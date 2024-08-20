@@ -10,6 +10,10 @@
 
 - npm i -D react-router-dom
 
+***Baixar Axios***
+
+- npm install axios
+
 ***Material UI***
 
 - npm install @mui/material @emotion/react @emotion/styled
