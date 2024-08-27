@@ -19,7 +19,7 @@ import {
   } from "@mui/material";
 
   import { DataGrid, GridColDef } from "@mui/x-data-grid";
-
+  import { ModalStyle } from "./styles";
   //Icones
   import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
   import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -35,13 +35,18 @@ const Usuario = () => {
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
     const [isAdm, setIsAdm] = useState("")
-    
+
+    //Modal ADD
+    const [adopen, setAdOpen] = React.useState(false);
+    const addOn = () => setAdOpen(true);
+    const addOf = () => setAdOpen(false);
+
     //Modal Put
     const [popen, setPOpen] = React.useState(false);
     const putOn = (id: string, nome: string, email: string, senha: string) => {
       setNome(nome);
-      setNome(email);
-      setNome(senha);
+      setEmail(email);
+      setSenha(senha);
       setUserId(id);
       setPOpen(true);
     };
@@ -70,7 +75,7 @@ const Usuario = () => {
       } catch (error: any) {
         new Error(error);
       } finally {
-        
+        addOf();
       }
     }
 
@@ -79,7 +84,7 @@ const Usuario = () => {
         const response = await axios.put(
           `http://localhost:3000/usuario?id=${userId}`,
           {
-            nome: nome,
+            nome:  nome,
             email: email,
             senha: senha,
             isAdm: isAdm
@@ -169,51 +174,127 @@ const Usuario = () => {
             Ihhhhhhhhh que papinho em
         </Typography>
         <Box>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Novo Usuario
-          </Typography>
-          <TextField //Prencher Categoria
-            id="outlined-helperText"
-            label="Nome"
-            defaultValue=""
-            helperText="Obrigatório"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
-          <TextField //Prencher Categoria
-            id="outlined-helperText"
-            label="Email"
-            defaultValue=""
-            helperText="Obrigatório"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <TextField //Prencher Categoria
-            id="outlined-helperText"
-            label="IsAdm"
-            defaultValue=""
-            helperText="Obrigatório"
-            value={isAdm}
-            onChange={(e) => setIsAdm(e.target.value)}
-          />
-          <TextField //Prencher Categoria
-            id="outlined-helperText"
-            label="senha"
-            defaultValue=""
-            helperText="Obrigatório"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
+        <Stack direction="row" spacing={2}>
           <Button
-            onClick={postUsers}
+            onClick={addOn}
             variant="outlined"
-            startIcon={<DoneIcon />}
+            startIcon={<AddCircleOutlineIcon />}
           >
-            Cadastrar
+            Adicionar
           </Button>
-      </Box>
+        </Stack>
 
+          <Modal //Modal ADICIONAR
+            open={adopen}
+            onClose={addOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+          <Box sx={ ModalStyle }> 
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Novo autor
+            </Typography>
+            <Typography>
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="Nome"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="Email"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="IsAdm"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={isAdm}
+                onChange={(e) => setIsAdm(e.target.value)}
+              />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="senha"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+              <Button
+                onClick={postUsers}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Cadastrar
+            </Button>
+          </Typography>
+        </Box>
+      </Modal>
+
+      <Modal //Modal EDITAR
+          open={popen}
+          onClose={putOf}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+        <Box sx={ModalStyle}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Editar Usuario
+            </Typography>
+
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <TextField //Prencher Autor
+                id="outlined-helperText"
+                label="Nome"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <TextField //Prencher Autor
+                id="outlined-helperText"
+                label="Email"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField //Prencher Autor
+                id="outlined-helperText"
+                label="senha"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+              <TextField //Prencher Autor
+                id="outlined-helperText"
+                label="IsAdm"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={isAdm}
+                onChange={(e) => setIsAdm(e.target.value)}
+              />
+              <Button
+                onClick={putUsers}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Alterar
+              </Button>
+            </Typography>
+          </Box>
+        </Modal>
+      
+      
+    </Box>
       <Box>
       <DataGrid
             rows={rows}
