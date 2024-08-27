@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import React from 'react';
 
 import { Home } from '../pages'
 import { Cliente } from '../pages'
+import { Usuario } from '../pages'
 import { NoPage } from '../pages'
 
 
@@ -13,6 +13,7 @@ const Router = () => (
         <Route index element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/cliente" element={<Cliente />} />
+        <Route path="/usuario" element={<Usuario />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>

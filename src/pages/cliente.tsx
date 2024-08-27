@@ -51,7 +51,7 @@ const Cliente = () => {
     async function getCustomers() {
         try { //MARIA JOOOOOOOAAAAAANAA VERIFICA O NOME DO LOCALHOST
           const response = await axios.get("http://localhost:3000/Cliente"); //VERIFICAR SE O NOME TA CERTO
-          setCustomers(response.data.autores); // aqui pe o nome que vem do back antona burra
+          setCustomers(response.data.clientes); // aqui pe o nome que vem do back antona burra
         } catch (error: any) {
           new Error(error);
         }
@@ -59,7 +59,7 @@ const Cliente = () => {
 
       async function postCustomer() {
         try {
-          const response = await axios.post("http://localhost:3000/autor", {
+          const response = await axios.post("http://localhost:3000/Cliente", {
             nome: nome,
             nomeFantasia: nomeFantasia,
             cpfCnpj: cpfCnpj,
@@ -79,7 +79,7 @@ const Cliente = () => {
 
           });
           getCustomers();
-          if (response.status === 200) alert("Autor cadastro com sucesso!");
+          if (response.status === 200) alert("Cliente cadastro com sucesso!");
         } catch (error: any) {
           new Error(error);
         } finally {
