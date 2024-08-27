@@ -7,7 +7,7 @@ export type UserVO = {
     nome:   string  //Se torna uma string
     email:  string
     senha:  string
-    idAdm:  string
+    isAdm:  string
 }
 
 //proximo passo é index.ts
