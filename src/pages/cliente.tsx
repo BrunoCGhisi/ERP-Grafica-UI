@@ -25,8 +25,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-
-
 const Cliente = () => {
 
     const [customers, setCustomers] = useState<CustomerVO[]>([]);

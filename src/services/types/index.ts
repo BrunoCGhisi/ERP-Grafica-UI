@@ -2,3 +2,4 @@
 
 export * from './CustomerVO'
 export * from './UserVO'
+export * from './BankVO'

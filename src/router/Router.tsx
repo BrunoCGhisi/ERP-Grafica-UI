@@ -1,9 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Home } from '../pages'
+import { Login } from '../pages'
+import { Banco } from '../pages'
 import { Cliente } from '../pages'
 import { Usuario } from '../pages'
+
+
 import { NoPage } from '../pages'
+
 
 
 const Router = () => (
@@ -11,10 +16,13 @@ const Router = () => (
     <BrowserRouter>
       <Routes>
         <Route index element={<Home />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home"   element={<Home />} />
+        <Route path="/login"  element={<Login />} />
+        <Route path="/banco" element={<Banco />} />
         <Route path="/cliente" element={<Cliente />} />
         <Route path="/usuario" element={<Usuario />} />
-        <Route path="*" element={<NoPage />} />
+        
+        <Route path="*"       element={<NoPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserVO } from "../services/types";
+import { BankVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -19,50 +19,46 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-const Usuario = () => {
-  const [users, setUsers] = useState<UserVO[]>([]);
-  const [userId, setUserId] = useState<string>("");
-  const [nome, setNome]   = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [senha, setSenha] = useState<string>("");
-  const [isAdm, setIsAdm] = useState<string>("");
+const Banco = () => {
 
-  // Modal ADD
+    const [banks, setBanks] = useState<BankVO[]>([]);
+    const [bankId, setBankId] = useState<string>("")
+    const [nome, setNome]     = useState<string>("")
+    const [valorTotal, setValorTotal] = useState<string>("")
+
+    // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, nome: string, email: string, senha: string, isAdm: string) => {
-    setUserId(id);
+  const putOn = (id: string, nome: string, valorTotal: string) => {
+    setBankId(id);
     setNome(nome);
-    setEmail(email);
-    setSenha(senha);
-    setIsAdm(isAdm);
+    setValorTotal(valorTotal);
+
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  async function getUsers() {
+  async function getBanks() {
     try {
-      const response = await axios.get("http://localhost:3000/usuario");
-      setUsers(response.data.usuarios);
+      const response = await axios.get("http://localhost:3000/banco");
+      setBanks(response.data.bancos);
     } catch (error: any) {
       console.error(error);
     }
   }
 
-  async function postUsers() {
+  async function postBanks() {
     try {
-      const response = await axios.post("http://localhost:3000/usuario", {
+      const response = await axios.post("http://localhost:3000/banco", {
         nome: nome,
-        email: email,
-        senha: senha,
-        isAdm: isAdm,
+        valorTotal: valorTotal,
       });
-      if (response.status === 200) alert("Usuário cadastrado com sucesso!");
-      getUsers();
+      if (response.status === 200) alert("Banco cadastrado com sucesso!");
+      getBanks();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -70,19 +66,18 @@ const Usuario = () => {
     }
   }
 
-  async function putUsers() {
+  async function putBanks() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/usuario?id=${userId}`,
+        `http://localhost:3000/banco?id=${bankId}`,
         {
           nome: nome,
-          email: email,
-          senha: senha,
-          isAdm: isAdm
+          valorTotal: valorTotal,
+          
         }
       );
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getUsers();
+      getBanks();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -90,25 +85,25 @@ const Usuario = () => {
     }
   }
 
-  async function delUsers(id: string) {
+  async function delBanks(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/usuario?id=${id}`);
+      const response = await axios.delete(`http://localhost:3000/banco?id=${id}`);
       if (response.status === 200) alert("Usuário deletado com sucesso!");
-      getUsers();
+      getBanks();
     } catch (error: any) {
       console.error(error);
     }
   }
 
   useEffect(() => {
-    getUsers();
+    getBanks();
   }, []);
 
-  const columns: GridColDef<UserVO>[] = [
+  const columns: GridColDef<BankVO>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
-    { field: "email", headerName: "Email", editable: false, flex: 0 },
-    { field: "isAdm", headerName: "isAdm", editable: false, flex: 0 },
+    { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
+
     {
       field: "acoes",
       headerName: "Ações",
@@ -118,10 +113,10 @@ const Usuario = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delUsers(row.id)}>
+          <IconButton onClick={() => delBanks(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.nome, row.email, row.senha, row.isAdm)}>
+          <IconButton onClick={() => putOn(row.id, row.nome, row.valorTotal)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -129,19 +124,19 @@ const Usuario = () => {
     },
   ];
 
-  const rows = users.map((usuario) => ({
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    senha: usuario.senha,
-    isAdm: usuario.isAdm,
-  }));
+  const rows = banks.map((banco) => ({
+    id: banco.id,
+    nome: banco.nome,
+    valorTotal: banco.valorTotal,
 
-  return (
-    <Box>
-      <Typography>Estamos dentro dos usuários</Typography>
-      <Typography> Ihhhhhhhhh que papinho em</Typography>
-      <Box>
+  }));
+  
+
+    return (
+        <Box>
+            <Typography>Estamos dentro do banco </Typography>
+            <Typography>(Não iremos cometer nenhum assalto...)</Typography>
+            <Box>
         <Stack direction="row" spacing={2}>
           <Button onClick={addOn} variant="outlined" startIcon={<AddCircleOutlineIcon />}>
             Adicionar
@@ -156,7 +151,7 @@ const Usuario = () => {
         >
           <Box sx={ModalStyle}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Novo usuário
+              Novo banco
             </Typography>
             <TextField
               id="outlined-helperText"
@@ -167,28 +162,14 @@ const Usuario = () => {
             />
             <TextField
               id="outlined-helperText"
-              label="Email"
+              label="valorTotal"
               helperText="Obrigatório"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={valorTotal}
+              onChange={(e) => setValorTotal(e.target.value)}
             />
-            <TextField
-              id="outlined-helperText"
-              label="IsAdm"
-              helperText="Obrigatório"
-              value={isAdm}
-              onChange={(e) => setIsAdm(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="Senha"
-              type="password"  // Corrigido para senha
-              helperText="Obrigatório"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+    
             <Button
-              onClick={postUsers}
+              onClick={postBanks}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -205,7 +186,7 @@ const Usuario = () => {
         >
           <Box sx={ModalStyle}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Usuário
+              Editar Banco
             </Typography>
             <TextField
               id="outlined-helperText"
@@ -216,28 +197,14 @@ const Usuario = () => {
             />
             <TextField
               id="outlined-helperText"
-              label="Email"
+              label="valorTotal"
               helperText="Obrigatório"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={valorTotal}
+              onChange={(e) => setValorTotal(e.target.value)}
             />
-            <TextField
-              id="outlined-helperText"
-              label="Senha"
-              type="password"  // Corrigido para senha
-              helperText="Obrigatório"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="IsAdm"
-              helperText="Obrigatório"
-              value={isAdm}
-              onChange={(e) => setIsAdm(e.target.value)}
-            />
+        
             <Button
-              onClick={putUsers}
+              onClick={putBanks}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -260,8 +227,10 @@ const Usuario = () => {
           pageSizeOptions={[6]}
         />
       </Box>
-    </Box>
-  );
+        
+        </Box>
+        
+    )
 }
 
-export default Usuario;
+export default Banco;
