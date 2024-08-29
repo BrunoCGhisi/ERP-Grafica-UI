@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BankVO } from "../services/types";
+import { ProductCategoryVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -19,12 +19,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-const Banco = () => {
-
-    const [banks, setBanks] = useState<BankVO[]>([]);
-    const [bankId, setBankId] = useState<string>("")
-    const [nome, setNome]     = useState<string>("")
-    const [valorTotal, setValorTotal] = useState<string>("")
+const CategoriaProduto = () => {
+    const [productCategorys, setProductCategorys] = useState<ProductCategoryVO[]>([]);
+    const [productCategoryId, setProductCategoryId] = useState<string>("")
+    const [categoria, setCategoria]     = useState<string>("")
+    
 
     // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -33,32 +32,31 @@ const Banco = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, nome: string, valorTotal: string) => {
-    setBankId(id);
-    setNome(nome);
-    setValorTotal(valorTotal);
+  const putOn = (id: string, categoria: string) => {
+    setProductCategoryId(id);
+    setCategoria(categoria);
 
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  async function getBanks() {
+  async function getProductCategorys() {
     try {
-      const response = await axios.get("http://localhost:3000/banco");
-      setBanks(response.data.bancos);
+      const response = await axios.get("http://localhost:3000/categoriaProduto");
+      setProductCategorys(response.data.categorias_produtos);
     } catch (error: any) {
       console.error(error);
     }
   }
 
-  async function postBanks() {
+  async function postProductCategorys() {
     try {
-      const response = await axios.post("http://localhost:3000/banco", {
-        nome: nome,
-        valorTotal: valorTotal,
+      const response = await axios.post("http://localhost:3000/categoriaProduto", {
+        categoria: categoria,
+        
       });
-      if (response.status === 200) alert("Banco cadastrado com sucesso!");
-      getBanks();
+      if (response.status === 200) alert("Categoria do produto cadastrado com sucesso!");
+      getProductCategorys();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -66,18 +64,16 @@ const Banco = () => {
     }
   }
 
-  async function putBanks() {
+  async function putProductCategorys() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/banco?id=${bankId}`,
+        `http://localhost:3000/categoriaProduto?id=${productCategoryId}`,
         {
-          nome: nome,
-          valorTotal: valorTotal,
-          
+          categoria: categoria,
         }
       );
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getBanks();
+      getProductCategorys();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -85,24 +81,23 @@ const Banco = () => {
     }
   }
 
-  async function delBanks(id: string) {
+  async function delProductCategorys(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/banco?id=${id}`);
+      const response = await axios.delete(`http://localhost:3000/categoriaProduto?id=${id}`);
       if (response.status === 200) alert("Banco deletado com sucesso!");
-      getBanks();
+      getProductCategorys();
     } catch (error: any) {
       console.error(error);
     }
   }
 
   useEffect(() => {
-    getBanks();
+    getProductCategorys();
   }, []);
 
-  const columns: GridColDef<BankVO>[] = [
+  const columns: GridColDef<ProductCategoryVO>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
-    { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
+    { field: "categoria", headerName: "Categoria", editable: false, flex: 0 },
 
     {
       field: "acoes",
@@ -113,10 +108,10 @@ const Banco = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delBanks(row.id)}>
+          <IconButton onClick={() => delProductCategorys(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.nome, row.valorTotal)}>
+          <IconButton onClick={() => putOn(row.id, row.categoria)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -124,17 +119,17 @@ const Banco = () => {
     },
   ];
 
-  const rows = banks.map((banco) => ({
-    id: banco.id,
-    nome: banco.nome,
-    valorTotal: banco.valorTotal,
+  const rows = productCategorys.map((categoriaProduto) => ({
+    id: categoriaProduto.id,
+    categoria: categoriaProduto.categoria
+    
 
   }));
   
 
     return (
         <Box>
-            <Typography>Estamos dentro do banco </Typography>
+            <Typography>Estamos dentro do categoriaProduto </Typography>
             <Typography>(Não iremos cometer nenhum assalto...)</Typography>
             <Box>
         <Stack direction="row" spacing={2}>
@@ -155,21 +150,13 @@ const Banco = () => {
             </Typography>
             <TextField
               id="outlined-helperText"
-              label="Nome"
+              label="categoriaProduto"
               helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
             />
-            <TextField
-              id="outlined-helperText"
-              label="valorTotal"
-              helperText="Obrigatório"
-              value={valorTotal}
-              onChange={(e) => setValorTotal(e.target.value)}
-            />
-    
             <Button
-              onClick={postBanks}
+              onClick={postProductCategorys}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -186,25 +173,18 @@ const Banco = () => {
         >
           <Box sx={ModalStyle}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Banco
+              Editar Categoria Produtos
             </Typography>
             <TextField
               id="outlined-helperText"
-              label="Nome"
+              label="categoria"
               helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
             />
-            <TextField
-              id="outlined-helperText"
-              label="valorTotal"
-              helperText="Obrigatório"
-              value={valorTotal}
-              onChange={(e) => setValorTotal(e.target.value)}
-            />
-        
+
             <Button
-              onClick={putBanks}
+              onClick={putProductCategorys}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -233,4 +213,4 @@ const Banco = () => {
     )
 }
 
-export default Banco;
+export default CategoriaProduto
