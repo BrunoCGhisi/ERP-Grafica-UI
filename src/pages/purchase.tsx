@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PaymentWayVO } from "../services/types";
+import { PurchaseVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -20,12 +20,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 
-const FormaPgto = () => {
+const Compra = () => {
 
-    const [paymentWays, setPaymentWays] = useState<PaymentWayVO[]>([]);
-    const [paymentWayId, setPaymentWayId] = useState<string>("")
-    const [tipo, setTipo]     = useState<string>("")
-    const [idBanco, setIdBanco] = useState<string>("")
+    const [purchases, setPurchases] = useState<PurchaseVO[]>([]);
+    const [purchaseId, setPurchaseId] = useState<string>("")
+    const [idFornecedor, setIdFornecedor]     = useState<string>("")
+    const [idCompraOS, setidCompraOS] = useState<string>("")
+    const [dataCompra, setDataCompra] = useState<string>("")
+    const [numNota, setNumNota] = useState<string>("")
+    const [desconto, setDesconto] = useState<string>("")
 
     // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -34,32 +37,35 @@ const FormaPgto = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, tipo: string, idBanco: string) => {
-    setPaymentWayId(id);
-    setTipo(tipo);
-    setIdBanco(idBanco);
+  const putOn = (id: string, idFornecedor: string, idCompraOS: string, dataCompra: string,numNota: string, desconto: string) => {
+    setPurchaseId(id);
+    setIdFornecedor(idFornecedor);
+    setidCompraOS(idCompraOS);
+    setDataCompra(dataCompra)
+    setNumNota(numNota);
+    setDesconto(desconto);
 
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  async function getPaymentWays() {
+  async function getPurchases() {
     try {
-      const response = await axios.get("http://localhost:3000/forma_pgto");
-      setPaymentWays(response.data.formas_pgto);
+      const response = await axios.get("http://localhost:3000/compra");
+      setPurchases(response.data.compras);
     } catch (error: any) {
       console.error(error);
     }
   }
 
-  async function postPaymentWays() {
+  async function postPurchases() {
     try {
-      const response = await axios.post("http://localhost:3000/forma_pgto", {
+      const response = await axios.post("http://localhost:3000/compra", {
         tipo: tipo,
         idBanco: idBanco,
       });
-      if (response.status === 200) alert("forma_pgto cadastrado com sucesso!");
-      getPaymentWays();
+      if (response.status === 200) alert("compra cadastrado com sucesso!");
+      getPurchases();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -67,18 +73,18 @@ const FormaPgto = () => {
     }
   }
 
-  async function putPaymentWays() {
+  async function putPurchases() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/forma_pgto?id=${paymentWayId}`,
+        `http://localhost:3000/compra?id=${purchaseId}`,
         {
           tipo: tipo,
           idBanco: idBanco,
           
         }
       );
-      if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getPaymentWays();
+      if (response.status === 200) alert("COmpra atualizado com sucesso!");
+      getPurchases();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -86,21 +92,21 @@ const FormaPgto = () => {
     }
   }
 
-  async function delPaymentWays(id: string) {
+  async function delPurchases(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/forma_pgto?id=${id}`);
-      if (response.status === 200) alert("forma_pgto deletado com sucesso!");
-      getPaymentWays();
+      const response = await axios.delete(`http://localhost:3000/compra?id=${id}`);
+      if (response.status === 200) alert("compra deletado com sucesso!");
+      getPurchases();
     } catch (error: any) {
       console.error(error);
     }
   }
 
   useEffect(() => {
-    getPaymentWays();
+    getPurchases();
   }, []);
 
-  const columns: GridColDef<PaymentWayVO>[] = [
+  const columns: GridColDef<PurchaseVO>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "tipo", headerName: "Tipo", editable: false, flex: 0 },
     { field: "idBanco", headerName: "IdBanco", editable: false, flex: 0 },
@@ -114,7 +120,7 @@ const FormaPgto = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delPaymentWays(row.id)}>
+          <IconButton onClick={() => delPurchases(row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => putOn(row.id, row.tipo, row.idBanco)}>
@@ -125,7 +131,7 @@ const FormaPgto = () => {
     },
   ];
 
-  const rows = paymentWays.map((forma_pgto) => ({
+  const rows = purchases.map((compra) => ({
     id: forma_pgto.id,
     tipo: forma_pgto.tipo,
     idBanco: forma_pgto.idBanco,
@@ -169,7 +175,7 @@ const FormaPgto = () => {
             />
     
             <Button
-              onClick={postPaymentWays}
+              onClick={postBanks}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -204,7 +210,7 @@ const FormaPgto = () => {
             />
         
             <Button
-              onClick={putPaymentWays}
+              onClick={putBanks}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -233,4 +239,4 @@ const FormaPgto = () => {
     )
 }
 
-export default FormaPgto;
+export default Compra;
