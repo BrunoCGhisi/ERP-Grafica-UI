@@ -42,7 +42,7 @@ const CategoriaProduto = () => {
 
   async function getProductCategorys() {
     try {
-      const response = await axios.get("http://localhost:3000/categorias_produtos");
+      const response = await axios.get("http://localhost:3000/categoria_produto");
       setProductCategorys(response.data.categorias_produtos);
     } catch (error: any) {
       console.error(error);
@@ -51,7 +51,7 @@ const CategoriaProduto = () => {
 
   async function postProductCategorys() {
     try {
-      const response = await axios.post("http://localhost:3000/categorias_produtos", {
+      const response = await axios.post("http://localhost:3000/categoria_produto", {
         categoria: categoria,
         
       });
@@ -66,7 +66,7 @@ const CategoriaProduto = () => {
   async function putProductCategorys() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/categorias_produtos?id=${productCategoryId}`,
+        `http://localhost:3000/categoria_produto?id=${productCategoryId}`,
         {
           categoria: categoria,
         }
@@ -82,7 +82,7 @@ const CategoriaProduto = () => {
 
   async function delProductCategorys(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/categorias_produtos?id=${id}`);
+      const response = await axios.delete(`http://localhost:3000/categoria_produto?id=${id}`);
       if (response.status === 200) alert("Banco deletado com sucesso!");
       getProductCategorys();
     } catch (error: any) {

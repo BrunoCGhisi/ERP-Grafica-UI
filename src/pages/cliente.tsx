@@ -8,6 +8,9 @@ import {
     Accordion,
     AccordionDetails,
     Box,
+    InputLabel,
+    Select,
+    MenuItem,
     Modal,
     AccordionSummary,
     Button,
@@ -33,22 +36,22 @@ const Cliente = () => {
     const [nome, setNome] = useState("")
     const [nomeFantasia, setNomeFantasia] = useState("")
     const [cpfCnpj, setCpfCnpj] = useState("")
-    const [email, setEmail] = useState("")
     const [telefone, setTelefone] = useState("")
+    const [email, setEmail] = useState("")
     const [isFornecedor, setIsFornecedor] = useState("")
-    const [cadastroData, setCadastroData] = useState("")
-    const [numIe, setNumIe] = useState("")
-    const [statusIe, setStatusIe] = useState("")
-    const [endereco, setEndereco] = useState("")
     const [cep, setCep] = useState("")
     const [estado, setEstado] = useState("")
-    const [numero, setNumero] = useState("")
     const [cidade, setCidade] = useState("")
+    const [numero, setNumero] = useState("")
+    const [endereco, setEndereco] = useState("")
     const [complemento, setComplemento] = useState("")
-
+    const [dataCadastro, setDataCadastro] = useState("")
+    const [numIe, setNumIe] = useState("")
+    const [statusIe, setStatusIe] = useState("")
+    
     async function getCustomers() {
-        try { //MARIA JOOOOOOOAAAAAANAA VERIFICA O NOME DO LOCALHOST
-          const response = await axios.get("http://localhost:3000/Cliente"); //VERIFICAR SE O NOME TA CERTO
+        try { 
+          const response = await axios.get("http://localhost:3000/cliente"); 
           setCustomers(response.data.clientes); // aqui pe o nome que vem do back antona burra
         } catch (error: any) {
           new Error(error);
@@ -57,24 +60,22 @@ const Cliente = () => {
 
       async function postCustomer() {
         try {
-          const response = await axios.post("http://localhost:3000/Cliente", {
+          const response = await axios.post("http://localhost:3000/cliente", {
             nome: nome,
             nomeFantasia: nomeFantasia,
             cpfCnpj: cpfCnpj,
-            email: email,
             telefone: telefone,
+            email: email,
             isFornecedor: isFornecedor,
-            cadastroData: cadastroData,
-            numIe: numIe,
-            statusIe: statusIe,
-            endereco: endereco,
             cep: cep,
             estado: estado,
-            numero: numero,
             cidade: cidade,
-            complemento: complemento
-
-
+            numero: numero,
+            endereco: endereco,
+            complemento: complemento,
+            dataCadastro: dataCadastro,
+            numIe: numIe,
+            statusIe: statusIe,
           });
           getCustomers();
           if (response.status === 200) alert("Cliente cadastro com sucesso!");
@@ -130,14 +131,6 @@ const Cliente = () => {
               />
               <TextField //Prencher Categoria
                 id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <TextField //Prencher Categoria
-                id="outlined-helperText"
                 label="telefone"
                 defaultValue=""
                 helperText="Obrigatório"
@@ -146,44 +139,23 @@ const Cliente = () => {
               />
               <TextField //Prencher Categoria
                 id="outlined-helperText"
-                label="isFornecedor"
+                label="email"
                 defaultValue=""
                 helperText="Obrigatório"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <Select
+                labelId="select-label"
+                id="demo-simple-select"
                 value={isFornecedor}
+                label="IsFornecedor"
                 onChange={(e) => setIsFornecedor(e.target.value)}
-              />
-              <TextField //Prencher Categoria
-                id="outlined-helperText"
-                label="cadastroData"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cadastroData}
-                onChange={(e) => setCadastroData(e.target.value)}
-              />
-              <TextField //Prencher Categoria
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={numIe}
-                onChange={(e) => setNumIe(e.target.value)}
-              />
-              <TextField //Prencher Categoria
-                id="outlined-helperText"
-                label="statusIe"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={statusIe}
-                onChange={(e) => setStatusIe(e.target.value)}
-              />
-              <TextField //Prencher Categoria
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-              />
+              >
+                <MenuItem value={"0"}>Normal</MenuItem>
+                <MenuItem value={"1"}>Fornecedor </MenuItem>
+              </Select>
               <TextField //Prencher Categoria
                 id="outlined-helperText"
                 label="cep"
@@ -202,6 +174,14 @@ const Cliente = () => {
               />
               <TextField //Prencher Categoria
                 id="outlined-helperText"
+                label="cidade"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
                 label="numero"
                 defaultValue=""
                 helperText="Obrigatório"
@@ -210,11 +190,11 @@ const Cliente = () => {
               />
               <TextField //Prencher Categoria
                 id="outlined-helperText"
-                label="cidade"
+                label="endereco"
                 defaultValue=""
                 helperText="Obrigatório"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
               />
               <TextField //Prencher Categoria
                 id="outlined-helperText"
@@ -224,6 +204,34 @@ const Cliente = () => {
                 value={complemento}
                 onChange={(e) => setComplemento(e.target.value)}
               />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="dataCadastro"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={dataCadastro}
+                onChange={(e) => setDataCadastro(e.target.value)}
+              />
+              <TextField //Prencher Categoria
+                id="outlined-helperText"
+                label="numIe"
+                defaultValue=""
+                helperText="Obrigatório"
+                value={numIe}
+                onChange={(e) => setNumIe(e.target.value)}
+              />
+              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <Select
+                labelId="select-label"
+                id="demo-simple-select"
+                value={statusIe}
+                label="StatusIe"
+                onChange={(e) => setStatusIe(e.target.value)}
+              >
+                <MenuItem value={"0"}>Off</MenuItem>
+                <MenuItem value={"1"}>On </MenuItem>
+              </Select>
+              
               <Button
                 onClick={postCustomer}
                 variant="outlined"

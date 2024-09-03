@@ -45,7 +45,7 @@ const FormaPgto = () => {
 
   async function getPaymentWays() {
     try {
-      const response = await axios.get("http://localhost:3000/forma_pgto");
+      const response = await axios.get("http://localhost:3000/formas_pgto");
       setPaymentWays(response.data.formas_pgto);
     } catch (error: any) {
       console.error(error);
@@ -54,7 +54,7 @@ const FormaPgto = () => {
 
   async function postPaymentWays() {
     try {
-      const response = await axios.post("http://localhost:3000/forma_pgto", {
+      const response = await axios.post("http://localhost:3000/formas_pgto", {
         tipo: tipo,
         idBanco: idBanco,
       });
@@ -70,7 +70,7 @@ const FormaPgto = () => {
   async function putPaymentWays() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/forma_pgto?id=${paymentWayId}`,
+        `http://localhost:3000/formas_pgto?id=${paymentWayId}`,
         {
           tipo: tipo,
           idBanco: idBanco,
@@ -88,7 +88,7 @@ const FormaPgto = () => {
 
   async function delPaymentWays(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/forma_pgto?id=${id}`);
+      const response = await axios.delete(`http://localhost:3000/formas_pgto?id=${id}`);
       if (response.status === 200) alert("forma_pgto deletado com sucesso!");
       getPaymentWays();
     } catch (error: any) {
