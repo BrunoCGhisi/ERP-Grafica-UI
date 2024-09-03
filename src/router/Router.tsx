@@ -10,8 +10,6 @@ import { FormaPgto } from '../pages'
 
 import { NoPage } from '../pages'
 
-
-
 const Router = () => (
     //constante Router é igual a uma função vazia que vai executar a pesquisa rotas e paginas
     <BrowserRouter>
@@ -19,7 +17,7 @@ const Router = () => (
         <Route index element={<Home />} />
         <Route path="/home"   element={<Home />} />
         <Route path="/login"  element={<Login />} />
-        <Route path="/banco" element={<Banco />} />
+        <Route path="/banco"  element={<Banco />} />
         <Route path="/cliente" element={<Cliente />} />
         <Route path="/usuario" element={<Usuario />} />
         <Route path="/categoria_produto" element={<CategoriaProduto />} />
