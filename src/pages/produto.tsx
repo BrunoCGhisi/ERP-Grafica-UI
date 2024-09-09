@@ -28,6 +28,7 @@ const Produto = () => {
     const [keyWord, setKeyWord] = useState<string>("");
     const [idCategoria, setIdCategoria] = useState<string>("");
     const [preco, setPreco] = useState<string>("");
+    const [tamanho, setTamanho] = useState<string>("");
     const [isEstoque, setIsEstoque] = useState<string>("");
     const [minEstoque, setMinEstoque] = useState<string>("");
     const [estoque, setEstoque] = useState<string>("");
@@ -44,6 +45,7 @@ const Produto = () => {
     keyWord: string,
     idCategoria: string,
     preco: string,
+    tamanho: string,
     isEstoque: string,
     minEstoque: string,
     estoque: string) => {
@@ -54,6 +56,7 @@ const Produto = () => {
     setKeyWord(keyWord);
     setIdCategoria(idCategoria);
     setPreco(preco);
+    setTamanho(tamanho);
     setIsEstoque(isEstoque);
     setMinEstoque(minEstoque);
     setEstoque(estoque);
@@ -65,7 +68,7 @@ const Produto = () => {
   async function getProducts() {
     try {
       const response = await axios.get("http://localhost:3000/produto");
-      setProducts(response.data.bancos);
+      setProducts(response.data.produtos);
     } catch (error: any) {
       console.error(error);
     }
@@ -79,6 +82,7 @@ const Produto = () => {
         keyWord: keyWord,
         idCategoria: idCategoria,
         preco: preco,
+        tamanho: tamanho,
         isEstoque: isEstoque,
         minEstoque: minEstoque,
         estoque: estoque
@@ -86,7 +90,7 @@ const Produto = () => {
       if (response.status === 200) alert("Produto cadastrado com sucesso!");
       getProducts();
     } catch (error: any) {
-      console.error(error);
+      console.error(error); 
     } finally {
       addOf();
     }
@@ -95,20 +99,21 @@ const Produto = () => {
   async function putProducts() {
     try {
       const response = await axios.put(
-        `http://localhost:3000/produto?id=${bankId}`,
+        `http://localhost:3000/produto?id=${productId}`,
         {
             nome: nome,
             tipo: tipo,
             keyWord: keyWord,
             idCategoria: idCategoria,
             preco: preco,
+            tamanho: tamanho,
             isEstoque: isEstoque,
             minEstoque: minEstoque,
             estoque: estoque
           
         }
       );
-      if (response.status === 200) alert("Usuário atualizado com sucesso!");
+      if (response.status === 200) alert("Produto atualizado com sucesso!");
       getProducts();
     } catch (error: any) {
       console.error(error);
@@ -120,7 +125,7 @@ const Produto = () => {
   async function delProducts(id: string) {
     try {
       const response = await axios.delete(`http://localhost:3000/produto?id=${id}`);
-      if (response.status === 200) alert("Banco deletado com sucesso!");
+      if (response.status === 200) alert("Produto deletado com sucesso!");
       getProducts();
     } catch (error: any) {
       console.error(error);
@@ -138,6 +143,7 @@ const Produto = () => {
     { field: "keyWord", headerName: "keyWord", editable: false, flex: 0 },
     { field: "idCategoria", headerName: "idCategoria", editable: false, flex: 0 },
     { field: "preco", headerName: "preco", editable: false, flex: 0 },
+    { field: "tamanho", headerName: "tamanho", editable: false, flex: 0 },
     { field: "isEstoque", headerName: "isEstoque", editable: false, flex: 0 },
     { field: "minEstoque", headerName: "minEstoque", editable: false, flex: 0 },
     { field: "estoque", headerName: "estoque", editable: false, flex: 0 },
@@ -154,7 +160,7 @@ const Produto = () => {
           <IconButton onClick={() => delProducts(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.nome, row.tipo, row.keyWord, row.idCategoria, row.preco, row.isEstoque, row.minEstoque, row.estoque)}>
+          <IconButton onClick={() => putOn(row.id, row.nome, row.tipo, row.keyWord, row.idCategoria, row.preco, row.tamanho, row.isEstoque, row.minEstoque, row.estoque)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -169,6 +175,7 @@ const Produto = () => {
     keyWord: produto.keyWord,
     idCategoria: produto.idCategoria,
     preco: produto.preco,
+    tamanho: produto.tamanho,
     isEstoque: produto.isEstoque,
     minEstoque: produto.minEstoque,
     estoque: produto.estoque
@@ -196,6 +203,99 @@ const Produto = () => {
           <Box sx={ModalStyle}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Novo produto
+            </Typography>
+    
+            <TextField
+                id="outlined-helperText"
+                label="Nome"
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Tipo"
+                helperText="Obrigatório"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="KeyWord"
+                helperText="Obrigatório"
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="ID Categoria"
+                helperText="Obrigatório"
+                value={idCategoria}
+                onChange={(e) => setIdCategoria(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Preço"
+                helperText="Obrigatório"
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Tamanho"
+                helperText="Obrigatório"
+                value={tamanho}
+                onChange={(e) => setTamanho(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Estoque é controlado?"
+                helperText="Obrigatório"
+                value={isEstoque}
+                onChange={(e) => setIsEstoque(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Mínimo em Estoque"
+                helperText="Obrigatório"
+                value={minEstoque}
+                onChange={(e) => setMinEstoque(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
+                label="Estoque"
+                helperText="Obrigatório"
+                value={estoque}
+                onChange={(e) => setEstoque(e.target.value)}
+            />
+    
+            <Button
+              onClick={postProducts}
+              variant="outlined"
+              startIcon={<DoneIcon />}
+            >
+              Cadastrar
+            </Button>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={popen}
+          onClose={putOf}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={ModalStyle}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Editar Banco
             </Typography>
             <TextField
               id="outlined-helperText"
@@ -246,6 +346,14 @@ const Produto = () => {
 
             <TextField
                 id="outlined-helperText"
+                label="Tamanho"
+                helperText="Obrigatório"
+                value={tamanho}
+                onChange={(e) => setTamanho(e.target.value)}
+            />
+
+            <TextField
+                id="outlined-helperText"
                 label="Estoque Disponível"
                 helperText="Obrigatório"
                 value={isEstoque}
@@ -266,41 +374,6 @@ const Produto = () => {
                 helperText="Obrigatório"
                 value={estoque}
                 onChange={(e) => setEstoque(e.target.value)}
-            />
-    
-            <Button
-              onClick={postProducts}
-              variant="outlined"
-              startIcon={<DoneIcon />}
-            >
-              Cadastrar
-            </Button>
-          </Box>
-        </Modal>
-
-        <Modal
-          open={popen}
-          onClose={putOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Banco
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="Nome"
-              helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="valorTotal"
-              helperText="Obrigatório"
-              value={valorTotal}
-              onChange={(e) => setValorTotal(e.target.value)}
             />
         
             <Button
@@ -333,4 +406,4 @@ const Produto = () => {
     )
 }
 
-export default Banco;
+export default Produto;

@@ -9,6 +9,7 @@ export type ProductVO = {
     keyWord:   string
     idCategoria:      string
     preco:     string
+    tamanho: string
     isEstoque:     string
     minEstoque:     string
     estoque:     string
