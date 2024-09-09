@@ -7,6 +7,7 @@ import { Cliente } from '../pages'
 import { Usuario } from '../pages'
 import { CategoriaProduto } from '../pages'
 import { FormaPgto } from '../pages'
+import { Produto } from '../pages'
 
 import { NoPage } from '../pages'
 
@@ -22,6 +23,7 @@ const Router = () => (
         <Route path="/usuario" element={<Usuario />} />
         <Route path="/categoria_produto" element={<CategoriaProduto />} />
         <Route path="/forma_pgto" element={<FormaPgto />} />
+        <Route path="/produto" element={<Produto />} />
         <Route path="*"       element={<NoPage />} />
       </Routes>
     </BrowserRouter>
