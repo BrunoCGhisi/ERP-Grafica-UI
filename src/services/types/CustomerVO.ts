@@ -10,7 +10,7 @@ export type CustomerVO = {
     email:string
     telefone:string
     isFornecedor:string
-    cadastroData:string
+    dataCadastro:string
     numIe:string
     statusIe:string
     endereco:string

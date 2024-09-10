@@ -215,6 +215,7 @@ const Produto = () => {
       <Typography>Estamos dentro do produto </Typography>
       <Typography>(Não iremos cometer nenhum assalto...)</Typography>
       <Box>
+        
         <Stack direction="row" spacing={2}>
           <Button
             onClick={addOn}

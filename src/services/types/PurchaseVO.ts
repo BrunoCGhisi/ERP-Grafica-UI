@@ -4,7 +4,7 @@
 
 export type PurchaseVO = {
     id:           string  //Se torna uma string
-    idFornedor:   string  //Se torna uma string
+    idFornecedor:   string  //Se torna uma string
     isCompraOS:   string
     dataCompra:   string
     numNota:      string

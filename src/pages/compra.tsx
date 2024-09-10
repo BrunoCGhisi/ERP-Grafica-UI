@@ -4,11 +4,14 @@ import axios from "axios";
 import {
   Box,
   Modal,
+  InputLabel,
+  Select,
   Button,
   Typography,
   TextField,
   Stack,
-  IconButton
+  IconButton,
+  MenuItem
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle } from "./styles";
@@ -25,7 +28,7 @@ const Compra = () => {
     const [purchases, setPurchases] = useState<PurchaseVO[]>([]);
     const [purchaseId, setPurchaseId] = useState<string>("")
     const [idFornecedor, setIdFornecedor]     = useState<string>("")
-    const [idCompraOS, setidCompraOS] = useState<string>("")
+    const [isCompraOS, setIsCompraOS] = useState<string>("")
     const [dataCompra, setDataCompra] = useState<string>("")
     const [numNota, setNumNota] = useState<string>("")
     const [desconto, setDesconto] = useState<string>("")
@@ -37,10 +40,10 @@ const Compra = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, idFornecedor: string, idCompraOS: string, dataCompra: string,numNota: string, desconto: string) => {
+  const putOn = (id: string, idFornecedor: string, isCompraOS: string, dataCompra: string,numNota: string, desconto: string) => {
     setPurchaseId(id);
     setIdFornecedor(idFornecedor);
-    setidCompraOS(idCompraOS);
+    setIsCompraOS(isCompraOS);
     setDataCompra(dataCompra)
     setNumNota(numNota);
     setDesconto(desconto);
@@ -61,8 +64,11 @@ const Compra = () => {
   async function postPurchases() {
     try {
       const response = await axios.post("http://localhost:3000/compra", {
-        tipo: tipo,
-        idBanco: idBanco,
+        idFornecedor: idFornecedor,  
+        isCompraOS: isCompraOS,
+        dataCompra: dataCompra,
+        numNota: numNota,
+        desconto: desconto
       });
       if (response.status === 200) alert("compra cadastrado com sucesso!");
       getPurchases();
@@ -78,9 +84,11 @@ const Compra = () => {
       const response = await axios.put(
         `http://localhost:3000/compra?id=${purchaseId}`,
         {
-          tipo: tipo,
-          idBanco: idBanco,
-          
+        idFornecedor: idFornecedor,  
+        isCompraOS: isCompraOS,
+        dataCompra: dataCompra,
+        numNota: numNota,
+        desconto: desconto
         }
       );
       if (response.status === 200) alert("COmpra atualizado com sucesso!");
@@ -107,9 +115,12 @@ const Compra = () => {
   }, []);
 
   const columns: GridColDef<PurchaseVO>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "tipo", headerName: "Tipo", editable: false, flex: 0 },
-    { field: "idBanco", headerName: "IdBanco", editable: false, flex: 0 },
+    { field: "id", headerName: "id", editable: false, flex: 0 },
+    { field: "idFornecedor", headerName: "IdFornecedor", editable: false, flex: 0 },
+    { field: "isCompraOS", headerName: "IsCompraOS", editable: false, flex: 0 },
+    { field: "dataCompra", headerName: "DataCompra", editable: false, flex: 0 },
+    { field: "numNota", headerName: "NumNota", editable: false, flex: 0 },
+    { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
 
     {
       field: "acoes",
@@ -123,7 +134,7 @@ const Compra = () => {
           <IconButton onClick={() => delPurchases(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.tipo, row.idBanco)}>
+          <IconButton onClick={() => putOn(row.id, row.idFornecedor, row.isCompraOS, row.dataCompra, row.numNota, row.desconto)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -132,9 +143,12 @@ const Compra = () => {
   ];
 
   const rows = purchases.map((compra) => ({
-    id: forma_pgto.id,
-    tipo: forma_pgto.tipo,
-    idBanco: forma_pgto.idBanco,
+    id: compra.id,
+    idFornecedor: compra.idFornecedor,
+    isCompraOS: compra.isCompraOS,
+    dataCompra: compra.dataCompra,
+    numNota: compra.numNota,
+    desconto: compra.desconto
 
   }));
   
@@ -159,23 +173,50 @@ const Compra = () => {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Novo banco
             </Typography>
+          
             <TextField
-              id="outlined-helperText"
-              label="Tipo"
-              helperText="Obrigatório"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+                id="outlined-idFornecedor"
+                label="ID Fornecedor"
+                helperText="Obrigatório"
+                value={idFornecedor}
+                onChange={(e) => setIdFornecedor(e.target.value)}
+            />
+            <InputLabel id="demo-simple-select-label">Compra ou OS</InputLabel>
+
+            <Select
+              labelId="select-label"
+              id="demo-simple-select"
+              value={isCompraOS}
+              label="isCompraOS"
+              onChange={(e) => setIsCompraOS(e.target.value)}
+            >
+              <MenuItem value={0}>Compra</MenuItem>
+              <MenuItem value={1}>OS </MenuItem>
+            </Select>
+            <TextField
+                id="outlined-dataCompra"
+                label="Data Compra"
+                helperText="Obrigatório"
+                value={dataCompra}
+                onChange={(e) => setDataCompra(e.target.value)}
             />
             <TextField
-              id="outlined-helperText"
-              label="idBanco"
-              helperText="Obrigatório"
-              value={idBanco}
-              onChange={(e) => setIdBanco(e.target.value)}
+                id="outlined-numNota"
+                label="Número da Nota"
+                helperText="Obrigatório"
+                value={numNota}
+                onChange={(e) => setNumNota(e.target.value)}
+            />
+            <TextField
+                id="outlined-desconto"
+                label="Desconto"
+                helperText="Obrigatório"
+                value={desconto}
+                onChange={(e) => setDesconto(e.target.value)}
             />
     
             <Button
-              onClick={postBanks}
+              onClick={postPurchases}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
@@ -194,23 +235,52 @@ const Compra = () => {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Editar Banco
             </Typography>
+            
             <TextField
-              id="outlined-helperText"
-              label="Tipo"
-              helperText="Obrigatório"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+                id="outlined-idFornecedor"
+                label="ID Fornecedor"
+                helperText="Obrigatório"
+                value={idFornecedor}
+                onChange={(e) => setIdFornecedor(e.target.value)}
+            />
+
+            <InputLabel id="demo-simple-select-label">Compra ou OS</InputLabel>
+
+            <Select
+              labelId="select-label"
+              id="demo-simple-select"
+              value={isCompraOS}
+              label="isCompraOS"
+              onChange={(e) => setIsCompraOS(e.target.value)}
+            >
+              <MenuItem value={0}>Compra</MenuItem>
+              <MenuItem value={1}>OS </MenuItem>
+            </Select>
+
+            <TextField
+                id="outlined-dataCompra"
+                label="Data Compra"
+                helperText="Obrigatório"
+                value={dataCompra}
+                onChange={(e) => setDataCompra(e.target.value)}
             />
             <TextField
-              id="outlined-helperText"
-              label="idBanco"
-              helperText="Obrigatório"
-              value={idBanco}
-              onChange={(e) => setIdBanco(e.target.value)}
+                id="outlined-numNota"
+                label="Número da Nota"
+                helperText="Obrigatório"
+                value={numNota}
+                onChange={(e) => setNumNota(e.target.value)}
+            />
+            <TextField
+                id="outlined-desconto"
+                label="Desconto"
+                helperText="Obrigatório"
+                value={desconto}
+                onChange={(e) => setDesconto(e.target.value)}
             />
         
             <Button
-              onClick={putBanks}
+              onClick={putPurchases}
               variant="outlined"
               startIcon={<DoneIcon />}
             >
