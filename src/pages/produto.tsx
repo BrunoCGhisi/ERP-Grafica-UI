@@ -296,7 +296,7 @@ const Produto = () => {
               label="Estoque é controlado?"
               onChange={(e) => setIsEstoque(e.target.value)}
             >
-              <MenuItem value={"0"}>Não</MenuItem>
+              <MenuItem value={0}>Não</MenuItem>
               <MenuItem value={1}>Sim </MenuItem>
             </Select>
 
