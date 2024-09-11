@@ -134,7 +134,7 @@ const Usuario = () => {
     nome: usuario.nome,
     email: usuario.email,
     senha: usuario.senha,
-    isAdm: usuario.isAdm,
+    isAdm: usuario.isAdm ? "Sim" : "Não",
   }));
 
   return (

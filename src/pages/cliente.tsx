@@ -49,7 +49,6 @@ const Cliente = () => {
   const [numero, setNumero] = useState("");
   const [endereco, setEndereco] = useState("");
   const [complemento, setComplemento] = useState("");
-  const [dataCadastro, setDataCadastro] = useState("");
   const [numIe, setNumIe] = useState("");
   const [statusIe, setStatusIe] = useState("");
 
@@ -69,7 +68,6 @@ const Cliente = () => {
     email: string,
     telefone: string,
     isFornecedor: string,
-    dataCadastro: string,
     numIe: string,
     statusIe: string,
     endereco: string,
@@ -86,7 +84,6 @@ const Cliente = () => {
     setEmail(email);
     setTelefone(telefone);
     setIsFornecedor(isFornecedor);
-    setDataCadastro(dataCadastro);
     setNumIe(numIe);
     setStatusIe(statusIe);
     setEndereco(endereco);
@@ -109,6 +106,8 @@ const Cliente = () => {
     }
   }
 
+ // const mydate = new Date().getDate()
+
   async function postCustomers() {
     try {
       const response = await axios.post("http://localhost:3000/cliente", {
@@ -117,8 +116,7 @@ const Cliente = () => {
         cpfCnpj: cpfCnpj,
         telefone: telefone,
         email: email,
-        isFornecedor: isFornecedor,
-        dataCadastro: dataCadastro,
+        isFornecedor: Boolean(isFornecedor),
         cep: cep,
         estado: estado,
         cidade: cidade,
@@ -126,7 +124,7 @@ const Cliente = () => {
         endereco: endereco,
         complemento: complemento,
         numIe: numIe,
-        statusIe: statusIe,
+        statusIe: Boolean(statusIe),
       });
       getCustomers();
       if (response.status === 200) alert("Cliente cadastro com sucesso!");
@@ -227,8 +225,7 @@ const Cliente = () => {
                 row.cpfCnpj,           
                 row.email,             
                 row.telefone,          
-                row.isFornecedor,      
-                row.dataCadastro,     
+                row.isFornecedor,           
                 row.numIe,            
                 row.statusIe,         
                 row.endereco,         
@@ -329,14 +326,6 @@ const Cliente = () => {
 
             <TextField
               id="outlined-helperText"
-              label="DATA"
-              defaultValue=""
-              helperText="Obrigatório"
-              value={dataCadastro}
-              onChange={(e) => setDataCadastro(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
               label="email"
               defaultValue=""
               helperText="Obrigatório"
@@ -351,8 +340,8 @@ const Cliente = () => {
               label="IsFornecedor"
               onChange={(e) => setIsFornecedor(e.target.value)}
             >
-              <MenuItem value={"0"}>Normal</MenuItem>
-              <MenuItem value={"1"}>Fornecedor </MenuItem>
+              <MenuItem value={"true"}>Normal</MenuItem>
+              <MenuItem value={"false"}>Fornecedor </MenuItem>
             </Select>
             <TextField
               id="outlined-helperText"

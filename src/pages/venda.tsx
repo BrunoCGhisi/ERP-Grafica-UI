@@ -63,6 +63,50 @@ const Venda = () => {
         } finally {}
     }
 
+
+//-MODAIS-----------------------------------------------------------------------------------------------------------------------
+
+const [adopen, setAdOpen] = useState<boolean>(false);
+const addOn = () => setAdOpen(true);
+const addOf = () => setAdOpen(false);
+
+const [popen, setPOpen] = useState<boolean>(false);
+const putOn = (
+  id: string, nome: string, nomeFantasia: string, cpfCnpj: string,
+  email: string, telefone: string, isFornecedor: string, dataCadastro: string,
+  numIe: string, statusIe: string,
+  endereco: string,
+  cep: string,
+  estado: string,
+  numero: string,
+  cidade: string,
+  complemento: string
+) => {
+  setCustomerId(id);
+  setNome(nome);
+  setNomeFantasia(nomeFantasia);
+  setCpfCnpj(cpfCnpj);
+  setEmail(email);
+  setTelefone(telefone);
+  setIsFornecedor(isFornecedor);
+  setDataCadastro(dataCadastro);
+  setNumIe(numIe);
+  setStatusIe(statusIe);
+  setEndereco(endereco);
+  setCep(cep);
+  setEstado(estado);
+  setNumero(numero);
+  setCidade(cidade);
+  setComplemento(complemento);
+
+  setPOpen(true);
+};
+const putOf = () => setPOpen(false);
+
+
+//------------------------------------------------------------------------------------------------------------------------
+
+
     return(
 
         <Box>
