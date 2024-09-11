@@ -18,7 +18,8 @@
     "axios": "^1.7.5",
     "package.json": "^2.0.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "utils": "^0.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

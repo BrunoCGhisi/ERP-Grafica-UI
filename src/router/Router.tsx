@@ -9,6 +9,7 @@ import { CategoriaProduto } from '../pages'
 import { FormaPgto } from '../pages'
 import { Produto } from '../pages'
 import { Compra } from '../pages'
+import { Venda } from '../pages'
 
 
 import { NoPage } from '../pages'
@@ -27,6 +28,7 @@ const Router = () => (
         <Route path="/forma_pgto" element={<FormaPgto />} />
         <Route path="/produto" element={<Produto />} />
         <Route path="/compra" element={<Compra />} />
+        <Route path="/venda" element={<Venda />} />
         <Route path="*"       element={<NoPage />} />
       </Routes>
     </BrowserRouter>
