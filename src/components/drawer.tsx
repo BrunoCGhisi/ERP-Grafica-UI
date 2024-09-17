@@ -20,19 +20,18 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 //Icones
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd"; //Autores
-import ClassIcon from "@mui/icons-material/Class"; //Categorias
-import BeenhereIcon from "@mui/icons-material/Beenhere"; //Emprestimo
-import AutoStoriesIcon from "@mui/icons-material/AutoStories"; // Livros
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt"; //Membros
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote"; //Multa
-import PaymentIcon from "@mui/icons-material/Payment"; //Pagamento
-import LowPriorityIcon from "@mui/icons-material/LowPriority"; //Reservas
 
-import LocalLibraryIcon from "@mui/icons-material/LocalLibrary"; //Logo
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'; // Banco
+import ClassIcon from '@mui/icons-material/Class'; // categoria
+import BadgeIcon from '@mui/icons-material/Badge'; // cliente
+import InventoryIcon from '@mui/icons-material/Inventory'; //compra
+import CreditCardIcon from '@mui/icons-material/CreditCard'; //forma pagamento
+import LayersIcon from '@mui/icons-material/Layers';
+import AccountBoxIcon from '@mui/icons-material/AccountBox'; //usuario
+import SellIcon from '@mui/icons-material/Sell'; //venda
 
 //Tamanho do drawer aberto
-const drawerWidth = 200;
+const drawerWidth = 230;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -140,7 +139,7 @@ const MiniDrawer = () => {
 
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <LocalLibraryIcon />
+          
           <Typography>GraficaName</Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
@@ -181,14 +180,14 @@ const MiniDrawer = () => {
 
                   //Impondo icones baseado no index do item na lista
                 >
-                  {index === 0 && <AssignmentIndIcon />}
+                  {index === 0 && <AccountBalanceIcon />}
                   {index === 1 && <ClassIcon />}
-                  {index === 2 && <BeenhereIcon />}
-                  {index === 3 && <AutoStoriesIcon />}
-                  {index === 4 && <PeopleAltIcon />}
-                  {index === 5 && <RequestQuoteIcon />}
-                  {index === 6 && <PaymentIcon />}
-                  {index === 7 && <LowPriorityIcon />}
+                  {index === 2 && <BadgeIcon />}
+                  {index === 3 && <InventoryIcon />}
+                  {index === 4 && <CreditCardIcon />}
+                  {index === 5 && <LayersIcon />}
+                  {index === 6 && <AccountBoxIcon />}
+                  {index === 7 && <SellIcon />}
                 </ListItemIcon>
 
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
