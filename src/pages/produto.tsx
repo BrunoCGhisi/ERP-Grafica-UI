@@ -18,7 +18,8 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle } from "./styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
+import { MiniDrawer } from "../components";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -212,233 +213,234 @@ const Produto = () => {
 
   return (
     <Box>
-      <Typography>Estamos dentro do produto </Typography>
-      <Typography>(Não iremos cometer nenhum assalto...)</Typography>
-      <Box>
-        
-        <Stack direction="row" spacing={2}>
-          <Button
-            onClick={addOn}
-            variant="outlined"
-            startIcon={<AddCircleOutlineIcon />}
+      <MiniDrawer />
+      <Box sx={SpaceStyle}>
+        <Typography>Produtos </Typography>
+        <Box>
+          <Stack direction="row" spacing={2}>
+            <Button
+              onClick={addOn}
+              variant="outlined"
+              startIcon={<AddCircleOutlineIcon />}
+            >
+              Adicionar
+            </Button>
+          </Stack>
+
+          <Modal
+            open={adopen}
+            onClose={addOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
           >
-            Adicionar
-          </Button>
-        </Stack>
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Novo produto
+              </Typography>
 
-        <Modal
-          open={adopen}
-          onClose={addOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Novo produto
-            </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="Nome"
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Nome"
-              helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
+              <InputLabel id="demo-simple-select-label">Tipo</InputLabel>
+              <Select
+                labelId="select-label"
+                id="demo-simple-select"
+                value={tipo}
+                label="Tipo"
+                onChange={(e) => setTipo(e.target.value)}
+              >
+                <MenuItem value={0}>Não</MenuItem>
+                <MenuItem value={1}>Sim </MenuItem>
+              </Select>
 
-            <InputLabel id="demo-simple-select-label">Tipo</InputLabel>
-            <Select
-              labelId="select-label"
-              id="demo-simple-select"
-              value={tipo}
-              label="Tipo"
-              onChange={(e) => setTipo(e.target.value)}
-            >
-              <MenuItem value={0}>Não</MenuItem>
-              <MenuItem value={1}>Sim </MenuItem>
-            </Select>
+              <TextField
+                id="outlined-helperText"
+                label="KeyWord"
+                helperText="Obrigatório"
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="KeyWord"
-              helperText="Obrigatório"
-              value={keyWord}
-              onChange={(e) => setKeyWord(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="ID Categoria"
+                helperText="Obrigatório"
+                value={idCategoria}
+                onChange={(e) => setIdCategoria(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="ID Categoria"
-              helperText="Obrigatório"
-              value={idCategoria}
-              onChange={(e) => setIdCategoria(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Preço"
+                helperText="Obrigatório"
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Preço"
-              helperText="Obrigatório"
-              value={preco}
-              onChange={(e) => setPreco(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Tamanho"
+                helperText="Obrigatório"
+                value={tamanho}
+                onChange={(e) => setTamanho(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Tamanho"
-              helperText="Obrigatório"
-              value={tamanho}
-              onChange={(e) => setTamanho(e.target.value)}
-            />
+              <InputLabel id="demo-simple-select-label">isEstoque</InputLabel>
+              <Select
+                labelId="select-label"
+                id="demo-simple-select"
+                value={isEstoque}
+                label="Estoque é controlado?"
+                onChange={(e) => setIsEstoque(e.target.value)}
+              >
+                <MenuItem value={0}>Não</MenuItem>
+                <MenuItem value={1}>Sim </MenuItem>
+              </Select>
 
-            <InputLabel id="demo-simple-select-label">isEstoque</InputLabel>
-            <Select
-              labelId="select-label"
-              id="demo-simple-select"
-              value={isEstoque}
-              label="Estoque é controlado?"
-              onChange={(e) => setIsEstoque(e.target.value)}
-            >
-              <MenuItem value={0}>Não</MenuItem>
-              <MenuItem value={1}>Sim </MenuItem>
-            </Select>
+              <TextField
+                id="outlined-helperText"
+                label="Mínimo em Estoque"
+                helperText="Obrigatório"
+                value={minEstoque}
+                onChange={(e) => setMinEstoque(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Mínimo em Estoque"
-              helperText="Obrigatório"
-              value={minEstoque}
-              onChange={(e) => setMinEstoque(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Estoque"
+                helperText="Obrigatório"
+                value={estoque}
+                onChange={(e) => setEstoque(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Estoque"
-              helperText="Obrigatório"
-              value={estoque}
-              onChange={(e) => setEstoque(e.target.value)}
-            />
+              <Button
+                onClick={postProducts}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Cadastrar
+              </Button>
+            </Box>
+          </Modal>
 
-            <Button
-              onClick={postProducts}
-              variant="outlined"
-              startIcon={<DoneIcon />}
-            >
-              Cadastrar
-            </Button>
-          </Box>
-        </Modal>
+          <Modal
+            open={popen}
+            onClose={putOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Editar Banco
+              </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="Nome"
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="Nome"
+                helperText="Obrigatório"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
 
-        <Modal
-          open={popen}
-          onClose={putOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Banco
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="Nome"
-              helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="Nome"
-              helperText="Obrigatório"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Tipo"
+                helperText="Obrigatório"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Tipo"
-              helperText="Obrigatório"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="KeyWord"
+                helperText="Obrigatório"
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="KeyWord"
-              helperText="Obrigatório"
-              value={keyWord}
-              onChange={(e) => setKeyWord(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="ID Categoria"
+                helperText="Obrigatório"
+                value={idCategoria}
+                onChange={(e) => setIdCategoria(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="ID Categoria"
-              helperText="Obrigatório"
-              value={idCategoria}
-              onChange={(e) => setIdCategoria(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Preço"
+                helperText="Obrigatório"
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Preço"
-              helperText="Obrigatório"
-              value={preco}
-              onChange={(e) => setPreco(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Tamanho"
+                helperText="Obrigatório"
+                value={tamanho}
+                onChange={(e) => setTamanho(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Tamanho"
-              helperText="Obrigatório"
-              value={tamanho}
-              onChange={(e) => setTamanho(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Estoque Disponível"
+                helperText="Obrigatório"
+                value={isEstoque}
+                onChange={(e) => setIsEstoque(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Estoque Disponível"
-              helperText="Obrigatório"
-              value={isEstoque}
-              onChange={(e) => setIsEstoque(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Mínimo em Estoque"
+                helperText="Obrigatório"
+                value={minEstoque}
+                onChange={(e) => setMinEstoque(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Mínimo em Estoque"
-              helperText="Obrigatório"
-              value={minEstoque}
-              onChange={(e) => setMinEstoque(e.target.value)}
-            />
+              <TextField
+                id="outlined-helperText"
+                label="Estoque"
+                helperText="Obrigatório"
+                value={estoque}
+                onChange={(e) => setEstoque(e.target.value)}
+              />
 
-            <TextField
-              id="outlined-helperText"
-              label="Estoque"
-              helperText="Obrigatório"
-              value={estoque}
-              onChange={(e) => setEstoque(e.target.value)}
-            />
-
-            <Button
-              onClick={putProducts}
-              variant="outlined"
-              startIcon={<DoneIcon />}
-            >
-              Alterar
-            </Button>
-          </Box>
-        </Modal>
-      </Box>
-      <Box>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 6,
+              <Button
+                onClick={putProducts}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Alterar
+              </Button>
+            </Box>
+          </Modal>
+        </Box>
+        <Box sx={GridStyle}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 6,
+                },
               },
-            },
-          }}
-          pageSizeOptions={[6]}
-        />
+            }}
+            pageSizeOptions={[6]}
+          />
+        </Box>
       </Box>
     </Box>
   );

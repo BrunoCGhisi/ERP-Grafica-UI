@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle } from "./styles";
+import { ModalStyle , GridStyle} from "./styles";
 //Icones
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -109,9 +109,11 @@ const putOf = () => setPOpen(false);
 
     return(
 
-        <Box>
-      <Typography>estamos dentro dos clientes</Typography>
-      <Typography>Ihhhhhhhhh que papinho em</Typography>
+      <Box>
+      <MiniDrawer />
+      <Box sx={SpaceStyle}>
+      <Typography>estamos dentro das vendas</Typography>
+      <Typography>(Não somos uma venda)</Typography>
       <Box>
         <Stack direction="row" spacing={2}>
           <Button
@@ -413,7 +415,7 @@ const putOf = () => setPOpen(false);
           </Box>
         </Modal>
         </Box>
-        <Box>
+        <Box sx={GridStyle}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -427,7 +429,7 @@ const putOf = () => setPOpen(false);
           pageSizeOptions={[6]}
         />
       </Box>
-        
+      </Box>
     </Box>
 
 

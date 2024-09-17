@@ -8,10 +8,11 @@ import {
   Typography,
   TextField,
   Stack,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle } from "./styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
+import { MiniDrawer } from "../components";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -19,15 +20,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-
 const FormaPgto = () => {
+  const [paymentWays, setPaymentWays] = useState<PaymentWayVO[]>([]);
+  const [paymentWayId, setPaymentWayId] = useState<string>("");
+  const [tipo, setTipo] = useState<string>("");
+  const [idBanco, setIdBanco] = useState<string>("");
 
-    const [paymentWays, setPaymentWays] = useState<PaymentWayVO[]>([]);
-    const [paymentWayId, setPaymentWayId] = useState<string>("")
-    const [tipo, setTipo]     = useState<string>("")
-    const [idBanco, setIdBanco] = useState<string>("")
-
-    // Modal ADD
+  // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
@@ -74,7 +73,6 @@ const FormaPgto = () => {
         {
           tipo: tipo,
           idBanco: idBanco,
-          
         }
       );
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
@@ -88,7 +86,9 @@ const FormaPgto = () => {
 
   async function delPaymentWays(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/formas_pgto?id=${id}`);
+      const response = await axios.delete(
+        `http://localhost:3000/formas_pgto?id=${id}`
+      );
       if (response.status === 200) alert("forma_pgto deletado com sucesso!");
       getPaymentWays();
     } catch (error: any) {
@@ -129,108 +129,112 @@ const FormaPgto = () => {
     id: forma_pgto.id,
     tipo: forma_pgto.tipo,
     idBanco: forma_pgto.idBanco,
-
   }));
-  
-    return (
+
+  return (
+    <Box>
+      <MiniDrawer />
+      <Box sx={SpaceStyle}>
+        <Typography>Formas Pagamento </Typography>
+        
         <Box>
-            <Typography>Estamos dentro do banco </Typography>
-            <Typography>(Não iremos cometer nenhum assalto...)</Typography>
-            <Box>
-        <Stack direction="row" spacing={2}>
-          <Button onClick={addOn} variant="outlined" startIcon={<AddCircleOutlineIcon />}>
-            Adicionar
-          </Button>
-        </Stack>
-
-        <Modal
-          open={adopen}
-          onClose={addOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Novo banco
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="Tipo"
-              helperText="Obrigatório"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="idBanco"
-              helperText="Obrigatório"
-              value={idBanco}
-              onChange={(e) => setIdBanco(e.target.value)}
-            />
-    
+          <Stack direction="row" spacing={2}>
             <Button
-              onClick={postPaymentWays}
+              onClick={addOn}
               variant="outlined"
-              startIcon={<DoneIcon />}
+              startIcon={<AddCircleOutlineIcon />}
             >
-              Cadastrar
+              Adicionar
             </Button>
-          </Box>
-        </Modal>
+          </Stack>
 
-        <Modal
-          open={popen}
-          onClose={putOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Banco
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="Tipo"
-              helperText="Obrigatório"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-            />
-            <TextField
-              id="outlined-helperText"
-              label="idBanco"
-              helperText="Obrigatório"
-              value={idBanco}
-              onChange={(e) => setIdBanco(e.target.value)}
-            />
-        
-            <Button
-              onClick={putPaymentWays}
-              variant="outlined"
-              startIcon={<DoneIcon />}
-            >
-              Alterar
-            </Button>
-          </Box>
-        </Modal>
-      </Box>
-      <Box>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 6,
-              },
-            },
-          }}
-          pageSizeOptions={[6]}
-        />
-      </Box>
-        
+          <Modal
+            open={adopen}
+            onClose={addOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Novo banco
+              </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="Tipo"
+                helperText="Obrigatório"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="idBanco"
+                helperText="Obrigatório"
+                value={idBanco}
+                onChange={(e) => setIdBanco(e.target.value)}
+              />
+
+              <Button
+                onClick={postPaymentWays}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Cadastrar
+              </Button>
+            </Box>
+          </Modal>
+
+          <Modal
+            open={popen}
+            onClose={putOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Editar Banco
+              </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="Tipo"
+                helperText="Obrigatório"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="idBanco"
+                helperText="Obrigatório"
+                value={idBanco}
+                onChange={(e) => setIdBanco(e.target.value)}
+              />
+
+              <Button
+                onClick={putPaymentWays}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Alterar
+              </Button>
+            </Box>
+          </Modal>
         </Box>
-        
-    )
-}
+        <Box sx={GridStyle}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 6,
+                },
+              },
+            }}
+            pageSizeOptions={[6]}
+          />
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
 export default FormaPgto;

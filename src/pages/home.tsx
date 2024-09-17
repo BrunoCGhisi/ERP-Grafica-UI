@@ -1,38 +1,33 @@
+import { useState, useEffect } from "react";
+import { ProductCategoryVO } from "../services/types";
+import axios from "axios";
 import {
-    Accordion,
-    AccordionDetails,
-    Box,
-    Modal,
-    AccordionSummary,
-    Button,
-    Divider,
-    IconButton,
-    Stack,
-    TextField,
-    Typography,
-  } from "@mui/material";
+  Box,
+  Modal,
+  Button,
+  Typography,
+  TextField,
+  Stack,
+  IconButton,
+} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 
-  //Icones
-
-
-
-import { useNavigate } from 'react-router-dom';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import DoneIcon from "@mui/icons-material/Done";
+import { MiniDrawer } from "../components";
 
 const Home = () => {
+  return (
+    <Box sx={SpaceStyle}>
+      <MiniDrawer />
+      
+        <Typography>Home do Aplicativo</Typography>
+      
+    </Box>
+  );
+};
 
-    const navigate = useNavigate()
-
-    const loginAction = () => {
-        navigate('/login');
-    };
-
-    return (
-        <Box>
-            <Button onClick={loginAction}>
-                Logar
-            </Button>
-        </Box>
-    )
-}
-
-export default Home
+export default Home;

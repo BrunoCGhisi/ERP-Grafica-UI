@@ -8,24 +8,25 @@ import {
   Typography,
   TextField,
   Stack,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle } from "./styles";
-
+import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
+import { MiniDrawer } from "../components";
 
 const CategoriaProduto = () => {
-    const [productCategorys, setProductCategorys] = useState<ProductCategoryVO[]>([]);
-    const [productCategoryId, setProductCategoryId] = useState<string>("")
-    const [categoria, setCategoria]     = useState<string>("")
-    
+  const [productCategorys, setProductCategorys] = useState<ProductCategoryVO[]>(
+    []
+  );
+  const [productCategoryId, setProductCategoryId] = useState<string>("");
+  const [categoria, setCategoria] = useState<string>("");
 
-    // Modal ADD
+  // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
@@ -42,7 +43,9 @@ const CategoriaProduto = () => {
 
   async function getProductCategorys() {
     try {
-      const response = await axios.get("http://localhost:3000/categoria_produto");
+      const response = await axios.get(
+        "http://localhost:3000/categoria_produto"
+      );
       setProductCategorys(response.data.categorias_produtos);
     } catch (error: any) {
       console.error(error);
@@ -51,11 +54,14 @@ const CategoriaProduto = () => {
 
   async function postProductCategorys() {
     try {
-      const response = await axios.post("http://localhost:3000/categoria_produto", {
-        categoria: categoria,
-        
-      });
-      if (response.status === 200) alert("Categoria do produto cadastrado com sucesso!");
+      const response = await axios.post(
+        "http://localhost:3000/categoria_produto",
+        {
+          categoria: categoria,
+        }
+      );
+      if (response.status === 200)
+        alert("Categoria do produto cadastrado com sucesso!");
       getProductCategorys();
     } catch (error: any) {
       console.error(error);
@@ -82,7 +88,9 @@ const CategoriaProduto = () => {
 
   async function delProductCategorys(id: string) {
     try {
-      const response = await axios.delete(`http://localhost:3000/categoria_produto?id=${id}`);
+      const response = await axios.delete(
+        `http://localhost:3000/categoria_produto?id=${id}`
+      );
       if (response.status === 200) alert("Banco deletado com sucesso!");
       getProductCategorys();
     } catch (error: any) {
@@ -120,96 +128,100 @@ const CategoriaProduto = () => {
 
   const rows = productCategorys.map((categoriaProduto) => ({
     id: categoriaProduto.id,
-    categoria: categoriaProduto.categoria
-    
-
+    categoria: categoriaProduto.categoria,
   }));
-  
 
-    return (
+  return (
+    <Box>
+      <MiniDrawer />
+      <Box
+        sx={SpaceStyle}
+      >
+        <Typography>Categoria Produto </Typography>
+
         <Box>
-            <Typography>Estamos dentro do categoriaProduto </Typography>
-            <Typography>(Não iremos cometer nenhum assalto...)</Typography>
-            <Box>
-        <Stack direction="row" spacing={2}>
-          <Button onClick={addOn} variant="outlined" startIcon={<AddCircleOutlineIcon />}>
-            Adicionar
-          </Button>
-        </Stack>
-
-        <Modal
-          open={adopen}
-          onClose={addOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Novo banco
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="categoriaProduto"
-              helperText="Obrigatório"
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-            />
+          <Stack direction="row" spacing={2}>
             <Button
-              onClick={postProductCategorys}
+              onClick={addOn}
               variant="outlined"
-              startIcon={<DoneIcon />}
+              startIcon={<AddCircleOutlineIcon />}
             >
-              Cadastrar
+              Adicionar
             </Button>
-          </Box>
-        </Modal>
+          </Stack>
 
-        <Modal
-          open={popen}
-          onClose={putOf}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={ModalStyle}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Editar Categoria Produtos
-            </Typography>
-            <TextField
-              id="outlined-helperText"
-              label="categoria"
-              helperText="Obrigatório"
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-            />
+          <Modal
+            open={adopen}
+            onClose={addOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Novo banco
+              </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="categoriaProduto"
+                helperText="Obrigatório"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+              />
+              <Button
+                onClick={postProductCategorys}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Cadastrar
+              </Button>
+            </Box>
+          </Modal>
 
-            <Button
-              onClick={putProductCategorys}
-              variant="outlined"
-              startIcon={<DoneIcon />}
-            >
-              Alterar
-            </Button>
-          </Box>
-        </Modal>
-      </Box>
-      <Box>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 6,
-              },
-            },
-          }}
-          pageSizeOptions={[6]}
-        />
-      </Box>
-        
+          <Modal
+            open={popen}
+            onClose={putOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Editar Categoria Produtos
+              </Typography>
+              <TextField
+                id="outlined-helperText"
+                label="categoria"
+                helperText="Obrigatório"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+              />
+
+              <Button
+                onClick={putProductCategorys}
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Alterar
+              </Button>
+            </Box>
+          </Modal>
         </Box>
-        
-    )
-}
+        <Box sx={GridStyle}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 6,
+                },
+              },
+            }}
+            pageSizeOptions={[6]}
+          />
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
-export default CategoriaProduto
+export default CategoriaProduto;

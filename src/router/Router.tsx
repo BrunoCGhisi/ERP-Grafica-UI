@@ -1,37 +1,94 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { Home } from '../pages'
-import { Login } from '../pages'
-import { Banco } from '../pages'
-import { Cliente } from '../pages'
-import { Usuario } from '../pages'
-import { CategoriaProduto } from '../pages'
-import { FormaPgto } from '../pages'
-import { Produto } from '../pages'
-import { Compra } from '../pages'
-import { Venda } from '../pages'
+import { Home } from "../pages";
+import { Login } from "../pages";
+import { SignUp } from "../pages";
+import { Banco } from "../pages";
+import { Cliente } from "../pages";
+import { Usuario } from "../pages";
+import { CategoriaProduto } from "../pages";
+import { FormaPgto } from "../pages";
+import { Produto } from "../pages";
+import { Compra } from "../pages";
+import { Venda } from "../pages";
+import { NoPage } from "../pages";
 
+import { ProtectedRoute } from "../components";
 
-import { NoPage } from '../pages'
 
 const Router = () => (
-    //constante Router é igual a uma função vazia que vai executar a pesquisa rotas e paginas
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="/home"   element={<Home />} />
-        <Route path="/login"  element={<Login />} />
-        <Route path="/banco"  element={<Banco />} />
-        <Route path="/cliente" element={<Cliente />} />
-        <Route path="/usuario" element={<Usuario />} />
-        <Route path="/categoria_produto" element={<CategoriaProduto />} />
-        <Route path="/forma_pgto" element={<FormaPgto />} />
-        <Route path="/produto" element={<Produto />} />
-        <Route path="/compra" element={<Compra />} />
-        <Route path="/venda" element={<Venda />} />
-        <Route path="*"       element={<NoPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-  
-  export default Router;
+  <BrowserRouter>
+    <Routes>
+      <Route path="/home" element={<Home />} />
+      <Route
+        path="/banco"
+        element={
+          <ProtectedRoute>
+            <Banco />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cliente"
+        element={
+          <ProtectedRoute>
+            <Cliente />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/usuario"
+        element={
+          <ProtectedRoute>
+            <Usuario />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/categoria_produto"
+        element={
+          <ProtectedRoute>
+            <CategoriaProduto />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/forma_pgto"
+        element={
+          <ProtectedRoute>
+            <FormaPgto />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/produto"
+        element={
+          <ProtectedRoute>
+            <Produto />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/compra"
+        element={
+          <ProtectedRoute>
+            <Compra />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/venda"
+        element={
+          <ProtectedRoute>
+            <Venda />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signUp" element={<SignUp />} />
+      <Route path="*" element={<NoPage />} />
+    </Routes>
+  </BrowserRouter>
+);
+
+export default Router;

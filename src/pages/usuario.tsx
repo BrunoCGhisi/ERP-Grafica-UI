@@ -11,7 +11,8 @@ import {
   IconButton
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle } from "./styles";
+import { ModalStyle , GridStyle, SpaceStyle} from "./styles";
+import { MiniDrawer } from "../components";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -139,8 +140,9 @@ const Usuario = () => {
 
   return (
     <Box>
-      <Typography>Estamos dentro dos usuários</Typography>
-      <Typography> Ihhhhhhhhh que papinho em</Typography>
+      <MiniDrawer />
+      <Box sx={SpaceStyle}>
+      <Typography>Usuários</Typography>
       <Box>
         <Stack direction="row" spacing={2}>
           <Button onClick={addOn} variant="outlined" startIcon={<AddCircleOutlineIcon />}>
@@ -246,7 +248,7 @@ const Usuario = () => {
           </Box>
         </Modal>
       </Box>
-      <Box>
+      <Box sx={GridStyle}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -260,6 +262,7 @@ const Usuario = () => {
           pageSizeOptions={[6]}
         />
       </Box>
+    </Box>
     </Box>
   );
 }
