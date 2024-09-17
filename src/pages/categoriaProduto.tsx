@@ -11,7 +11,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
+import { ModalStyle, SpaceStyle } from "./styles";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -205,7 +205,7 @@ const CategoriaProduto = () => {
             </Box>
           </Modal>
         </Box>
-        <Box sx={GridStyle}>
+        <Box>
           <DataGrid
             rows={rows}
             columns={columns}
