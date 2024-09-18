@@ -12,6 +12,7 @@ import { Produto } from "../pages";
 import { Compra } from "../pages";
 import { Venda } from "../pages";
 import { NoPage } from "../pages";
+import { Testes  } from "../pages";
 
 import { ProtectedRoute } from "../components";
 
@@ -86,6 +87,7 @@ const Router = () => (
       />
       <Route path="/login" element={<Login />} />
       <Route path="/signUp" element={<SignUp />} />
+      <Route path="/teste" element={<Testes/>} />
       <Route path="*" element={<NoPage />} />
     </Routes>
   </BrowserRouter>

@@ -1,40 +1,3 @@
-***Baixar node modules***
-
-- npm install
-
-***Startar***
-
-- npm run dev
-
-***React Router***
-
-- npm i -D react-router-dom
-
-***Baixar Axios***
-
-- npm install axios
-
-***Material UI***
-
-- npm install @mui/material @emotion/react @emotion/styled
-
-*** Material UI Grid *** 
-
-- npm install @mui/x-data-grid
-
-***Material UI icones***
-
-- npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
-
-***Baixar Grid***
-
-- npm install @mui/material @emotion/react @emotion/styled
-
-***Pegar codigo do repositorio pro codigo local***
-
-- git pull
-
--- exemplo chat------------------------
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,8 +5,8 @@ import { Button, TextField } from "@mui/material";
 
 // Definindo o esquema de validação usando Zod
 const testeSchema = z.object({
-    nome: z.string().nonempty("O nome é obrigatório"), // Validação para string não vazia
-    valorTotal: z.number().min(0, "O valor total deve ser um número positivo") // Validação para número
+    nome: z.string(), // Validação para string não vazia
+    valorTotal: z.number() // Validação para número
 });
 
 // Inferindo o tipo a partir do esquema do Zod
@@ -52,7 +15,7 @@ type testeSchemaType = z.infer<typeof testeSchema>;
 const Testes = () =>  {
 
     // Inicializando o useForm com o zodResolver e o tipo inferido
-    const { register, handleSubmit, formState: { errors } } = useForm<testeSchemaType>({
+    const { register, handleSubmit} = useForm<testeSchemaType>({
         resolver: zodResolver(testeSchema),
     });
     
@@ -66,8 +29,8 @@ const Testes = () =>  {
             <TextField
                 id="outlined-helperText"
                 label="Nome"
-                helperText={errors.nome ? errors.nome.message : "Obrigatório"} // Exibe erro se houver
-                error={!!errors.nome} // Marca o campo como inválido se houver erro
+                helperText={"Obrigatório"} // Exibe erro se houver
+                // Marca o campo como inválido se houver erro
                 {...register('nome')}
             />
             {/* Campo valorTotal com validação */}
@@ -75,8 +38,8 @@ const Testes = () =>  {
                 id="outlined-helperText"
                 label="Valor Total"
                 type="number"
-                helperText={errors.valorTotal ? errors.valorTotal.message : "Obrigatório"} // Exibe erro se houver
-                error={!!errors.valorTotal} // Marca o campo como inválido se houver erro
+                helperText={"Obrigatório"} // Exibe erro se houver
+                 // Marca o campo como inválido se houver erro
                 {...register('valorTotal', { valueAsNumber: true })} // Converte valor para número
             />
 

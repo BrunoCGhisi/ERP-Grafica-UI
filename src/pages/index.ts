@@ -10,3 +10,4 @@ export { default as CategoriaProduto } from "./categoriaProduto";
 export { default as FormaPgto } from "./formaPgto";
 export { default as Compra } from "./compra";
 export { default as Venda } from "./venda";
+export { default as Testes } from "./teste";
