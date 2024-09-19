@@ -1,31 +1,24 @@
-import { useState, useEffect } from "react";
-import { ProductCategoryVO } from "../services/types";
-import axios from "axios";
-import {
-  Box,
-  Modal,
-  Button,
-  Typography,
-  TextField,
-  Stack,
-  IconButton,
-} from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
-
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import DoneIcon from "@mui/icons-material/Done";
+import { useNavigate } from 'react-router-dom';
+import { Box, Button, Typography } from "@mui/material";
 import { MiniDrawer } from "../components";
+import { SpaceStyle } from "./styles";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    
+    localStorage.removeItem('token');
+    navigate("/login");
+  };
+
   return (
     <Box sx={SpaceStyle}>
       <MiniDrawer />
-      
-        <Typography>Home do Aplicativo</Typography>
-      
+      <Typography>Home do Aplicativo</Typography>
+      <Button onClick={handleLogout} variant="contained" color="primary">
+        Log Out
+      </Button>
     </Box>
   );
 };
