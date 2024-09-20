@@ -5,16 +5,12 @@ import { CustomerVO } from "../services/types";
 import axios from "axios";
 
 import {
-  Accordion,
-  AccordionDetails,
   Box,
   InputLabel,
   Select,
   MenuItem,
   Modal,
-  AccordionSummary,
   Button,
-  Divider,
   IconButton,
   Stack,
   TextField,
@@ -25,14 +21,13 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 import { MiniDrawer } from "../components";
 //Icones
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 const Cliente = () => {
-  const dataAtual = new Date().toLocaleString("en-US", { day: "2-digit" });
   const [customers, setCustomers] = useState<CustomerVO[]>([]);
 
   const [customerId, setCustomerId] = useState("");
@@ -284,8 +279,7 @@ const Cliente = () => {
     <Box>
       <MiniDrawer />
       <Box sx={SpaceStyle}>
-        <Typography>estamos dentro dos clientes</Typography>
-        <Typography>Ihhhhhhhhh que papinho em</Typography>
+        
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
