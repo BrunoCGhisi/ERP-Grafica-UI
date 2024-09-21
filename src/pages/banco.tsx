@@ -34,27 +34,9 @@ const bancoSchema = z.object({
 type bancoSchemaType = z.infer<typeof bancoSchema>
 
 const Banco = () => {
-  const [banks, setBanks] = useState<BankVO[]>([]);
-  //const [bankId, setBankId] = useState<string>("");
-  //const [nome, setNome] = useState<string>("");
-  //const [valorTotal, setValorTotal] = useState<string>("");
+  const [banks, setBanks] = useState<bancoSchemaType[]>([]);
 
-  const [output, setOutput] = useState('');
-  const [selected, setSelected] = useState<string | null>(null);
-
-
-  const {register, handleSubmit, formState: {errors}} = useForm<bancoSchemaType>({
-    resolver:  zodResolver(bancoSchema)
-  });
-  
-
-
-  // const handleBancos = (data: bancoSchemaType) => {
-  //   console.log("adata", data)
-  // }
-
- 
- // type bancoSchema = z.infer<typeof bancoSchema>
+  const [selected, setSelected] = useState<bancoSchemaType[]>([]);
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -64,10 +46,17 @@ const Banco = () => {
   // Modal PUT -----------------------------------------------------------------------------------------------------
    const [popen, setPOpen] = useState<boolean>(false);
    const putOn = (id: string) => {
-      setSelected(id);
-     setPOpen(true);
+    const bancosFilter = banks.filter((banco : bancoSchemaType) => banco.id === id);
+    setSelected(bancosFilter)
+    
+    setPOpen(true);
+
    };
    const putOf = () => setPOpen(false);
+
+  const {register, handleSubmit, formState: {errors}} = useForm<bancoSchemaType>({
+    resolver:  zodResolver(bancoSchema)
+  });
 
    //CRUD -----------------------------------------------------------------------------------------------------
    async function getBanks() {
@@ -91,10 +80,10 @@ const Banco = () => {
       }
     }
 
-  async function putBanks(data: bancoSchemaType, id: string) {
+  async function putBanks(data: bancoSchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/banco?id=${id}`, data);
+        `http://localhost:3000/banco?id=${data.id}`, data);
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
       getBanks();
     } catch (error: any) {
@@ -137,7 +126,7 @@ const Banco = () => {
          <IconButton onClick={() => delBanks(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.nome, row.valorTotal)}>
+          <IconButton onClick={() => putOn(row.id)}>
             <EditIcon />
           </IconButton> 
         </div>
@@ -151,6 +140,8 @@ const Banco = () => {
     valorTotal: banco.valorTotal,
   }));
 
+  
+  
   return (
     <Box>
       <MiniDrawer />
@@ -208,7 +199,7 @@ const Banco = () => {
                 </Button>
               </form>
 
-              <pre>{output}</pre>
+              
 
             </Box>
           </Modal>
@@ -229,13 +220,15 @@ const Banco = () => {
                 label="Nome"
                 helperText={errors.nome?.message || "Obrigatório"}
                 error={!!errors.nome} 
+                value={selected.length > 0 ? selected[0].nome : ''}
                 {...register('nome')}
               />
               <TextField
                 id="outlined-helperText"
                 label="valorTotal"
                 helperText={errors.valorTotal?.message || "Obrigatório"}
-                error={!!errors.valorTotal} 
+                error={!!errors.valorTotal}
+                value={selected.length > 0 ? selected[0].valorTotal : ''}
                 {...register('valorTotal')}
               />
 
