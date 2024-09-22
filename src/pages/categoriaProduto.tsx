@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ProductCategoryVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -18,13 +17,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import { MiniDrawer } from "../components";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+const productCategorySchema = z.object({
+  id: z.string(),
+  categoria: z.string()
+})
+
+type productCategorySchemaType = z.infer<typeof productCategorySchema>
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<ProductCategoryVO[]>(
-    []
-  );
-  const [productCategoryId, setProductCategoryId] = useState<string>("");
-  const [categoria, setCategoria] = useState<string>("");
+  const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
+  const [selected, setSelected] = useState<productCategorySchemaType[]>([]);
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -33,14 +39,18 @@ const CategoriaProduto = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, categoria: string) => {
-    setProductCategoryId(id);
-    setCategoria(categoria);
-
+  const putOn = (id: string) => {
+    const prodCatFilter = productCategorys.filter((prodCat: productCategorySchemaType) => prodCat.id === id)
+    setSelected(prodCatFilter);
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
+  const {register, handleSubmit, formState: {errors}} = useForm<productCategorySchemaType>({
+    resolver: zodResolver(productCategorySchema)
+  });
+
+// CRUD ----------------------------------------------------------------------------------------------------------------------------
   async function getProductCategorys() {
     try {
       const response = await axios.get(
@@ -52,14 +62,10 @@ const CategoriaProduto = () => {
     }
   }
 
-  async function postProductCategorys() {
+  async function postProductCategorys(data: productCategorySchemaType) {
     try {
       const response = await axios.post(
-        "http://localhost:3000/categoria_produto",
-        {
-          categoria: categoria,
-        }
-      );
+        "http://localhost:3000/Categoria_produto", data);
       if (response.status === 200)
         alert("Categoria do produto cadastrado com sucesso!");
       getProductCategorys();
@@ -69,14 +75,10 @@ const CategoriaProduto = () => {
       addOf();
     }
   }
-  async function putProductCategorys() {
+  async function putProductCategorys(data: productCategorySchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/categoria_produto?id=${productCategoryId}`,
-        {
-          categoria: categoria,
-        }
-      );
+        `http://localhost:3000/categoria_produto?id=${data.id}`, data);
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
       getProductCategorys();
     } catch (error: any) {
@@ -102,7 +104,7 @@ const CategoriaProduto = () => {
     getProductCategorys();
   }, []);
 
-  const columns: GridColDef<ProductCategoryVO>[] = [
+  const columns: GridColDef<productCategorySchemaType>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "categoria", headerName: "Categoria", editable: false, flex: 0 },
 
@@ -118,7 +120,7 @@ const CategoriaProduto = () => {
           <IconButton onClick={() => delProductCategorys(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.categoria)}>
+          <IconButton onClick={() => putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -160,20 +162,22 @@ const CategoriaProduto = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo banco
               </Typography>
+              <form onSubmit={handleSubmit(postProductCategorys)}>
               <TextField
                 id="outlined-helperText"
                 label="categoriaProduto"
-                helperText="Obrigatório"
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
+                helperText={errors.categoria?.message || "Obrigatório"}
+                error={!!errors.categoria}
+                {...register('categoria')}
               />
               <Button
-                onClick={postProductCategorys}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Cadastrar
               </Button>
+              </form>
             </Box>
           </Modal>
 
@@ -187,21 +191,24 @@ const CategoriaProduto = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Editar Categoria Produtos
               </Typography>
+              <form onSubmit={handleSubmit(putProductCategorys)}>
               <TextField
                 id="outlined-helperText"
                 label="categoria"
-                helperText="Obrigatório"
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
+                helperText={errors.categoria?.message || "Obrigatório"}
+                error={!!errors.categoria}
+                value={selected.length > 0 ? selected[0].categoria : '' }
+                {...register('categoria')}
               />
 
               <Button
-                onClick={putProductCategorys}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Alterar
               </Button>
+              </form>
             </Box>
           </Modal>
         </Box>

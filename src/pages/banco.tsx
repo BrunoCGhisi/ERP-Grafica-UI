@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-import { BankVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -26,9 +25,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 
 const bancoSchema = z.object({
-  id: z.string(),
-  nome: z.string(),
-  valorTotal: z.string()
+  id: z.number().optional(),
+  nome: z.string(), 
+  valorTotal: z.number()
 })
 
 type bancoSchemaType = z.infer<typeof bancoSchema>
@@ -45,18 +44,24 @@ const Banco = () => {
 
   // Modal PUT -----------------------------------------------------------------------------------------------------
    const [popen, setPOpen] = useState<boolean>(false);
-   const putOn = (id: string) => {
+   const putOn = (id: number) => {
+    console.log("cheguei aqui", id)
     const bancosFilter = banks.filter((banco : bancoSchemaType) => banco.id === id);
-    setSelected(bancosFilter)
-    
-    setPOpen(true);
-
+    if (bancosFilter.length > 0){
+      setValue('nome', bancosFilter[0].nome);
+      setValue('valorTotal', bancosFilter[0].valorTotal); 
+      setValue('id', bancosFilter[0].id)
+      setSelected(bancosFilter)
+      setPOpen(true);
+    }
    };
    const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}} = useForm<bancoSchemaType>({
+  const {register, handleSubmit, formState: {errors}, setValue} = useForm<bancoSchemaType>({
     resolver:  zodResolver(bancoSchema)
   });
+  //console.log(errors)
+ 
 
    //CRUD -----------------------------------------------------------------------------------------------------
    async function getBanks() {
@@ -69,8 +74,10 @@ const Banco = () => {
    }
 
     async function postBanks(data: bancoSchemaType) {
+      
       try {
         const response = await axios.post("http://localhost:3000/banco", data);
+        console.log("cheguei aqui")
         if (response.status === 200) alert("Banco cadastrado com sucesso!");
         getBanks();
       } catch (error: any) {
@@ -81,6 +88,7 @@ const Banco = () => {
     }
 
   async function putBanks(data: bancoSchemaType) {
+    console.log("Dados enviados para atualização:", data);
     try {
       const response = await axios.put(
         `http://localhost:3000/banco?id=${data.id}`, data);
@@ -109,7 +117,7 @@ const Banco = () => {
      getBanks();
    }, []);
 
-  const columns: GridColDef<BankVO>[] = [
+  const columns: GridColDef<bancoSchemaType>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
@@ -126,12 +134,14 @@ const Banco = () => {
          <IconButton onClick={() => delBanks(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id)}>
+           <IconButton onClick={() => putOn(row.id)}>
             <EditIcon />
-          </IconButton> 
+          </IconButton>  
         </div>
+
       ),
     },
+
   ];
 
   const rows = banks.map((banco) => ({
@@ -204,7 +214,7 @@ const Banco = () => {
             </Box>
           </Modal>
 
-           <Modal
+          <Modal
             open={popen}
             onClose={putOf}
             aria-labelledby="modal-modal-title"
@@ -220,7 +230,6 @@ const Banco = () => {
                 label="Nome"
                 helperText={errors.nome?.message || "Obrigatório"}
                 error={!!errors.nome} 
-                value={selected.length > 0 ? selected[0].nome : ''}
                 {...register('nome')}
               />
               <TextField
@@ -228,8 +237,7 @@ const Banco = () => {
                 label="valorTotal"
                 helperText={errors.valorTotal?.message || "Obrigatório"}
                 error={!!errors.valorTotal}
-                value={selected.length > 0 ? selected[0].valorTotal : ''}
-                {...register('valorTotal')}
+                {...register('valorTotal', {valueAsNumber: true})}
               />
 
               <Button
@@ -241,7 +249,7 @@ const Banco = () => {
               </Button>
               </form>
             </Box>
-          </Modal> 
+          </Modal>  
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
@@ -255,6 +263,7 @@ const Banco = () => {
               },
             }}
             pageSizeOptions={[6]}
+            
           />
         </Box>
       </Box>
