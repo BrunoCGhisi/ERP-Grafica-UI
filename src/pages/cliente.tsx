@@ -1,52 +1,42 @@
-import React, { useState, useEffect } from "react";
-
-import { CustomerVO } from "../services/types";
-
+import { useState, useEffect } from "react";
 import axios from "axios";
-
-import {
-  Box,
-  InputLabel,
-  Select,
-  MenuItem,
-  Modal,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-
+import { Box, InputLabel, Select, MenuItem, Modal, Button, IconButton, Stack, TextField, Typography,} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 import { MiniDrawer } from "../components";
 //Icones
-
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
+import {useForm} from "react-hook-form";
+import {number, z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+const clienteSchema = z.object({
+  id: z.number().optional(),
+  nome: z.string(),
+  nomeFantasia: z.string(),
+  cpfCnpj: z.string(),
+  telefone: z.string(),
+  email: z.string(),
+  isFornecedor: z.boolean(),
+  cep: z.string(),
+  estado: z.string(),
+  cidade: z.string(),
+  numero: z.string(),
+  endereco: z.string(),
+  complemento: z.string(),
+  dataCadastro: z.string(),
+  numIe: z.string(),
+  statusIe: z.boolean(),
+});
+
+type clienteSchemaType = z.infer<typeof clienteSchema>
+
 const Cliente = () => {
-  const [customers, setCustomers] = useState<CustomerVO[]>([]);
-
-  const [customerId, setCustomerId] = useState("");
-  // variaveis da coluna
-  const [nome, setNome] = useState("");
-  const [nomeFantasia, setNomeFantasia] = useState("");
-  const [cpfCnpj, setCpfCnpj] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
-  const [isFornecedor, setIsFornecedor] = useState("");
-  const [cep, setCep] = useState("");
-  const [estado, setEstado] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [numero, setNumero] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [complemento, setComplemento] = useState("");
-  const [numIe, setNumIe] = useState("");
-  const [statusIe, setStatusIe] = useState("");
-
+  const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -54,42 +44,34 @@ const Cliente = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (
-    id: string,
-    nome: string,
-    nomeFantasia: string,
-    cpfCnpj: string,
-    email: string,
-    telefone: string,
-    isFornecedor: string,
-    numIe: string,
-    statusIe: string,
-    endereco: string,
-    cep: string,
-    estado: string,
-    numero: string,
-    cidade: string,
-    complemento: string
-  ) => {
-    setCustomerId(id);
-    setNome(nome);
-    setNomeFantasia(nomeFantasia);
-    setCpfCnpj(cpfCnpj);
-    setEmail(email);
-    setTelefone(telefone);
-    setIsFornecedor(isFornecedor);
-    setNumIe(numIe);
-    setStatusIe(statusIe);
-    setEndereco(endereco);
-    setCep(cep);
-    setEstado(estado);
-    setNumero(numero);
-    setCidade(cidade);
-    setComplemento(complemento);
-
+  const putOn = (id: number) => {
+    const clienteFilter = customers.filter((cliente: clienteSchemaType) => cliente. id === id)
+    if (clienteFilter.length > 0){
+      setValue('id', clienteFilter[0].id);
+      setValue('nome', clienteFilter[0].nome);
+      setValue('nomeFantasia', clienteFilter[0].nomeFantasia);
+      setValue('cpfCnpj', clienteFilter[0].cpfCnpj);
+      setValue('telefone', clienteFilter[0].telefone);
+      setValue('email', clienteFilter[0].email);
+      setValue('isFornecedor', clienteFilter[0].isFornecedor);
+      setValue('cep', clienteFilter[0].cep);
+      setValue('estado', clienteFilter[0].estado);
+      setValue('cidade', clienteFilter[0].cidade);
+      setValue('endereco', clienteFilter[0].endereco);
+      setValue('complemento', clienteFilter[0].complemento);
+      setValue('dataCadastro', clienteFilter[0].dataCadastro);
+      setValue('numIe', clienteFilter[0].numIe);
+      setValue('statusIe', clienteFilter[0].statusIe);
+      
+    }
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
+
+  const {register, handleSubmit, formState: {errors}, setValue} = useForm<clienteSchemaType>({
+    resolver: zodResolver(clienteSchema)
+  });
+
 
   async function getCustomers() {
     try {
@@ -102,24 +84,9 @@ const Cliente = () => {
 
   // const mydate = new Date().getDate()
 
-  async function postCustomers() {
+  async function postCustomers(data: clienteSchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/cliente", {
-        nome: nome,
-        nomeFantasia: nomeFantasia,
-        cpfCnpj: cpfCnpj,
-        telefone: telefone,
-        email: email,
-        isFornecedor: Boolean(isFornecedor),
-        cep: cep,
-        estado: estado,
-        cidade: cidade,
-        numero: numero,
-        endereco: endereco,
-        complemento: complemento,
-        numIe: numIe,
-        statusIe: Boolean(statusIe),
-      });
+      const response = await axios.post("http://localhost:3000/cliente", data);
       getCustomers();
       if (response.status === 200) alert("Cliente cadastro com sucesso!");
     } catch (error: any) {
@@ -132,27 +99,10 @@ const Cliente = () => {
     getCustomers();
   }, []);
 
-  async function putCustomers() {
+  async function putCustomers(data: clienteSchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/cliente?id=${customerId}`,
-        {
-          nome: nome,
-          nomeFantasia: nomeFantasia,
-          cpfCnpj: cpfCnpj,
-          telefone: telefone,
-          email: email,
-          isFornecedor: isFornecedor,
-          cep: cep,
-          estado: estado,
-          cidade: cidade,
-          numero: numero,
-          endereco: endereco,
-          complemento: complemento,
-          numIe: numIe,
-          statusIe: statusIe,
-        }
-      );
+        `http://localhost:3000/cliente?id=${data.id}`, data);
       if (response.status === 200) alert("cliente atualizado com sucesso!");
       getCustomers();
     } catch (error: any) {
@@ -162,7 +112,7 @@ const Cliente = () => {
     }
   }
 
-  async function delCustomers(id: string) {
+  async function delCustomers(id: number) {
     try {
       const response = await axios.delete(
         `http://localhost:3000/cliente?id=${id}`
@@ -178,7 +128,7 @@ const Cliente = () => {
     getCustomers();
   }, []);
 
-  const columns: GridColDef<CustomerVO>[] = [
+  const columns: GridColDef<clienteSchemaType>[] = [
     { field: "id", headerName: "ID", editable: false, flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     {
@@ -225,29 +175,11 @@ const Cliente = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delCustomers(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delCustomers(row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton
-            onClick={() =>
-              putOn(
-                row.id,
-                row.nome,
-                row.nomeFantasia,
-                row.cpfCnpj,
-                row.email,
-                row.telefone,
-                row.isFornecedor,
-                row.numIe,
-                row.statusIe,
-                row.endereco,
-                row.cep,
-                row.estado,
-                row.numero,
-                row.cidade,
-                row.complemento
-              )
-            }
+            onClick={() => row.id !== undefined && putOn(row.id)}
           >
             <EditIcon />
           </IconButton>
@@ -257,7 +189,7 @@ const Cliente = () => {
   ];
 
   const rows = customers.map((cliente) => ({
-    id: cliente.id.toString(),
+    id: cliente.id,
     nome: cliente.nome,
     nomeFantasia: cliente.nomeFantasia,
     cpfCnpj: cliente.cpfCnpj,
@@ -297,139 +229,143 @@ const Cliente = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
+            
             <Box sx={ModalStyle}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo Cliente
               </Typography>
-
+            <form onSubmit={handleSubmit(postCustomers)}>
               <TextField
                 id="outlined-helperText"
                 label="Nome"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                helperText={errors.nome?.message || "Obrigatório"}
+                error={!!errors.nome}
+                {...register('nome')}
+                
               />
               <TextField
                 id="outlined-helperText"
                 label="nomeFantasia"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={nomeFantasia}
-                onChange={(e) => setNomeFantasia(e.target.value)}
+                helperText={errors.nomeFantasia?.message || "Obrigatório"}
+                error={!!errors.nomeFantasia}
+                {...register('nomeFantasia')}
               />
               <TextField
                 id="outlined-helperText"
                 label="cpfCnpj"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cpfCnpj}
-                onChange={(e) => setCpfCnpj(e.target.value)}
+                helperText={errors.cpfCnpj?.message || "Obrigatório"}
+                error={!!errors.cpfCnpj}
+                {...register('cpfCnpj')}
               />
               <TextField
                 id="outlined-helperText"
                 label="telefone"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
+                helperText={errors.telefone?.message || "Obrigatório"}
+                error={!!errors.telefone}
+                {...register('telefone')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="email"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                helperText={errors.email?.message || "Obrigatório"}
+                error={!!errors.email}
+                {...register('email')}
               />
               <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isFornecedor}
                 label="IsFornecedor"
-                onChange={(e) => setIsFornecedor(e.target.value)}
+                error={!!errors.isFornecedor}
+                {...register('isFornecedor')}
               >
-                <MenuItem value={"true"}>Normal</MenuItem>
+                <MenuItem value={"true"}>Cliente</MenuItem>
                 <MenuItem value={"false"}>Fornecedor </MenuItem>
               </Select>
+              
               <TextField
                 id="outlined-helperText"
                 label="cep"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
+                helperText={errors.cep?.message || "Obrigatório"}
+                error={!!errors.cep}
+                {...register('cep')}
               />
               <TextField
                 id="outlined-helperText"
                 label="estado"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
+                helperText={errors.estado?.message || "Obrigatório"}
+                error={!!errors.estado}
+                {...register('estado')}
               />
               <TextField
                 id="outlined-helperText"
                 label="cidade"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
+                helperText={errors.cidade?.message || "Obrigatório"}
+                error={!!errors.cidade}
+                {...register('cidade')}
               />
               <TextField
                 id="outlined-helperText"
                 label="numero"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
+                helperText={errors.numero?.message || "Obrigatório"}
+                error={!!errors.numero}
+                {...register('numero')}
               />
               <TextField
                 id="outlined-helperText"
                 label="endereco"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
+                helperText={errors.endereco?.message || "Obrigatório"}
+                error={!!errors.endereco}
+                {...register('endereco')}
               />
               <TextField
                 id="outlined-helperText"
                 label="complemento"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
+                helperText={errors.complemento?.message || "Obrigatório"}
+                error={!!errors.complemento}
+                {...register('complemento')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="numIe"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={numIe}
-                onChange={(e) => setNumIe(e.target.value)}
+                helperText={errors.numIe?.message || "Obrigatório"}
+                error={!!errors.numIe}
+                {...register('numIe')}
               />
               <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={statusIe}
-                label="StatusIe"
-                onChange={(e) => setStatusIe(e.target.value)}
+                error={!!errors.statusIe}
+                {...register('statusIe')}
+                defaultValue={'true'}
               >
-                <MenuItem value={"0"}>Off</MenuItem>
-                <MenuItem value={"1"}>On </MenuItem>
+                <MenuItem value={"false"}>Off</MenuItem>
+                <MenuItem value={"true"}>On </MenuItem>
               </Select>
 
               <Button
-                onClick={postCustomers}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Cadastrar
               </Button>
+            </form>
             </Box>
           </Modal>
 
@@ -443,133 +379,139 @@ const Cliente = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Editar Banco
               </Typography>
+              <form onSubmit={handleSubmit(putCustomers)}>
               <TextField
                 id="outlined-helperText"
                 label="Nome"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                helperText={errors.nome?.message || "Obrigatório"}
+                error={!!errors.nome}
+                {...register('nome')}
+                
               />
               <TextField
                 id="outlined-helperText"
                 label="nomeFantasia"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={nomeFantasia}
-                onChange={(e) => setNomeFantasia(e.target.value)}
+                helperText={errors.nomeFantasia?.message || "Obrigatório"}
+                error={!!errors.nomeFantasia}
+                {...register('nomeFantasia')}
               />
               <TextField
                 id="outlined-helperText"
                 label="cpfCnpj"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cpfCnpj}
-                onChange={(e) => setCpfCnpj(e.target.value)}
+                helperText={errors.cpfCnpj?.message || "Obrigatório"}
+                error={!!errors.cpfCnpj}
+                {...register('cpfCnpj')}
               />
               <TextField
                 id="outlined-helperText"
                 label="telefone"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
+                helperText={errors.telefone?.message || "Obrigatório"}
+                error={!!errors.telefone}
+                {...register('telefone')}
               />
+
               <TextField
                 id="outlined-helperText"
                 label="email"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                helperText={errors.email?.message || "Obrigatório"}
+                error={!!errors.email}
+                {...register('email')}
               />
               <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isFornecedor}
                 label="IsFornecedor"
-                onChange={(e) => setIsFornecedor(e.target.value)}
+                error={!!errors.isFornecedor}
+                {...register('isFornecedor')}
+                defaultValue={'true'}
               >
-                <MenuItem value={"0"}>Normal</MenuItem>
-                <MenuItem value={"1"}>Fornecedor </MenuItem>
+                <MenuItem value={'false'}>Cliente</MenuItem>
+                <MenuItem value={'true'}>Fornecedor </MenuItem>
               </Select>
+              
               <TextField
                 id="outlined-helperText"
                 label="cep"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
+                helperText={errors.cep?.message || "Obrigatório"}
+                error={!!errors.cep}
+                {...register('cep')}
               />
               <TextField
                 id="outlined-helperText"
                 label="estado"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
+                helperText={errors.estado?.message || "Obrigatório"}
+                error={!!errors.estado}
+                {...register('estado')}
               />
               <TextField
                 id="outlined-helperText"
                 label="cidade"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
+                helperText={errors.cidade?.message || "Obrigatório"}
+                error={!!errors.cidade}
+                {...register('cidade')}
               />
               <TextField
                 id="outlined-helperText"
                 label="numero"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
+                helperText={errors.numero?.message || "Obrigatório"}
+                error={!!errors.numero}
+                {...register('numero')}
               />
               <TextField
                 id="outlined-helperText"
                 label="endereco"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
+                helperText={errors.endereco?.message || "Obrigatório"}
+                error={!!errors.endereco}
+                {...register('endereco')}
               />
               <TextField
                 id="outlined-helperText"
                 label="complemento"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
+                helperText={errors.complemento?.message || "Obrigatório"}
+                error={!!errors.complemento}
+                {...register('complemento')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="numIe"
                 defaultValue=""
-                helperText="Obrigatório"
-                value={numIe}
-                onChange={(e) => setNumIe(e.target.value)}
+                helperText={errors.numIe?.message || "Obrigatório"}
+                error={!!errors.numIe}
+                {...register('numIe')}
               />
               <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={statusIe}
-                label="StatusIe"
-                onChange={(e) => setStatusIe(e.target.value)}
+                error={!!errors.statusIe}
+                {...register('statusIe')}
+                defaultValue={'true'}
               >
-                <MenuItem value={"0"}>Off</MenuItem>
-                <MenuItem value={"1"}>On </MenuItem>
+                <MenuItem value={'true'}>Off</MenuItem>
+                <MenuItem value={'false'}>On </MenuItem>
               </Select>
 
               <Button
-                onClick={putCustomers}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Alterar
               </Button>
+              </form>
             </Box>
           </Modal>
         </Box>

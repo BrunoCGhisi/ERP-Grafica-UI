@@ -35,8 +35,6 @@ type bancoSchemaType = z.infer<typeof bancoSchema>
 const Banco = () => {
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
 
-  const [selected, setSelected] = useState<bancoSchemaType[]>([]);
-
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -45,13 +43,11 @@ const Banco = () => {
   // Modal PUT -----------------------------------------------------------------------------------------------------
    const [popen, setPOpen] = useState<boolean>(false);
    const putOn = (id: number) => {
-    console.log("cheguei aqui", id)
     const bancosFilter = banks.filter((banco : bancoSchemaType) => banco.id === id);
     if (bancosFilter.length > 0){
       setValue('nome', bancosFilter[0].nome);
       setValue('valorTotal', bancosFilter[0].valorTotal); 
       setValue('id', bancosFilter[0].id)
-      setSelected(bancosFilter)
       setPOpen(true);
     }
    };
@@ -60,8 +56,6 @@ const Banco = () => {
   const {register, handleSubmit, formState: {errors}, setValue} = useForm<bancoSchemaType>({
     resolver:  zodResolver(bancoSchema)
   });
-  //console.log(errors)
- 
 
    //CRUD -----------------------------------------------------------------------------------------------------
    async function getBanks() {
@@ -77,7 +71,6 @@ const Banco = () => {
       
       try {
         const response = await axios.post("http://localhost:3000/banco", data);
-        console.log("cheguei aqui")
         if (response.status === 200) alert("Banco cadastrado com sucesso!");
         getBanks();
       } catch (error: any) {
@@ -88,7 +81,6 @@ const Banco = () => {
     }
 
   async function putBanks(data: bancoSchemaType) {
-    console.log("Dados enviados para atualização:", data);
     try {
       const response = await axios.put(
         `http://localhost:3000/banco?id=${data.id}`, data);
@@ -101,7 +93,7 @@ const Banco = () => {
     }
   }
 
-   async function delBanks(id: string) {
+   async function delBanks(id: number) {
      try {
        const response = await axios.delete(
          `http://localhost:3000/banco?id=${id}`
@@ -131,10 +123,10 @@ const Banco = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-         <IconButton onClick={() => delBanks(row.id)}>
+         <IconButton onClick={() => row.id !== undefined && delBanks(row.id)}>
             <DeleteIcon />
           </IconButton>
-           <IconButton onClick={() => putOn(row.id)}>
+           <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
           </IconButton>  
         </div>
@@ -150,8 +142,6 @@ const Banco = () => {
     valorTotal: banco.valorTotal,
   }));
 
-  
-  
   return (
     <Box>
       <MiniDrawer />

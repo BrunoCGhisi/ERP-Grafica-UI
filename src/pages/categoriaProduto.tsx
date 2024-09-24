@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, SpaceStyle } from "./styles";
-
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,7 +21,7 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 const productCategorySchema = z.object({
-  id: z.string(),
+  id: z.number().optional(),
   categoria: z.string()
 })
 
@@ -30,7 +29,6 @@ type productCategorySchemaType = z.infer<typeof productCategorySchema>
 
 const CategoriaProduto = () => {
   const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
-  const [selected, setSelected] = useState<productCategorySchemaType[]>([]);
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -39,14 +37,17 @@ const CategoriaProduto = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string) => {
+  const putOn = (id: number) => {
     const prodCatFilter = productCategorys.filter((prodCat: productCategorySchemaType) => prodCat.id === id)
-    setSelected(prodCatFilter);
+    if (prodCatFilter.length > 0){
+      setValue('id', prodCatFilter[0].id)
+      setValue('categoria', prodCatFilter[0].categoria)
+    }
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}} = useForm<productCategorySchemaType>({
+  const {register, handleSubmit, formState: {errors}, setValue} = useForm<productCategorySchemaType>({
     resolver: zodResolver(productCategorySchema)
   });
 
@@ -64,8 +65,7 @@ const CategoriaProduto = () => {
 
   async function postProductCategorys(data: productCategorySchemaType) {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/Categoria_produto", data);
+      const response = await axios.post("http://localhost:3000/categoria_produto", data);
       if (response.status === 200)
         alert("Categoria do produto cadastrado com sucesso!");
       getProductCategorys();
@@ -88,7 +88,7 @@ const CategoriaProduto = () => {
     }
   }
 
-  async function delProductCategorys(id: string) {
+  async function delProductCategorys(id: number) {
     try {
       const response = await axios.delete(
         `http://localhost:3000/categoria_produto?id=${id}`
@@ -117,10 +117,10 @@ const CategoriaProduto = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delProductCategorys(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delProductCategorys(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -197,7 +197,6 @@ const CategoriaProduto = () => {
                 label="categoria"
                 helperText={errors.categoria?.message || "Obrigatório"}
                 error={!!errors.categoria}
-                value={selected.length > 0 ? selected[0].categoria : '' }
                 {...register('categoria')}
               />
 
