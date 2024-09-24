@@ -20,11 +20,23 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
+import { useForm } from "react-hook-form"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const formaPgtoSchema = z.object({
+  id: z.number().optional(),
+  tipo: z.string(),
+  idBanco: z.number().optional()
+})
+
+type formaPgtoSchemaType = z.infer<typeof formaPgtoSchema>
+
+
 const FormaPgto = () => {
-  const [paymentWays, setPaymentWays] = useState<PaymentWayVO[]>([]);
-  const [paymentWayId, setPaymentWayId] = useState<string>("");
-  const [tipo, setTipo] = useState<string>("");
-  const [idBanco, setIdBanco] = useState<string>("");
+  const [paymentWays, setPaymentWays] = useState<formaPgtoSchemaType[]>([]);
+
+  const [selected, setSelected] = useState<formaPgtoSchemaType[]>([]);
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -33,15 +45,24 @@ const FormaPgto = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: string, tipo: string, idBanco: string) => {
-    setPaymentWayId(id);
-    setTipo(tipo);
-    setIdBanco(idBanco);
-
-    setPOpen(true);
-  };
+  const putOn = (id: number) => {
+    console.log("cheguei aqui", id)
+    const formasPgtoFilter = paymentWays.filter((formaPgto : formaPgtoSchemaType) => formaPgto.id === id);
+    if (formasPgtoFilter.length > 0){
+      setValue('tipo', formasPgtoFilter[0].tipo);
+      setValue('idBanco', formasPgtoFilter[0].idBanco); 
+      setValue('id', formasPgtoFilter[0].id)
+      setSelected(formasPgtoFilter)
+      setPOpen(true);
+    };
+  }
   const putOf = () => setPOpen(false);
 
+  const {register, handleSubmit, formState: {errors}, setValue} = useForm<formaPgtoSchemaType>({
+    resolver:  zodResolver(formaPgtoSchema)
+  });
+
+  //CRUD -----------------------------------------------------------------------------------------------------
   async function getPaymentWays() {
     try {
       const response = await axios.get("http://localhost:3000/forma_pgto");
@@ -51,12 +72,10 @@ const FormaPgto = () => {
     }
   }
 
-  async function postPaymentWays() {
+  async function postPaymentWays(data: formaPgtoSchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/forma_pgto", {
-        tipo: tipo,
-        idBanco: idBanco,
-      });
+      const response = await axios.post("http://localhost:3000/forma_pgto", data);
+      console.log("cheguei aqui")
       if (response.status === 200) alert("forma_pgto cadastrado com sucesso!");
       getPaymentWays();
     } catch (error: any) {
@@ -66,15 +85,11 @@ const FormaPgto = () => {
     }
   }
 
-  async function putPaymentWays() {
+  async function putPaymentWays(data: formaPgtoSchemaType) {
+    console.log("Dados enviados para atualização:", data);
     try {
       const response = await axios.put(
-        `http://localhost:3000/forma_pgto?id=${paymentWayId}`,
-        {
-          tipo: tipo,
-          idBanco: idBanco,
-        }
-      );
+        `http://localhost:3000/forma_pgto?id=${data.id}`, data)
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
       getPaymentWays();
     } catch (error: any) {
@@ -117,7 +132,7 @@ const FormaPgto = () => {
           <IconButton onClick={() => delPaymentWays(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id, row.tipo, row.idBanco)}>
+          <IconButton onClick={() => putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -158,6 +173,8 @@ const FormaPgto = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo banco
               </Typography>
+
+              
               <TextField
                 id="outlined-helperText"
                 label="Tipo"
