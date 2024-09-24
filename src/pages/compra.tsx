@@ -16,20 +16,30 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 import { MiniDrawer } from "../components";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
+import {useForm} from "react-hook-form";
+import { z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+const compraSchema = z.object({
+  id: z.number().optional(),
+  idFornecedor: z.number(),
+  isCompraOS: z.boolean(),
+  dataCompra: z.date(),
+  numNota: z.string(),
+  desconto: z.string(),
+  isOpen: z.boolean(),
+})
+
+type compraSchemaType = z.infer<typeof compraSchema>
+
 const Compra = () => {
-  const [purchases, setPurchases] = useState<PurchaseVO[]>([]);
-  const [purchaseId, setPurchaseId] = useState<string>("");
-  const [idFornecedor, setIdFornecedor] = useState<string>("");
-  const [isCompraOS, setIsCompraOS] = useState<string>("");
-  const [dataCompra, setDataCompra] = useState<string>("");
-  const [numNota, setNumNota] = useState<string>("");
-  const [desconto, setDesconto] = useState<string>("");
+  const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -38,24 +48,26 @@ const Compra = () => {
 
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (
-    id: string,
-    idFornecedor: string,
-    isCompraOS: string,
-    dataCompra: string,
-    numNota: string,
-    desconto: string
-  ) => {
-    setPurchaseId(id);
-    setIdFornecedor(idFornecedor);
-    setIsCompraOS(isCompraOS);
-    setDataCompra(dataCompra);
-    setNumNota(numNota);
-    setDesconto(desconto);
+  const putOn = (id: number) => {
+
+    const compraFilter = purchases.filter((compra: compraSchemaType) => compra.id === id)
+    if (compraFilter.length > 0){
+    setValue('id', id);
+    setValue('idFornecedor', compraFilter[0].idFornecedor);
+    setValue('isCompraOS', compraFilter[0].isCompraOS);
+    setValue('dataCompra', compraFilter[0].dataCompra);
+    setValue('numNota', compraFilter[0].numNota);
+    setValue('desconto', compraFilter[0].desconto);
+    setValue('isOpen', compraFilter[0].isOpen);
+  }
 
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
+
+  const {register, handleSubmit, formState: {errors}, setValue} = useForm<compraSchemaType>({
+    resolver: zodResolver(compraSchema)
+  });
 
   async function getPurchases() {
     try {
@@ -66,15 +78,9 @@ const Compra = () => {
     }
   }
 
-  async function postPurchases() {
+  async function postPurchases(data: compraSchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/compra", {
-        idFornecedor: idFornecedor,
-        isCompraOS: isCompraOS,
-        dataCompra: dataCompra,
-        numNota: numNota,
-        desconto: desconto,
-      });
+      const response = await axios.post("http://localhost:3000/compra", data);
       if (response.status === 200) alert("compra cadastrado com sucesso!");
       getPurchases();
     } catch (error: any) {
@@ -84,18 +90,9 @@ const Compra = () => {
     }
   }
 
-  async function putPurchases() {
+  async function putPurchases(data: compraSchemaType) {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/compra?id=${purchaseId}`,
-        {
-          idFornecedor: idFornecedor,
-          isCompraOS: isCompraOS,
-          dataCompra: dataCompra,
-          numNota: numNota,
-          desconto: desconto,
-        }
-      );
+      const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
       if (response.status === 200) alert("COmpra atualizado com sucesso!");
       getPurchases();
     } catch (error: any) {
@@ -105,11 +102,10 @@ const Compra = () => {
     }
   }
 
-  async function delPurchases(id: string) {
+  async function delPurchases(id: number) {
     try {
       const response = await axios.delete(
-        `http://localhost:3000/compra?id=${id}`
-      );
+        `http://localhost:3000/compra?id=${id}`);
       if (response.status === 200) alert("compra deletado com sucesso!");
       getPurchases();
     } catch (error: any) {
@@ -121,7 +117,7 @@ const Compra = () => {
     getPurchases();
   }, []);
 
-  const columns: GridColDef<PurchaseVO>[] = [
+  const columns: GridColDef<compraSchemaType>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
     {
       field: "idFornecedor",
@@ -133,6 +129,7 @@ const Compra = () => {
     { field: "dataCompra", headerName: "DataCompra", editable: false, flex: 0 },
     { field: "numNota", headerName: "NumNota", editable: false, flex: 0 },
     { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
+    { field: "isOpen", headerName: "isOpen", editable: false, flex: 0 },
 
     {
       field: "acoes",
@@ -143,21 +140,11 @@ const Compra = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delPurchases(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delPurchases(row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton
-            onClick={() =>
-              putOn(
-                row.id,
-                row.idFornecedor,
-                row.isCompraOS,
-                row.dataCompra,
-                row.numNota,
-                row.desconto
-              )
-            }
-          >
+            onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -172,6 +159,8 @@ const Compra = () => {
     dataCompra: compra.dataCompra,
     numNota: compra.numNota,
     desconto: compra.desconto,
+    isOpen: compra.isOpen,
+    
   }));
 
   return (
@@ -201,13 +190,13 @@ const Compra = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo banco
               </Typography>
-
+              <form onSubmit={handleSubmit(postPurchases)}>
               <TextField
                 id="outlined-idFornecedor"
                 label="ID Fornecedor"
-                helperText="Obrigatório"
-                value={idFornecedor}
-                onChange={(e) => setIdFornecedor(e.target.value)}
+                helperText={errors.idFornecedor?.message || "Obrigatório"}
+                error={!!errors.idFornecedor}
+                {...register('idFornecedor')}
               />
               <InputLabel id="demo-simple-select-label">
                 Compra ou OS
@@ -216,42 +205,45 @@ const Compra = () => {
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isCompraOS}
                 label="isCompraOS"
-                onChange={(e) => setIsCompraOS(e.target.value)}
-              >
-                <MenuItem value={0}>Compra</MenuItem>
-                <MenuItem value={1}>OS </MenuItem>
+                error={!!errors.isCompraOS}
+                {...register('isCompraOS')}
+                defaultValue={"false"}
+                >
+                <MenuItem value={"true"}>Compra</MenuItem>
+                <MenuItem value={"false"}>OS </MenuItem>
               </Select>
+
               <TextField
                 id="outlined-dataCompra"
                 label="Data Compra"
-                helperText="Obrigatório"
-                value={dataCompra}
-                onChange={(e) => setDataCompra(e.target.value)}
+                helperText={errors.dataCompra?.message || "Obrigatório"}
+                error={!!errors.dataCompra}
+                {...register('dataCompra')}
               />
               <TextField
                 id="outlined-numNota"
                 label="Número da Nota"
-                helperText="Obrigatório"
-                value={numNota}
-                onChange={(e) => setNumNota(e.target.value)}
+                helperText={errors.numNota?.message || "Obrigatório"}
+                error={!!errors.numNota}
+                {...register('numNota')}
               />
               <TextField
                 id="outlined-desconto"
                 label="Desconto"
-                helperText="Obrigatório"
-                value={desconto}
-                onChange={(e) => setDesconto(e.target.value)}
+                helperText={errors.desconto?.message || "Obrigatório"}
+                error={!!errors.desconto}
+                {...register('desconto')}
               />
 
               <Button
-                onClick={postPurchases}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Cadastrar
               </Button>
+              </form>
             </Box>
           </Modal>
 
@@ -266,14 +258,14 @@ const Compra = () => {
                 Editar Banco
               </Typography>
 
+              <form onSubmit={handleSubmit(putPurchases)}>
               <TextField
                 id="outlined-idFornecedor"
                 label="ID Fornecedor"
-                helperText="Obrigatório"
-                value={idFornecedor}
-                onChange={(e) => setIdFornecedor(e.target.value)}
+                helperText={errors.idFornecedor?.message || "Obrigatório"}
+                error={!!errors.idFornecedor}
+                {...register('idFornecedor')}
               />
-
               <InputLabel id="demo-simple-select-label">
                 Compra ou OS
               </InputLabel>
@@ -281,43 +273,64 @@ const Compra = () => {
               <Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isCompraOS}
                 label="isCompraOS"
-                onChange={(e) => setIsCompraOS(e.target.value)}
-              >
-                <MenuItem value={0}>Compra</MenuItem>
-                <MenuItem value={1}>OS </MenuItem>
+                error={!!errors.isCompraOS}
+                {...register('isCompraOS')}
+                defaultValue={"false"}
+                >
+                <MenuItem value={"true"}>Compra</MenuItem>
+                <MenuItem value={"false"}>OS </MenuItem>
               </Select>
 
               <TextField
                 id="outlined-dataCompra"
                 label="Data Compra"
-                helperText="Obrigatório"
-                value={dataCompra}
-                onChange={(e) => setDataCompra(e.target.value)}
+                helperText={errors.dataCompra?.message || "Obrigatório"}
+                error={!!errors.dataCompra}
+                {...register('dataCompra')}
+
+              <DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} />
+
               />
               <TextField
                 id="outlined-numNota"
                 label="Número da Nota"
-                helperText="Obrigatório"
-                value={numNota}
-                onChange={(e) => setNumNota(e.target.value)}
+                helperText={errors.numNota?.message || "Obrigatório"}
+                error={!!errors.numNota}
+                {...register('numNota')}
               />
               <TextField
                 id="outlined-desconto"
                 label="Desconto"
-                helperText="Obrigatório"
-                value={desconto}
-                onChange={(e) => setDesconto(e.target.value)}
+                helperText={errors.desconto?.message || "Obrigatório"}
+                error={!!errors.desconto}
+                {...register('desconto')}
               />
 
+              <InputLabel id="demo-simple-select-label">
+                Em aberto?
+              </InputLabel>
+
+              <Select
+                labelId="select-label"
+                id="demo-simple-select"
+                label="isOpen"
+                error={!!errors.isOpen}
+                {...register('isOpen')}
+                defaultValue={"false"}
+                >
+                <MenuItem value={"true"}>Open</MenuItem>
+                <MenuItem value={"false"}>Close</MenuItem>
+              </Select>
+
               <Button
-                onClick={putPurchases}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
-                Alterar
+                Cadastrar
               </Button>
+              </form>
             </Box>
           </Modal>
         </Box>
