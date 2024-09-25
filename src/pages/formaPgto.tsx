@@ -36,8 +36,6 @@ type formaPgtoSchemaType = z.infer<typeof formaPgtoSchema>
 const FormaPgto = () => {
   const [paymentWays, setPaymentWays] = useState<formaPgtoSchemaType[]>([]);
 
-  const [selected, setSelected] = useState<formaPgtoSchemaType[]>([]);
-
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -115,7 +113,7 @@ const FormaPgto = () => {
     getPaymentWays();
   }, []);
 
-  const columns: GridColDef<PaymentWayVO>[] = [
+  const columns: GridColDef<formaPgtoSchemaType>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "tipo", headerName: "Tipo", editable: false, flex: 0 },
     { field: "idBanco", headerName: "IdBanco", editable: false, flex: 0 },
@@ -129,10 +127,10 @@ const FormaPgto = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delPaymentWays(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delPaymentWays(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -178,20 +176,20 @@ const FormaPgto = () => {
               <TextField
                 id="outlined-helperText"
                 label="Tipo"
-                helperText="Obrigatório"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
+                helperText={errors.tipo?.message || "Obrigatório"}
+                error={!!errors.tipo} 
+                {...register('tipo')}
               />
               <TextField
                 id="outlined-helperText"
                 label="idBanco"
-                helperText="Obrigatório"
-                value={idBanco}
-                onChange={(e) => setIdBanco(e.target.value)}
+                helperText={errors.idBanco?.message || "Obrigatório"}
+                error={!!errors.idBanco} 
+                {...register('idBanco', {valueAsNumber: true})}
               />
 
               <Button
-                onClick={postPaymentWays}
+                type="submit" 
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
@@ -213,20 +211,20 @@ const FormaPgto = () => {
               <TextField
                 id="outlined-helperText"
                 label="Tipo"
-                helperText="Obrigatório"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
+                helperText={errors.tipo?.message || "Obrigatório"}
+                error={!!errors.tipo} 
+                {...register('tipo')}
               />
               <TextField
                 id="outlined-helperText"
                 label="idBanco"
-                helperText="Obrigatório"
-                value={idBanco}
-                onChange={(e) => setIdBanco(e.target.value)}
+                helperText={errors.idBanco?.message || "Obrigatório"}
+                error={!!errors.idBanco} 
+                {...register('idBanco', {valueAsNumber: true})}
               />
 
               <Button
-                onClick={putPaymentWays}
+                type="submit" 
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
