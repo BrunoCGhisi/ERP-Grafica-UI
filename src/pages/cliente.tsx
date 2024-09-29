@@ -11,7 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 import {useForm} from "react-hook-form";
-import {number, z} from "zod";
+import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 const clienteSchema = z.object({
@@ -36,6 +36,7 @@ const clienteSchema = z.object({
 type clienteSchemaType = z.infer<typeof clienteSchema>
 
 const Cliente = () => {
+
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);

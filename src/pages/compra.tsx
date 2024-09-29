@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { PurchaseVO } from "../services/types";
 import axios from "axios";
 import {
   Box,
@@ -22,24 +21,45 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import {useForm} from "react-hook-form";
+
+import {useForm } from "react-hook-form";
 import { z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 const compraSchema = z.object({
   id: z.number().optional(),
-  idFornecedor: z.number(),
+  idFornecedor: z.coerce.number(),
   isCompraOS: z.boolean(),
-  dataCompra: z.date(),
-  numNota: z.string(),
-  desconto: z.string(),
+  dataCompra: z.string(),
+  numNota: z.coerce.number(),
+  desconto: z.coerce.number(),
   isOpen: z.boolean(),
 })
-
 type compraSchemaType = z.infer<typeof compraSchema>
 
+const fornecedorSchema = z.object({
+  id: z.number(),
+  nome: z.string()
+})
+type fornecedorSchemaType = z.infer<typeof fornecedorSchema>
+
+
 const Compra = () => {
+
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
+  const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
+
+  useEffect(() => {
+    const getFornecedores = async () => {
+      const response = await axios.get("http://localhost:3000/cliente/fornecedores");
+      setFornecedores(response.data)
+      console.log("forncededores", response.data)
+      console.log(fornecedores)
+    };
+
+    getFornecedores();
+  }, []);
+
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -55,7 +75,6 @@ const Compra = () => {
     setValue('id', id);
     setValue('idFornecedor', compraFilter[0].idFornecedor);
     setValue('isCompraOS', compraFilter[0].isCompraOS);
-    setValue('dataCompra', compraFilter[0].dataCompra);
     setValue('numNota', compraFilter[0].numNota);
     setValue('desconto', compraFilter[0].desconto);
     setValue('isOpen', compraFilter[0].isOpen);
@@ -66,7 +85,15 @@ const Compra = () => {
   const putOf = () => setPOpen(false);
 
   const {register, handleSubmit, formState: {errors}, setValue} = useForm<compraSchemaType>({
-    resolver: zodResolver(compraSchema)
+    resolver: zodResolver(compraSchema),
+    defaultValues: {
+      idFornecedor: fornecedores.length > 0 ? fornecedores[0].id : 0,
+      isCompraOS: false,  // Valor inicial
+      dataCompra: '',  // Defina um valor inicial como string vazia
+      numNota: 0,  // Valor inicial
+      desconto: 0,  // Valor inicial
+      isOpen: false  // Valor inicial
+    }
   });
 
   async function getPurchases() {
@@ -191,36 +218,51 @@ const Compra = () => {
                 Novo banco
               </Typography>
               <form onSubmit={handleSubmit(postPurchases)}>
-              <TextField
-                id="outlined-idFornecedor"
-                label="ID Fornecedor"
-                helperText={errors.idFornecedor?.message || "Obrigatório"}
-                error={!!errors.idFornecedor}
+
+                <Select 
                 {...register('idFornecedor')}
-              />
+                labelId="select-label"
+                id="demo-simple-select"
+                label="Fornecedor"
+                fullWidth
+                error={!!errors.idFornecedor}
+                >
+                  {fornecedores && fornecedores.map((fornecedor) => (
+                    <MenuItem value={fornecedor.id}> {fornecedor.nome} </MenuItem>
+                  ))}
+
+                </Select>
+
+             
               <InputLabel id="demo-simple-select-label">
                 Compra ou OS
               </InputLabel>
 
               <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                label="isCompraOS"
-                error={!!errors.isCompraOS}
-                {...register('isCompraOS')}
-                defaultValue={"false"}
-                >
-                <MenuItem value={"true"}>Compra</MenuItem>
-                <MenuItem value={"false"}>OS </MenuItem>
-              </Select>
+              {...register('isCompraOS')}
+              labelId="select-label"
+              id="demo-simple-select"
+              label="isCompraOS"
+              error={!!errors.isCompraOS}
+              defaultValue={false}
+              
+            >
+              <MenuItem value="true">Compra</MenuItem>
+              <MenuItem value="false">OS</MenuItem>
+            </Select>
+
+    
 
               <TextField
-                id="outlined-dataCompra"
-                label="Data Compra"
+                type="date"
+                label={"Data compra"}
+                InputLabelProps={{ shrink: true }}
+                size="medium"
                 helperText={errors.dataCompra?.message || "Obrigatório"}
                 error={!!errors.dataCompra}
                 {...register('dataCompra')}
               />
+
               <TextField
                 id="outlined-numNota"
                 label="Número da Nota"
@@ -235,6 +277,19 @@ const Compra = () => {
                 error={!!errors.desconto}
                 {...register('desconto')}
               />
+
+              <Select
+               {...register('isOpen')}
+                labelId="select-label"
+                id="demo-simple-select"
+                label="isOpen"
+                error={!!errors.isOpen}
+                defaultValue={false}
+                >
+                <MenuItem value={'true'}>Open</MenuItem>
+                <MenuItem value={'false'}>Close</MenuItem>
+              </Select>
+
 
               <Button
                 type="submit"
@@ -271,27 +326,27 @@ const Compra = () => {
               </InputLabel>
 
               <Select
+                {...register('isCompraOS')}
                 labelId="select-label"
                 id="demo-simple-select"
                 label="isCompraOS"
                 error={!!errors.isCompraOS}
-                {...register('isCompraOS')}
-                defaultValue={"false"}
+                defaultValue={false}
                 >
                 <MenuItem value={"true"}>Compra</MenuItem>
                 <MenuItem value={"false"}>OS </MenuItem>
               </Select>
 
               <TextField
-                id="outlined-dataCompra"
-                label="Data Compra"
+                type="date"
+                label={"Data compra"}
+                InputLabelProps={{ shrink: true }}
+                size="medium"
                 helperText={errors.dataCompra?.message || "Obrigatório"}
                 error={!!errors.dataCompra}
                 {...register('dataCompra')}
-
-              <DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} />
-
               />
+
               <TextField
                 id="outlined-numNota"
                 label="Número da Nota"
@@ -312,12 +367,12 @@ const Compra = () => {
               </InputLabel>
 
               <Select
+               {...register('isOpen')}
                 labelId="select-label"
                 id="demo-simple-select"
                 label="isOpen"
                 error={!!errors.isOpen}
-                {...register('isOpen')}
-                defaultValue={"false"}
+                defaultValue={false}
                 >
                 <MenuItem value={"true"}>Open</MenuItem>
                 <MenuItem value={"false"}>Close</MenuItem>
