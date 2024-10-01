@@ -14,7 +14,7 @@ import { Venda } from "../pages";
 import { NoPage } from "../pages";
 import { Testes  } from "../pages";
 
-import { ProtectedRoute } from "../components";
+import { AdmRoute, ProtectedRoute } from "../components";
 
 
 const Router = () => (
@@ -25,7 +25,9 @@ const Router = () => (
         path="/banco"
         element={
           <ProtectedRoute>
-            <Banco />
+            <AdmRoute> 
+              <Banco />
+            </AdmRoute>
           </ProtectedRoute>
         }
       />

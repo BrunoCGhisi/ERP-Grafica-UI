@@ -5,9 +5,12 @@ import { MiniDrawer } from "../components";
 import { SpaceStyle } from "./styles";
 import { getToken } from '../services/payload'; // Importa a função do serviço
 
+
 const Home = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
+  const [nome, setNome]   = useState<string | null>(null); // Estado para armazenar o userId
+  const [isAdm, setIsAdm] = useState<boolean | null>(null); // Estado para armazenar o userId
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -15,11 +18,12 @@ const Home = () => {
   };
 
   useEffect(() => {
-    // Chama o serviço e atualiza o estado com o userId
     const fetchToken = async () => {
-      const tokenData = await getToken(); // Agora retorna o userId
+      const tokenData = await getToken(); 
       if (tokenData) {
         setUserId(tokenData.userId);
+        setNome(tokenData.nome);
+        setIsAdm(tokenData.isAdm);
       }
     };
 
@@ -30,7 +34,9 @@ const Home = () => {
     <Box sx={SpaceStyle}>
       <MiniDrawer />
       <Typography>Home do Aplicativo</Typography>
-      {userId && <Typography>ID do Usuário: {userId}</Typography>} {/* Exibe o userId */}
+      {userId && <Typography>ID do Usuário: {userId}</Typography>}
+      {nome && <Typography>Nome do Usuário: {nome}</Typography>}
+      {isAdm && <Typography>Role do Usuário: {isAdm}</Typography>}
       <Button onClick={handleLogout} variant="contained" color="primary">
         Log Out
       </Button>
