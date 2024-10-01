@@ -32,14 +32,18 @@ type DataRowType = z.infer<typeof DataRowSchema>
 
 export function ModalDoBelone({data, open, toggleModal}: {data: DataRow, open: boolean, toggleModal: any}){
   
-    async function handleUpdate(){
+     function handleUpdate(datas: DataRowType){
       try {
-        const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
-        if (response.status === 200) alert("compras atualizado com sucesso")
+        axios.put(`http://localhost:3000/compra?id=${data.id}`, datas);
+        alert("compras atualizado com sucesso")
       } catch (error: any) {
         console.error(error);
       }
+      finally {
+        toggleModal();
+      }
     }
+    
     const {register, handleSubmit, formState: {errors}, control} = useForm<DataRowType>({
       resolver: zodResolver(DataRowSchema)
     });
@@ -87,7 +91,7 @@ export function ModalDoBelone({data, open, toggleModal}: {data: DataRow, open: b
               /> 
 
               <TextField
-                type="text"
+                type="date"
                 label={"Data compra"}
                 InputLabelProps={{ shrink: true }}
                 size="medium"
@@ -121,7 +125,7 @@ export function ModalDoBelone({data, open, toggleModal}: {data: DataRow, open: b
               <Controller
                 control={control}
                 name="isOpen"
-                defaultValue={true}
+                defaultValue={data.isOpen}
                 render={({field}) => (
                 <Select
                   onChange={field.onChange}

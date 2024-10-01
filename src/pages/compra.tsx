@@ -87,27 +87,7 @@ const Compra = () => {
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-  // Modal PUT
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: number) => {
 
-    const compraFilter = purchases.filter((compra: compraSchemaType) => compra.id === id)
-    if (compraFilter.length > 0){
-    setValue('id', id);
-    setValue('idFornecedor', compraFilter[0].idFornecedor);
-    setValue('isCompraOS', compraFilter[0].isCompraOS);
-    setValue('dataCompra', compraFilter[0].dataCompra) 
-    setValue('numNota', compraFilter[0].numNota);
-    setValue('desconto', compraFilter[0].desconto);
-    setValue('isOpen', compraFilter[0].isOpen);
-  }
-
-    setPOpen(true);
-  };
-    const putOf = () => {
-      reset()
-      setPOpen(false)
-    };
 
   const {register, handleSubmit, reset, control, formState: {errors}, setValue} = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema)
@@ -153,8 +133,13 @@ const Compra = () => {
     getPurchases();
   }, []);
 
+  
+  
   const {open, toggleModal} = useOpenModal()
-
+  
+  useEffect(() => {
+    getPurchases();
+  }, [open]);
 
   const columns: GridColDef<compraSchemaType>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
