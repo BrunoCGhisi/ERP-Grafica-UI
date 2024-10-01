@@ -26,6 +26,8 @@ import DoneIcon from "@mui/icons-material/Done";
 import {useForm, Controller } from "react-hook-form";
 import { z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
+import { useOpenModal } from "../hooks/useOpenModal";
+import { ModalDoBelone } from "../components/testeDoBelone";
 
 const compraSchema = z.object({
   id: z.number().optional(),
@@ -36,6 +38,17 @@ const compraSchema = z.object({
   desconto: z.coerce.number(),
   isOpen: z.boolean(),
 })
+
+interface dataRow {
+  id: number,
+  idFornecedor: number,
+  isCompraOS: boolean,
+  dataCompra: string,
+  numNota: number,
+  desconto: number,
+  isOpen: boolean,
+}
+
 type compraSchemaType = z.infer<typeof compraSchema>
 
 const fornecedorSchema = z.object({
@@ -46,17 +59,23 @@ type fornecedorSchemaType = z.infer<typeof fornecedorSchema>
 
 
 const Compra = () => {
-
+  
   const today = new Date();
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
+
+  const handleEdit = (updateData: compraSchemaType) => {
+    toggleModal()
+    setSelectedData(updateData)
+    console.log(selectedData)
+    console.log(dayjs(selectedData?.dataCompra, 'pt-BR').format("YYYY-MM-DD"))
+  } 
 
   useEffect(() => {
     const getFornecedores = async () => {
       const response = await axios.get("http://localhost:3000/cliente/fornecedores");
       setFornecedores(response.data)
-      console.log("forncededores", response.data)
-      console.log(fornecedores)
     };
 
     getFornecedores();
@@ -77,7 +96,7 @@ const Compra = () => {
     setValue('id', id);
     setValue('idFornecedor', compraFilter[0].idFornecedor);
     setValue('isCompraOS', compraFilter[0].isCompraOS);
-    setValue('dataCompra', dayjs(compraFilter[0].dataCompra).format("YYYY-MM-DD")) 
+    setValue('dataCompra', compraFilter[0].dataCompra) 
     setValue('numNota', compraFilter[0].numNota);
     setValue('desconto', compraFilter[0].desconto);
     setValue('isOpen', compraFilter[0].isOpen);
@@ -85,7 +104,10 @@ const Compra = () => {
 
     setPOpen(true);
   };
-  const putOf = () => setPOpen(false);
+    const putOf = () => {
+      reset()
+      setPOpen(false)
+    };
 
   const {register, handleSubmit, reset, control, formState: {errors}, setValue} = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema)
@@ -96,32 +118,23 @@ const Compra = () => {
     try {
       const response = await axios.get("http://localhost:3000/compra");
       setPurchases(response.data.compras);
+      console.log(response.data.compras[0].dataCompra)
     } catch (error: any) {
       console.error(error);
     }
   }
 
   async function postPurchases(data: compraSchemaType) {
+    const {id, ...mydata} = data
+
     try {
-      const response = await axios.post("http://localhost:3000/compra", data);
+      const response = await axios.post("http://localhost:3000/compra", mydata);
       if (response.status === 200) alert("compra cadastrado com sucesso!");
       getPurchases();
     } catch (error: any) {
       console.error(error);
     } finally {
       addOf();
-    }
-  }
-
-  async function putPurchases(data: compraSchemaType) {
-    try {
-      const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
-      if (response.status === 200) alert("COmpra atualizado com sucesso!");
-      getPurchases();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      putOf();
     }
   }
 
@@ -139,6 +152,9 @@ const Compra = () => {
   useEffect(() => {
     getPurchases();
   }, []);
+
+  const {open, toggleModal} = useOpenModal()
+
 
   const columns: GridColDef<compraSchemaType>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
@@ -167,7 +183,7 @@ const Compra = () => {
             <DeleteIcon />
           </IconButton>
           <IconButton
-            onClick={() => row.id !== undefined && putOn(row.id)}>
+            onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -315,103 +331,9 @@ const Compra = () => {
               </form>
             </Box>
           </Modal>
-
-          <Modal
-            open={popen}
-            onClose={putOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-
-              <form onSubmit={handleSubmit(putPurchases)}>
-              <TextField
-                id="outlined-idFornecedor"
-                label="ID Fornecedor"
-                helperText={errors.idFornecedor?.message || "Obrigatório"}
-                error={!!errors.idFornecedor}
-                {...register('idFornecedor')}
-              />
-              <InputLabel id="demo-simple-select-label">
-                Compra ou OS
-              </InputLabel>
-              
-               <Controller
-                control={control}
-                name="isCompraOS"
-                defaultValue={true}
-                render={({field}) => ( 
-                <Select
-                  onChange={field.onChange}
-                  value={field.value}
-                >
-                  <MenuItem value={true}>Compra</MenuItem>
-                  <MenuItem value={false}>OS</MenuItem>
-                </Select>
-                ) }
-              /> 
-
-              <TextField
-                type="date"
-                label={"Data compra"}
-                InputLabelProps={{ shrink: true }}
-                size="medium"
-                helperText={errors.dataCompra?.message || "Obrigatório"}
-                error={!!errors.dataCompra}
-                {...register('dataCompra')}
-              />
-
-              <TextField
-                id="outlined-numNota"
-                label="Número da Nota"
-                helperText={errors.numNota?.message || "Obrigatório"}
-                error={!!errors.numNota}
-                {...register('numNota')}
-              />
-              <TextField
-                id="outlined-desconto"
-                label="Desconto"
-                helperText={errors.desconto?.message || "Obrigatório"}
-                error={!!errors.desconto}
-                {...register('desconto')}
-              />
-
-              <InputLabel id="demo-simple-select-label">
-                Em aberto?
-              </InputLabel>
-
-              <Controller
-                control={control}
-                name="isOpen"
-                defaultValue={true}
-                render={({field}) => (
-                <Select
-                  onChange={field.onChange}
-                  labelId="select-label"
-                  id="demo-simple-select"
-                  label="isOpen"
-                  value={field.value}
-                  >
-                  <MenuItem value={true}>Open</MenuItem>
-                  <MenuItem value={false}>Close</MenuItem>
-                </Select>
-                
-              )}
-              />
-
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Cadastrar
-              </Button>
-              </form>
-            </Box>
-          </Modal>
+          
+          {open && selectedData ? <ModalDoBelone data={selectedData} open={open} toggleModal={toggleModal} /> : null }
+          
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
