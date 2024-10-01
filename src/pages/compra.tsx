@@ -15,6 +15,7 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
 import { MiniDrawer } from "../components";
+import dayjs from 'dayjs';
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,7 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 
-import {useForm } from "react-hook-form";
+import {useForm, Controller } from "react-hook-form";
 import { z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 
@@ -46,6 +47,7 @@ type fornecedorSchemaType = z.infer<typeof fornecedorSchema>
 
 const Compra = () => {
 
+  const today = new Date();
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
 
@@ -75,6 +77,7 @@ const Compra = () => {
     setValue('id', id);
     setValue('idFornecedor', compraFilter[0].idFornecedor);
     setValue('isCompraOS', compraFilter[0].isCompraOS);
+    setValue('dataCompra', dayjs(compraFilter[0].dataCompra).format("YYYY-MM-DD")) 
     setValue('numNota', compraFilter[0].numNota);
     setValue('desconto', compraFilter[0].desconto);
     setValue('isOpen', compraFilter[0].isOpen);
@@ -84,16 +87,9 @@ const Compra = () => {
   };
   const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}, setValue} = useForm<compraSchemaType>({
-    resolver: zodResolver(compraSchema),
-    defaultValues: {
-      idFornecedor: fornecedores.length > 0 ? fornecedores[0].id : 0,
-      isCompraOS: false,  // Valor inicial
-      dataCompra: '',  // Defina um valor inicial como string vazia
-      numNota: 0,  // Valor inicial
-      desconto: 0,  // Valor inicial
-      isOpen: false  // Valor inicial
-    }
+  const {register, handleSubmit, reset, control, formState: {errors}, setValue} = useForm<compraSchemaType>({
+    resolver: zodResolver(compraSchema)
+
   });
 
   async function getPurchases() {
@@ -189,6 +185,9 @@ const Compra = () => {
     isOpen: compra.isOpen,
     
   }));
+  useEffect(() => {
+    reset()
+  }, [fornecedorSchema, reset])
 
   return (
     <Box>
@@ -215,7 +214,7 @@ const Compra = () => {
           >
             <Box sx={ModalStyle}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo banco
+                Nova compra
               </Typography>
               <form onSubmit={handleSubmit(postPurchases)}>
 
@@ -226,6 +225,7 @@ const Compra = () => {
                 label="Fornecedor"
                 fullWidth
                 error={!!errors.idFornecedor}
+                defaultValue={fornecedores.length > 0 ? fornecedores[0].nome : "Sem Fornecedores"}
                 >
                   {fornecedores && fornecedores.map((fornecedor) => (
                     <MenuItem value={fornecedor.id}> {fornecedor.nome} </MenuItem>
@@ -237,35 +237,37 @@ const Compra = () => {
               <InputLabel id="demo-simple-select-label">
                 Compra ou OS
               </InputLabel>
-
-              <Select
-              {...register('isCompraOS')}
-              labelId="select-label"
-              id="demo-simple-select"
-              label="isCompraOS"
-              error={!!errors.isCompraOS}
-              defaultValue={false}
               
-            >
-              <MenuItem value="true">Compra</MenuItem>
-              <MenuItem value="false">OS</MenuItem>
-            </Select>
-
-    
+               <Controller
+                control={control}
+                name="isCompraOS"
+                defaultValue={true}
+                render={({field}) => ( 
+                <Select
+                  onChange={field.onChange}
+                  value={field.value}
+                >
+                  <MenuItem value={true}>Compra</MenuItem>
+                  <MenuItem value={false}>OS</MenuItem>
+                </Select>
+                ) }
+              /> 
 
               <TextField
                 type="date"
                 label={"Data compra"}
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true } }
                 size="medium"
                 helperText={errors.dataCompra?.message || "Obrigatório"}
                 error={!!errors.dataCompra}
+                defaultValue={dayjs(today).format("YYYY-MM-DD")}
                 {...register('dataCompra')}
               />
 
               <TextField
                 id="outlined-numNota"
                 label="Número da Nota"
+                defaultValue={0}
                 helperText={errors.numNota?.message || "Obrigatório"}
                 error={!!errors.numNota}
                 {...register('numNota')}
@@ -273,23 +275,35 @@ const Compra = () => {
               <TextField
                 id="outlined-desconto"
                 label="Desconto"
+                defaultValue={0}
                 helperText={errors.desconto?.message || "Obrigatório"}
                 error={!!errors.desconto}
                 {...register('desconto')}
               />
 
-              <Select
-               {...register('isOpen')}
-                labelId="select-label"
-                id="demo-simple-select"
-                label="isOpen"
-                error={!!errors.isOpen}
-                defaultValue={false}
-                >
-                <MenuItem value={'true'}>Open</MenuItem>
-                <MenuItem value={'false'}>Close</MenuItem>
-              </Select>
+              <InputLabel id="demo-simple-select-label">
+                IsOpen
+              </InputLabel>
 
+              <Controller
+                control={control}
+                name="isOpen"
+                defaultValue={true}
+                render={({field}) => (
+                <Select
+                  onChange={field.onChange}
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="isOpen"
+                  value={field.value}
+                  >
+                  <MenuItem value={true}>Open</MenuItem>
+                  <MenuItem value={false}>Close</MenuItem>
+                </Select>
+                
+              )}
+              />
+              
 
               <Button
                 type="submit"
@@ -324,18 +338,21 @@ const Compra = () => {
               <InputLabel id="demo-simple-select-label">
                 Compra ou OS
               </InputLabel>
-
-              <Select
-                {...register('isCompraOS')}
-                labelId="select-label"
-                id="demo-simple-select"
-                label="isCompraOS"
-                error={!!errors.isCompraOS}
-                defaultValue={false}
+              
+               <Controller
+                control={control}
+                name="isCompraOS"
+                defaultValue={true}
+                render={({field}) => ( 
+                <Select
+                  onChange={field.onChange}
+                  value={field.value}
                 >
-                <MenuItem value={"true"}>Compra</MenuItem>
-                <MenuItem value={"false"}>OS </MenuItem>
-              </Select>
+                  <MenuItem value={true}>Compra</MenuItem>
+                  <MenuItem value={false}>OS</MenuItem>
+                </Select>
+                ) }
+              /> 
 
               <TextField
                 type="date"
@@ -366,17 +383,24 @@ const Compra = () => {
                 Em aberto?
               </InputLabel>
 
-              <Select
-               {...register('isOpen')}
-                labelId="select-label"
-                id="demo-simple-select"
-                label="isOpen"
-                error={!!errors.isOpen}
-                defaultValue={false}
-                >
-                <MenuItem value={"true"}>Open</MenuItem>
-                <MenuItem value={"false"}>Close</MenuItem>
-              </Select>
+              <Controller
+                control={control}
+                name="isOpen"
+                defaultValue={true}
+                render={({field}) => (
+                <Select
+                  onChange={field.onChange}
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="isOpen"
+                  value={field.value}
+                  >
+                  <MenuItem value={true}>Open</MenuItem>
+                  <MenuItem value={false}>Close</MenuItem>
+                </Select>
+                
+              )}
+              />
 
               <Button
                 type="submit"
