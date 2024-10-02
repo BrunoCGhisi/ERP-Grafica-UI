@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import DoneIcon from "@mui/icons-material/Done";
-import ModalStyle from "../../pages/styles/ModalStyle";
+import ModalStyle from "../styles/ModalStyle";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,15 +38,8 @@ const DataRowSchema = z.object({
 
 type DataRowType = z.infer<typeof DataRowSchema>;
 
-export function ModalDoBelone({
-  data,
-  open,
-  toggleModal,
-}: {
-  data: DataRow;
-  open: boolean;
-  toggleModal: any;
-}) {
+export function ModalDoBelone({data, open, toggleModal}: {data: DataRow; open: boolean; toggleModal: any;})
+{
   function handleUpdate(datas: DataRowType) {
     try {
       axios.put(`http://localhost:3000/compra?id=${data.id}`, datas);
@@ -56,7 +49,7 @@ export function ModalDoBelone({
     } finally {
       toggleModal();
     }
-  }
+}
 
   const {
     register,

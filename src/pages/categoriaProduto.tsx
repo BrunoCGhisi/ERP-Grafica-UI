@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, SpaceStyle } from "./styles";
+import { ModalStyle, SpaceStyle } from "../shared/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";

@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle } from "./styles";
+import { ModalStyle, GridStyle } from "../shared/styles";
 //Icones
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";

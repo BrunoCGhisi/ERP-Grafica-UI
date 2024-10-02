@@ -13,7 +13,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
 import dayjs from "dayjs";
 
@@ -27,6 +27,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalDoBelone } from "../shared/components/testeDoBelone";
+
+import { ModalRoot } from "../shared/components/ModalRoot";
 
 const compraSchema = z.object({
   id: z.number().optional(),
@@ -57,7 +59,8 @@ const fornecedorSchema = z.object({
 type fornecedorSchemaType = z.infer<typeof fornecedorSchema>;
 
 const Compra = () => {
-  const today = new Date();
+
+  const { open, toggleModal } = useOpenModal();
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
@@ -90,8 +93,7 @@ const Compra = () => {
     handleSubmit,
     reset,
     control,
-    formState: { errors },
-    setValue,
+    formState: { errors }
   } = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema),
   });
@@ -120,6 +122,17 @@ const Compra = () => {
     }
   }
 
+  async function putPurchases(data: compraSchemaType) {
+    try {
+      const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
+      if (response.status === 200) alert("compras atualizado com sucesso");
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      toggleModal();
+    }
+  
+
   async function delPurchases(id: number) {
     try {
       const response = await axios.delete(
@@ -136,7 +149,7 @@ const Compra = () => {
     getPurchases();
   }, []);
 
-  const { open, toggleModal } = useOpenModal();
+
 
   useEffect(() => {
     getPurchases();
@@ -207,43 +220,25 @@ const Compra = () => {
               Adicionar
             </Button>
           </Stack>
-
+{/* ------------------------------------------- */}
           <Modal
-            open={adopen}
-            onClose={addOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Nova compra
-              </Typography>
-              <form onSubmit={handleSubmit(postPurchases)}>
-                <Select
+            <ModalRoot>
+              <form onSubmit={handleSubmit(putPurchases)}>
+                <TextField
+                  id="outlined-idFornecedor"
+                  label="IDs Fornecedor"
+                  inputProps={{ readOnly: true }}
+                  helperText={errors.idFornecedor?.message || "Obrigatório"}
+                  defaultValue={'idFornecedor'}
+                  error={!!errors.idFornecedor?.message}
                   {...register("idFornecedor")}
-                  labelId="select-label"
-                  id="demo-simple-select"
-                  label="Fornecedor"
-                  fullWidth
-                  error={!!errors.idFornecedor}
-                  defaultValue={
-                    fornecedores.length > 0
-                      ? fornecedores[0].nome
-                      : "Sem Fornecedores"
-                  }
-                >
-                  {fornecedores &&
-                    fornecedores.map((fornecedor) => (
-                      <MenuItem value={fornecedor.id}>
-                        {" "}
-                        {fornecedor.nome}{" "}
-                      </MenuItem>
-                    ))}
-                </Select>
-
-                <InputLabel id="demo-simple-select-label">
-                  Compra ou OS
-                </InputLabel>
+                />
+                <InputLabel id="demo-simple-select-label">Compra ou OS</InputLabel>
 
                 <Controller
                   control={control}
@@ -262,16 +257,16 @@ const Compra = () => {
                   label={"Data compra"}
                   InputLabelProps={{ shrink: true }}
                   size="medium"
+                  defaultValue={dayjs('dataCompra').format("DD-MM-YYYY")}
                   helperText={errors.dataCompra?.message || "Obrigatório"}
                   error={!!errors.dataCompra}
-                  defaultValue={dayjs(today).format("YYYY-MM-DD")}
                   {...register("dataCompra")}
                 />
 
                 <TextField
                   id="outlined-numNota"
                   label="Número da Nota"
-                  defaultValue={0}
+                  defaultValue={'numNota'}
                   helperText={errors.numNota?.message || "Obrigatório"}
                   error={!!errors.numNota}
                   {...register("numNota")}
@@ -279,18 +274,18 @@ const Compra = () => {
                 <TextField
                   id="outlined-desconto"
                   label="Desconto"
-                  defaultValue={0}
+                  defaultValue={'desconto'}
                   helperText={errors.desconto?.message || "Obrigatório"}
                   error={!!errors.desconto}
                   {...register("desconto")}
                 />
 
-                <InputLabel id="demo-simple-select-label">IsOpen</InputLabel>
+                <InputLabel id="demo-simple-select-label">Em aberto?</InputLabel>
 
                 <Controller
                   control={control}
                   name="isOpen"
-                  defaultValue={true}
+                  defaultValue={false}
                   render={({ field }) => (
                     <Select
                       onChange={field.onChange}
@@ -305,24 +300,21 @@ const Compra = () => {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Cadastrar
+                <Button type="submit" variant="outlined" startIcon={<DoneIcon />}>
+                  Atualizar
                 </Button>
               </form>
-            </Box>
+            </ModalRoot>
+
           </Modal>
 
-          {open && selectedData ? (
+          {/* {open && selectedData ? (
             <ModalDoBelone
               data={selectedData}
               open={open}
               toggleModal={toggleModal}
             />
-          ) : null}
+          ) : null} */}
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
@@ -341,6 +333,6 @@ const Compra = () => {
       </Box>
     </Box>
   );
-};
+}};
 
 export default Compra;

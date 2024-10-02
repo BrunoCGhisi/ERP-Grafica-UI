@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { MiniDrawer } from "../shared/components";
-import { SpaceStyle } from "./styles";
+import { SpaceStyle } from "../shared/styles";
 import { getToken } from "../shared/services/payload"; // Importa a função do serviço
 
 const Home = () => {

@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
