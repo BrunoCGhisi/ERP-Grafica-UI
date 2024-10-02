@@ -15,20 +15,22 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import { MiniDrawer } from "../components";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { MiniDrawer } from "../shared/components";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const productCategorySchema = z.object({
   id: z.number().optional(),
-  categoria: z.string()
-})
+  categoria: z.string(),
+});
 
-type productCategorySchemaType = z.infer<typeof productCategorySchema>
+type productCategorySchemaType = z.infer<typeof productCategorySchema>;
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
+  const [productCategorys, setProductCategorys] = useState<
+    productCategorySchemaType[]
+  >([]);
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -38,20 +40,27 @@ const CategoriaProduto = () => {
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
   const putOn = (id: number) => {
-    const prodCatFilter = productCategorys.filter((prodCat: productCategorySchemaType) => prodCat.id === id)
-    if (prodCatFilter.length > 0){
-      setValue('id', prodCatFilter[0].id)
-      setValue('categoria', prodCatFilter[0].categoria)
+    const prodCatFilter = productCategorys.filter(
+      (prodCat: productCategorySchemaType) => prodCat.id === id
+    );
+    if (prodCatFilter.length > 0) {
+      setValue("id", prodCatFilter[0].id);
+      setValue("categoria", prodCatFilter[0].categoria);
     }
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}, setValue} = useForm<productCategorySchemaType>({
-    resolver: zodResolver(productCategorySchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<productCategorySchemaType>({
+    resolver: zodResolver(productCategorySchema),
   });
 
-// CRUD ----------------------------------------------------------------------------------------------------------------------------
+  // CRUD ----------------------------------------------------------------------------------------------------------------------------
   async function getProductCategorys() {
     try {
       const response = await axios.get(
@@ -65,7 +74,10 @@ const CategoriaProduto = () => {
 
   async function postProductCategorys(data: productCategorySchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/categoria_produto", data);
+      const response = await axios.post(
+        "http://localhost:3000/categoria_produto",
+        data
+      );
       if (response.status === 200)
         alert("Categoria do produto cadastrado com sucesso!");
       getProductCategorys();
@@ -78,7 +90,9 @@ const CategoriaProduto = () => {
   async function putProductCategorys(data: productCategorySchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/categoria_produto?id=${data.id}`, data);
+        `http://localhost:3000/categoria_produto?id=${data.id}`,
+        data
+      );
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
       getProductCategorys();
     } catch (error: any) {
@@ -117,7 +131,9 @@ const CategoriaProduto = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && delProductCategorys(row.id)}>
+          <IconButton
+            onClick={() => row.id !== undefined && delProductCategorys(row.id)}
+          >
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
@@ -136,9 +152,7 @@ const CategoriaProduto = () => {
   return (
     <Box>
       <MiniDrawer />
-      <Box
-        sx={SpaceStyle}
-      >
+      <Box sx={SpaceStyle}>
         <Typography>Categoria Produto </Typography>
 
         <Box>
@@ -163,20 +177,20 @@ const CategoriaProduto = () => {
                 Novo banco
               </Typography>
               <form onSubmit={handleSubmit(postProductCategorys)}>
-              <TextField
-                id="outlined-helperText"
-                label="categoriaProduto"
-                helperText={errors.categoria?.message || "Obrigatório"}
-                error={!!errors.categoria}
-                {...register('categoria')}
-              />
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Cadastrar
-              </Button>
+                <TextField
+                  id="outlined-helperText"
+                  label="categoriaProduto"
+                  helperText={errors.categoria?.message || "Obrigatório"}
+                  error={!!errors.categoria}
+                  {...register("categoria")}
+                />
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Cadastrar
+                </Button>
               </form>
             </Box>
           </Modal>
@@ -192,21 +206,21 @@ const CategoriaProduto = () => {
                 Editar Categoria Produtos
               </Typography>
               <form onSubmit={handleSubmit(putProductCategorys)}>
-              <TextField
-                id="outlined-helperText"
-                label="categoria"
-                helperText={errors.categoria?.message || "Obrigatório"}
-                error={!!errors.categoria}
-                {...register('categoria')}
-              />
+                <TextField
+                  id="outlined-helperText"
+                  label="categoria"
+                  helperText={errors.categoria?.message || "Obrigatório"}
+                  error={!!errors.categoria}
+                  {...register("categoria")}
+                />
 
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Alterar
-              </Button>
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Alterar
+                </Button>
               </form>
             </Box>
           </Modal>

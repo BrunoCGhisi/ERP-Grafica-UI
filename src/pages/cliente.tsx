@@ -1,18 +1,29 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Box, InputLabel, Select, MenuItem, Modal, Button, IconButton, Stack, TextField, Typography,} from "@mui/material";
+import {
+  Box,
+  InputLabel,
+  Select,
+  MenuItem,
+  Modal,
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
-import { MiniDrawer } from "../components";
+import { MiniDrawer } from "../shared/components";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -33,10 +44,9 @@ const clienteSchema = z.object({
   statusIe: z.boolean(),
 });
 
-type clienteSchemaType = z.infer<typeof clienteSchema>
+type clienteSchemaType = z.infer<typeof clienteSchema>;
 
 const Cliente = () => {
-
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -46,33 +56,38 @@ const Cliente = () => {
   // Modal PUT
   const [popen, setPOpen] = useState<boolean>(false);
   const putOn = (id: number) => {
-    const clienteFilter = customers.filter((cliente: clienteSchemaType) => cliente. id === id)
-    if (clienteFilter.length > 0){
-      setValue('id', clienteFilter[0].id);
-      setValue('nome', clienteFilter[0].nome);
-      setValue('nomeFantasia', clienteFilter[0].nomeFantasia);
-      setValue('cpfCnpj', clienteFilter[0].cpfCnpj);
-      setValue('telefone', clienteFilter[0].telefone);
-      setValue('email', clienteFilter[0].email);
-      setValue('isFornecedor', clienteFilter[0].isFornecedor);
-      setValue('cep', clienteFilter[0].cep);
-      setValue('estado', clienteFilter[0].estado);
-      setValue('cidade', clienteFilter[0].cidade);
-      setValue('endereco', clienteFilter[0].endereco);
-      setValue('complemento', clienteFilter[0].complemento);
-      setValue('dataCadastro', clienteFilter[0].dataCadastro);
-      setValue('numIe', clienteFilter[0].numIe);
-      setValue('statusIe', clienteFilter[0].statusIe);
-      
+    const clienteFilter = customers.filter(
+      (cliente: clienteSchemaType) => cliente.id === id
+    );
+    if (clienteFilter.length > 0) {
+      setValue("id", clienteFilter[0].id);
+      setValue("nome", clienteFilter[0].nome);
+      setValue("nomeFantasia", clienteFilter[0].nomeFantasia);
+      setValue("cpfCnpj", clienteFilter[0].cpfCnpj);
+      setValue("telefone", clienteFilter[0].telefone);
+      setValue("email", clienteFilter[0].email);
+      setValue("isFornecedor", clienteFilter[0].isFornecedor);
+      setValue("cep", clienteFilter[0].cep);
+      setValue("estado", clienteFilter[0].estado);
+      setValue("cidade", clienteFilter[0].cidade);
+      setValue("endereco", clienteFilter[0].endereco);
+      setValue("complemento", clienteFilter[0].complemento);
+      setValue("dataCadastro", clienteFilter[0].dataCadastro);
+      setValue("numIe", clienteFilter[0].numIe);
+      setValue("statusIe", clienteFilter[0].statusIe);
     }
     setPOpen(true);
   };
   const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}, setValue} = useForm<clienteSchemaType>({
-    resolver: zodResolver(clienteSchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<clienteSchemaType>({
+    resolver: zodResolver(clienteSchema),
   });
-
 
   async function getCustomers() {
     try {
@@ -103,7 +118,9 @@ const Cliente = () => {
   async function putCustomers(data: clienteSchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/cliente?id=${data.id}`, data);
+        `http://localhost:3000/cliente?id=${data.id}`,
+        data
+      );
       if (response.status === 200) alert("cliente atualizado com sucesso!");
       getCustomers();
     } catch (error: any) {
@@ -176,12 +193,12 @@ const Cliente = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && delCustomers(row.id)}>
+          <IconButton
+            onClick={() => row.id !== undefined && delCustomers(row.id)}
+          >
             <DeleteIcon />
           </IconButton>
-          <IconButton
-            onClick={() => row.id !== undefined && putOn(row.id)}
-          >
+          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -212,7 +229,6 @@ const Cliente = () => {
     <Box>
       <MiniDrawer />
       <Box sx={SpaceStyle}>
-        
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
@@ -230,143 +246,141 @@ const Cliente = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            
             <Box sx={ModalStyle}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo Cliente
               </Typography>
-            <form onSubmit={handleSubmit(postCustomers)}>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                defaultValue=""
-                helperText={errors.nome?.message || "Obrigatório"}
-                error={!!errors.nome}
-                {...register('nome')}
-                
-              />
-              <TextField
-                id="outlined-helperText"
-                label="nomeFantasia"
-                defaultValue=""
-                helperText={errors.nomeFantasia?.message || "Obrigatório"}
-                error={!!errors.nomeFantasia}
-                {...register('nomeFantasia')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cpfCnpj"
-                defaultValue=""
-                helperText={errors.cpfCnpj?.message || "Obrigatório"}
-                error={!!errors.cpfCnpj}
-                {...register('cpfCnpj')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="telefone"
-                defaultValue=""
-                helperText={errors.telefone?.message || "Obrigatório"}
-                error={!!errors.telefone}
-                {...register('telefone')}
-              />
+              <form onSubmit={handleSubmit(postCustomers)}>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  defaultValue=""
+                  helperText={errors.nome?.message || "Obrigatório"}
+                  error={!!errors.nome}
+                  {...register("nome")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="nomeFantasia"
+                  defaultValue=""
+                  helperText={errors.nomeFantasia?.message || "Obrigatório"}
+                  error={!!errors.nomeFantasia}
+                  {...register("nomeFantasia")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="cpfCnpj"
+                  defaultValue=""
+                  helperText={errors.cpfCnpj?.message || "Obrigatório"}
+                  error={!!errors.cpfCnpj}
+                  {...register("cpfCnpj")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="telefone"
+                  defaultValue=""
+                  helperText={errors.telefone?.message || "Obrigatório"}
+                  error={!!errors.telefone}
+                  {...register("telefone")}
+                />
 
-              <TextField
-                id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText={errors.email?.message || "Obrigatório"}
-                error={!!errors.email}
-                {...register('email')}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                label="IsFornecedor"
-                error={!!errors.isFornecedor}
-                {...register('isFornecedor')}
-              >
-                <MenuItem value={"true"}>Cliente</MenuItem>
-                <MenuItem value={"false"}>Fornecedor </MenuItem>
-              </Select>
-              
-              <TextField
-                id="outlined-helperText"
-                label="cep"
-                defaultValue=""
-                helperText={errors.cep?.message || "Obrigatório"}
-                error={!!errors.cep}
-                {...register('cep')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="estado"
-                defaultValue=""
-                helperText={errors.estado?.message || "Obrigatório"}
-                error={!!errors.estado}
-                {...register('estado')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cidade"
-                defaultValue=""
-                helperText={errors.cidade?.message || "Obrigatório"}
-                error={!!errors.cidade}
-                {...register('cidade')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="numero"
-                defaultValue=""
-                helperText={errors.numero?.message || "Obrigatório"}
-                error={!!errors.numero}
-                {...register('numero')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText={errors.endereco?.message || "Obrigatório"}
-                error={!!errors.endereco}
-                {...register('endereco')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="complemento"
-                defaultValue=""
-                helperText={errors.complemento?.message || "Obrigatório"}
-                error={!!errors.complemento}
-                {...register('complemento')}
-              />
+                <TextField
+                  id="outlined-helperText"
+                  label="email"
+                  defaultValue=""
+                  helperText={errors.email?.message || "Obrigatório"}
+                  error={!!errors.email}
+                  {...register("email")}
+                />
+                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+                <Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="IsFornecedor"
+                  error={!!errors.isFornecedor}
+                  {...register("isFornecedor")}
+                >
+                  <MenuItem value={"true"}>Cliente</MenuItem>
+                  <MenuItem value={"false"}>Fornecedor </MenuItem>
+                </Select>
 
-              <TextField
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText={errors.numIe?.message || "Obrigatório"}
-                error={!!errors.numIe}
-                {...register('numIe')}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                error={!!errors.statusIe}
-                {...register('statusIe')}
-                defaultValue={'true'}
-              >
-                <MenuItem value={"false"}>Off</MenuItem>
-                <MenuItem value={"true"}>On </MenuItem>
-              </Select>
+                <TextField
+                  id="outlined-helperText"
+                  label="cep"
+                  defaultValue=""
+                  helperText={errors.cep?.message || "Obrigatório"}
+                  error={!!errors.cep}
+                  {...register("cep")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="estado"
+                  defaultValue=""
+                  helperText={errors.estado?.message || "Obrigatório"}
+                  error={!!errors.estado}
+                  {...register("estado")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="cidade"
+                  defaultValue=""
+                  helperText={errors.cidade?.message || "Obrigatório"}
+                  error={!!errors.cidade}
+                  {...register("cidade")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="numero"
+                  defaultValue=""
+                  helperText={errors.numero?.message || "Obrigatório"}
+                  error={!!errors.numero}
+                  {...register("numero")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="endereco"
+                  defaultValue=""
+                  helperText={errors.endereco?.message || "Obrigatório"}
+                  error={!!errors.endereco}
+                  {...register("endereco")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="complemento"
+                  defaultValue=""
+                  helperText={errors.complemento?.message || "Obrigatório"}
+                  error={!!errors.complemento}
+                  {...register("complemento")}
+                />
 
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Cadastrar
-              </Button>
-            </form>
+                <TextField
+                  id="outlined-helperText"
+                  label="numIe"
+                  defaultValue=""
+                  helperText={errors.numIe?.message || "Obrigatório"}
+                  error={!!errors.numIe}
+                  {...register("numIe")}
+                />
+                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+                <Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  error={!!errors.statusIe}
+                  {...register("statusIe")}
+                  defaultValue={"true"}
+                >
+                  <MenuItem value={"false"}>Off</MenuItem>
+                  <MenuItem value={"true"}>On </MenuItem>
+                </Select>
+
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Cadastrar
+                </Button>
+              </form>
             </Box>
           </Modal>
 
@@ -381,137 +395,136 @@ const Cliente = () => {
                 Editar Banco
               </Typography>
               <form onSubmit={handleSubmit(putCustomers)}>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                defaultValue=""
-                helperText={errors.nome?.message || "Obrigatório"}
-                error={!!errors.nome}
-                {...register('nome')}
-                
-              />
-              <TextField
-                id="outlined-helperText"
-                label="nomeFantasia"
-                defaultValue=""
-                helperText={errors.nomeFantasia?.message || "Obrigatório"}
-                error={!!errors.nomeFantasia}
-                {...register('nomeFantasia')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cpfCnpj"
-                defaultValue=""
-                helperText={errors.cpfCnpj?.message || "Obrigatório"}
-                error={!!errors.cpfCnpj}
-                {...register('cpfCnpj')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="telefone"
-                defaultValue=""
-                helperText={errors.telefone?.message || "Obrigatório"}
-                error={!!errors.telefone}
-                {...register('telefone')}
-              />
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  defaultValue=""
+                  helperText={errors.nome?.message || "Obrigatório"}
+                  error={!!errors.nome}
+                  {...register("nome")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="nomeFantasia"
+                  defaultValue=""
+                  helperText={errors.nomeFantasia?.message || "Obrigatório"}
+                  error={!!errors.nomeFantasia}
+                  {...register("nomeFantasia")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="cpfCnpj"
+                  defaultValue=""
+                  helperText={errors.cpfCnpj?.message || "Obrigatório"}
+                  error={!!errors.cpfCnpj}
+                  {...register("cpfCnpj")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="telefone"
+                  defaultValue=""
+                  helperText={errors.telefone?.message || "Obrigatório"}
+                  error={!!errors.telefone}
+                  {...register("telefone")}
+                />
 
-              <TextField
-                id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText={errors.email?.message || "Obrigatório"}
-                error={!!errors.email}
-                {...register('email')}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                label="IsFornecedor"
-                error={!!errors.isFornecedor}
-                {...register('isFornecedor')}
-                defaultValue={'true'}
-              >
-                <MenuItem value={'false'}>Cliente</MenuItem>
-                <MenuItem value={'true'}>Fornecedor </MenuItem>
-              </Select>
-              
-              <TextField
-                id="outlined-helperText"
-                label="cep"
-                defaultValue=""
-                helperText={errors.cep?.message || "Obrigatório"}
-                error={!!errors.cep}
-                {...register('cep')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="estado"
-                defaultValue=""
-                helperText={errors.estado?.message || "Obrigatório"}
-                error={!!errors.estado}
-                {...register('estado')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cidade"
-                defaultValue=""
-                helperText={errors.cidade?.message || "Obrigatório"}
-                error={!!errors.cidade}
-                {...register('cidade')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="numero"
-                defaultValue=""
-                helperText={errors.numero?.message || "Obrigatório"}
-                error={!!errors.numero}
-                {...register('numero')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText={errors.endereco?.message || "Obrigatório"}
-                error={!!errors.endereco}
-                {...register('endereco')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="complemento"
-                defaultValue=""
-                helperText={errors.complemento?.message || "Obrigatório"}
-                error={!!errors.complemento}
-                {...register('complemento')}
-              />
+                <TextField
+                  id="outlined-helperText"
+                  label="email"
+                  defaultValue=""
+                  helperText={errors.email?.message || "Obrigatório"}
+                  error={!!errors.email}
+                  {...register("email")}
+                />
+                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+                <Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="IsFornecedor"
+                  error={!!errors.isFornecedor}
+                  {...register("isFornecedor")}
+                  defaultValue={"true"}
+                >
+                  <MenuItem value={"false"}>Cliente</MenuItem>
+                  <MenuItem value={"true"}>Fornecedor </MenuItem>
+                </Select>
 
-              <TextField
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText={errors.numIe?.message || "Obrigatório"}
-                error={!!errors.numIe}
-                {...register('numIe')}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                error={!!errors.statusIe}
-                {...register('statusIe')}
-                defaultValue={'true'}
-              >
-                <MenuItem value={'true'}>Off</MenuItem>
-                <MenuItem value={'false'}>On </MenuItem>
-              </Select>
+                <TextField
+                  id="outlined-helperText"
+                  label="cep"
+                  defaultValue=""
+                  helperText={errors.cep?.message || "Obrigatório"}
+                  error={!!errors.cep}
+                  {...register("cep")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="estado"
+                  defaultValue=""
+                  helperText={errors.estado?.message || "Obrigatório"}
+                  error={!!errors.estado}
+                  {...register("estado")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="cidade"
+                  defaultValue=""
+                  helperText={errors.cidade?.message || "Obrigatório"}
+                  error={!!errors.cidade}
+                  {...register("cidade")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="numero"
+                  defaultValue=""
+                  helperText={errors.numero?.message || "Obrigatório"}
+                  error={!!errors.numero}
+                  {...register("numero")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="endereco"
+                  defaultValue=""
+                  helperText={errors.endereco?.message || "Obrigatório"}
+                  error={!!errors.endereco}
+                  {...register("endereco")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="complemento"
+                  defaultValue=""
+                  helperText={errors.complemento?.message || "Obrigatório"}
+                  error={!!errors.complemento}
+                  {...register("complemento")}
+                />
 
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Alterar
-              </Button>
+                <TextField
+                  id="outlined-helperText"
+                  label="numIe"
+                  defaultValue=""
+                  helperText={errors.numIe?.message || "Obrigatório"}
+                  error={!!errors.numIe}
+                  {...register("numIe")}
+                />
+                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+                <Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  error={!!errors.statusIe}
+                  {...register("statusIe")}
+                  defaultValue={"true"}
+                >
+                  <MenuItem value={"true"}>Off</MenuItem>
+                  <MenuItem value={"false"}>On </MenuItem>
+                </Select>
+
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Alterar
+                </Button>
               </form>
             </Box>
           </Modal>

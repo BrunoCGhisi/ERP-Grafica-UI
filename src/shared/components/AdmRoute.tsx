@@ -12,7 +12,7 @@ const AdmRoute = ({ children }: { children: JSX.Element }) => {
       if (tokenData) {
         setIsAdm(tokenData.isAdm === true); // Converte o valor para booleano
       }
-      setLoading(false); 
+      setLoading(false);
     };
 
     fetchToken();
@@ -22,7 +22,7 @@ const AdmRoute = ({ children }: { children: JSX.Element }) => {
     return <div>Carregando...</div>; // Exibe algo enquanto o token está sendo carregado
   }
 
-  if (!isAdm) { 
+  if (!isAdm) {
     // Se não for admin, redireciona para login ou outra página de acesso negado
     return <Navigate to="/home" />;
   }

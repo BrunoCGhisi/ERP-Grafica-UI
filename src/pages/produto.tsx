@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ProductVO } from "../services/types";
+import { ProductVO } from "../shared/services/types";
 import axios from "axios";
 import {
   Accordion,
@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
-import { MiniDrawer } from "../components";
+import { MiniDrawer } from "../shared/components";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";

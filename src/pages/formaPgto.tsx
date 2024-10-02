@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
-import { MiniDrawer } from "../components";
+import { MiniDrawer } from "../shared/components";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";

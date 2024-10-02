@@ -8,8 +8,7 @@ import {
   Typography,
   TextField,
   Stack,
-  IconButton
-
+  IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "./styles";
@@ -17,20 +16,19 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import { MiniDrawer } from "../components";
+import { MiniDrawer } from "../shared/components";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-
 const bancoSchema = z.object({
   id: z.number().optional(),
-  nome: z.string(), 
-  valorTotal: z.number()
-})
+  nome: z.string(),
+  valorTotal: z.number(),
+});
 
-type bancoSchemaType = z.infer<typeof bancoSchema>
+type bancoSchemaType = z.infer<typeof bancoSchema>;
 
 const Banco = () => {
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
@@ -41,49 +39,57 @@ const Banco = () => {
   const addOf = () => setAdOpen(false);
 
   // Modal PUT -----------------------------------------------------------------------------------------------------
-   const [popen, setPOpen] = useState<boolean>(false);
-   const putOn = (id: number) => {
-    const bancosFilter = banks.filter((banco : bancoSchemaType) => banco.id === id);
-    if (bancosFilter.length > 0){
-      setValue('nome', bancosFilter[0].nome);
-      setValue('valorTotal', bancosFilter[0].valorTotal); 
-      setValue('id', bancosFilter[0].id)
+  const [popen, setPOpen] = useState<boolean>(false);
+  const putOn = (id: number) => {
+    const bancosFilter = banks.filter(
+      (banco: bancoSchemaType) => banco.id === id
+    );
+    if (bancosFilter.length > 0) {
+      setValue("nome", bancosFilter[0].nome);
+      setValue("valorTotal", bancosFilter[0].valorTotal);
+      setValue("id", bancosFilter[0].id);
       setPOpen(true);
     }
-   };
-   const putOf = () => setPOpen(false);
+  };
+  const putOf = () => setPOpen(false);
 
-  const {register, handleSubmit, formState: {errors}, setValue} = useForm<bancoSchemaType>({
-    resolver:  zodResolver(bancoSchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<bancoSchemaType>({
+    resolver: zodResolver(bancoSchema),
   });
 
-   //CRUD -----------------------------------------------------------------------------------------------------
-   async function getBanks() {
-     try {
-       const response = await axios.get("http://localhost:3000/banco");
-       setBanks(response.data.bancos);
-     } catch (error: any) {
-       console.error(error);
-     }
-   }
-
-    async function postBanks(data: bancoSchemaType) {
-      
-      try {
-        const response = await axios.post("http://localhost:3000/banco", data);
-        if (response.status === 200) alert("Banco cadastrado com sucesso!");
-        getBanks();
-      } catch (error: any) {
-        console.error(error);
-      } finally {
-        addOf();
-      }
+  //CRUD -----------------------------------------------------------------------------------------------------
+  async function getBanks() {
+    try {
+      const response = await axios.get("http://localhost:3000/banco");
+      setBanks(response.data.bancos);
+    } catch (error: any) {
+      console.error(error);
     }
+  }
+
+  async function postBanks(data: bancoSchemaType) {
+    try {
+      const response = await axios.post("http://localhost:3000/banco", data);
+      if (response.status === 200) alert("Banco cadastrado com sucesso!");
+      getBanks();
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      addOf();
+    }
+  }
 
   async function putBanks(data: bancoSchemaType) {
     try {
       const response = await axios.put(
-        `http://localhost:3000/banco?id=${data.id}`, data);
+        `http://localhost:3000/banco?id=${data.id}`,
+        data
+      );
       if (response.status === 200) alert("Usuário atualizado com sucesso!");
       getBanks();
     } catch (error: any) {
@@ -93,21 +99,21 @@ const Banco = () => {
     }
   }
 
-   async function delBanks(id: number) {
-     try {
-       const response = await axios.delete(
-         `http://localhost:3000/banco?id=${id}`
-       );
-       if (response.status === 200) alert("Banco deletado com sucesso!");
-       getBanks();
-     } catch (error: any) {
-       console.error(error);
-     }
-   }
+  async function delBanks(id: number) {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/banco?id=${id}`
+      );
+      if (response.status === 200) alert("Banco deletado com sucesso!");
+      getBanks();
+    } catch (error: any) {
+      console.error(error);
+    }
+  }
 
-   useEffect(() => {
-     getBanks();
-   }, []);
+  useEffect(() => {
+    getBanks();
+  }, []);
 
   const columns: GridColDef<bancoSchemaType>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
@@ -123,17 +129,15 @@ const Banco = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-         <IconButton onClick={() => row.id !== undefined && delBanks(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delBanks(row.id)}>
             <DeleteIcon />
           </IconButton>
-           <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
             <EditIcon />
-          </IconButton>  
+          </IconButton>
         </div>
-
       ),
     },
-
   ];
 
   const rows = banks.map((banco) => ({
@@ -171,36 +175,29 @@ const Banco = () => {
               </Typography>
 
               <form onSubmit={handleSubmit(postBanks)}>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText={errors.nome?.message || "Obrigatório"}
+                  error={!!errors.nome}
+                  {...register("nome")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="valorTotal"
+                  helperText={errors.valorTotal?.message || "Obrigatório"}
+                  error={!!errors.valorTotal}
+                  {...register("valorTotal", { valueAsNumber: true })}
+                />
 
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText={errors.nome?.message || "Obrigatório"}
-                error={!!errors.nome} 
-                {...register('nome')}
-                
-              />
-              <TextField
-                id="outlined-helperText"
-                label="valorTotal"
-                helperText={errors.valorTotal?.message || "Obrigatório"}
-                error={!!errors.valorTotal} 
-                {...register('valorTotal', {valueAsNumber: true})}
-              />
-
-                <Button  
-                
-                  type="submit" 
+                <Button
+                  type="submit"
                   variant="outlined"
                   startIcon={<DoneIcon />}
-                  
                 >
                   Cadastrar
                 </Button>
               </form>
-
-              
-
             </Box>
           </Modal>
 
@@ -215,31 +212,31 @@ const Banco = () => {
                 Editar Banco
               </Typography>
               <form onSubmit={handleSubmit(putBanks)}>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText={errors.nome?.message || "Obrigatório"}
-                error={!!errors.nome} 
-                {...register('nome')}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="valorTotal"
-                helperText={errors.valorTotal?.message || "Obrigatório"}
-                error={!!errors.valorTotal}
-                {...register('valorTotal', {valueAsNumber: true})}
-              />
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText={errors.nome?.message || "Obrigatório"}
+                  error={!!errors.nome}
+                  {...register("nome")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="valorTotal"
+                  helperText={errors.valorTotal?.message || "Obrigatório"}
+                  error={!!errors.valorTotal}
+                  {...register("valorTotal", { valueAsNumber: true })}
+                />
 
-              <Button
-                type="submit" // colcoar esse putbanks no form, tipar para submit
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Alterar
-              </Button>
+                <Button
+                  type="submit" // colcoar esse putbanks no form, tipar para submit
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Alterar
+                </Button>
               </form>
             </Box>
-          </Modal>  
+          </Modal>
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
@@ -253,7 +250,6 @@ const Banco = () => {
               },
             }}
             pageSizeOptions={[6]}
-            
           />
         </Box>
       </Box>

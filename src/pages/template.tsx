@@ -20,7 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-const Usuario = () => {
+const Template = () => {
   const [users, setUsers] = useState<UserVO[]>([]);
   const [userId, setUserId] = useState<string>("");
   const [nome, setNome] = useState<string>("");
@@ -283,4 +283,4 @@ const Usuario = () => {
   );
 };
 
-export default Usuario;
+export default Template;
