@@ -20,10 +20,10 @@ import {
 import { ProtectedRoute } from "../shared/components";
 import { AdmRoute } from "../shared/components";
 import { ThemeProvider } from "@emotion/react";
-import { LightTheme } from "../shared/themes";
+import { LightTheme, DarkTheme } from "../shared/themes";
 
 const Router = () => (
-  <ThemeProvider theme={LightTheme}>
+  
     <BrowserRouter>
       <Routes>
         <Route path="/home" element={<Home />} />
@@ -99,7 +99,6 @@ const Router = () => (
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
-  </ThemeProvider>
 );
 
 export default Router;

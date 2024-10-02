@@ -20,7 +20,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
+import { useAppThemeContext } from '../shared/contexts';
+
 const Template = () => {
+
+  const { toggleTheme } = useAppThemeContext();
+
   const [users, setUsers] = useState<UserVO[]>([]);
   const [userId, setUserId] = useState<string>("");
   const [nome, setNome] = useState<string>("");
@@ -156,6 +161,9 @@ const Template = () => {
       <Box sx={SpaceStyle}>
         <Typography>Usuários</Typography>
         <Box>
+          <Button onClick={toggleTheme}>
+            Alterar tema
+          </Button>
           <Stack direction="row" spacing={2}>
             <Button
               onClick={addOn}
