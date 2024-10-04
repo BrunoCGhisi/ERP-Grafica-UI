@@ -54,3 +54,59 @@ const Testes = () =>  {
 
 export default Testes;
 
+//----------------------------------------------------------------------------------------------------- */}
+
+type dataRow = {
+    id: number,
+    idFornecedor: number,
+    isCompraOS: boolean,
+    dataCompra: string,
+    numNota: number,
+    desconto: number,
+    isOpen: boolean,
+  }
+
+const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+
+const handleEdit = (updateData: dataRow) => {
+    setSelectedData(updateData)
+    toggleModal()
+    console.log('updateData', updateData)
+    console.log('selectedData', selectedData)
+  } 
+
+
+<Modal
+            open={open}
+            onClose={toggleModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+          <ModalRoot children={
+            
+            <form onSubmit={handleSubmit(putPurchases)}>
+              <TextField
+                id="outlined-idFornecedor"
+                label="IDs Fornecedor"
+                inputProps={{ readOnly: true }}
+                helperText={errors.idFornecedor?.message || "Obrigatório"}
+                error={!!errors.idFornecedor?.message}
+                {...register("idFornecedor")}
+              />
+
+              <TextField
+                type="date"
+                label={"Data compra"}
+                InputLabelProps={{ shrink: true }}
+                size="medium"
+                defaultValue={dayjs('dataCompra').format("DD-MM-YYYY")}
+                helperText={errors.dataCompra?.message || "Obrigatório"}
+                error={!!errors.dataCompra}
+                {...register("dataCompra")}
+              />
+              <Button type="submit" variant="outlined" startIcon={<DoneIcon />}>
+                Atualizar
+              </Button>
+            </form>
+          }/> 
+</Modal>    

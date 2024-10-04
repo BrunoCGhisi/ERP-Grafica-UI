@@ -201,6 +201,7 @@ const Banco = () => {
             </Box>
           </Modal>
 
+
           <Modal
             open={popen}
             onClose={putOf}
@@ -237,7 +238,10 @@ const Banco = () => {
               </form>
             </Box>
           </Modal>
+
+
         </Box>
+
         <Box sx={GridStyle}>
           <DataGrid
             rows={rows}
