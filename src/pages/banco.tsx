@@ -62,6 +62,9 @@ const Banco = () => {
     resolver: zodResolver(bancoSchema),
   });
 
+  
+
+
   //CRUD -----------------------------------------------------------------------------------------------------
   async function getBanks() {
     try {

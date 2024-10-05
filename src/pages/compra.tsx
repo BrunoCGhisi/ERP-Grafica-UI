@@ -13,11 +13,10 @@ import {useForm, Controller } from "react-hook-form";
 import { z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useOpenModal} from "../shared/hooks/useOpenModal";
-import { ModalDoBelone } from "../shared/components/testeDoBelone";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
 const compraSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   idFornecedor: z.coerce.number(),
   isCompraOS: z.boolean(),
   dataCompra: z.string(),
@@ -53,13 +52,28 @@ const Compra = () => {
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal()
  
+  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<compraSchemaType>({
+    resolver: zodResolver(compraSchema)
+
+  });
+
 
   const handleEdit = (updateData: dataRow) => {
     setSelectedData(updateData)
     toggleModal()
-    console.log('updateData', updateData)
-    console.log('selectedData', selectedData)
   } 
+
+  useEffect(() => {
+    if (selectedData) {
+      setValue("id", selectedData.id);
+      setValue("idFornecedor", selectedData.idFornecedor);
+      setValue("isCompraOS", selectedData.isCompraOS);
+      setValue("dataCompra", dayjs(selectedData.dataCompra).format("YYYY-MM-DD")); // Formato ISO
+      setValue("numNota", selectedData.numNota);
+      setValue("desconto", selectedData.desconto);
+      setValue("isOpen", selectedData.isOpen);
+    }
+  }, [selectedData, setValue]);
 
   useEffect(() => {
     const getFornecedores = async () => {
@@ -75,12 +89,6 @@ const Compra = () => {
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-
-
-  const {register, handleSubmit, reset, control, formState: {errors}} = useForm<compraSchemaType>({
-    resolver: zodResolver(compraSchema)
-
-  });
 
   async function getPurchases() {
     try {
@@ -107,7 +115,6 @@ const Compra = () => {
 
   async function putPurchases(data: compraSchemaType) {
     try {
-      console.log(data.id)
       const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
       if (response.status === 200) alert("compras atualizado com sucesso");
     } catch (error: any) {
@@ -317,7 +324,7 @@ const Compra = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-          <ModalRoot children={
+          <ModalRoot children={ // meu componente 
             
             <form onSubmit={handleSubmit(putPurchases)}>
               <TextField
@@ -364,7 +371,7 @@ const Compra = () => {
               <TextField
                 id="outlined-desconto"
                 label="Desconto"
-                defaultValue={0}
+                defaultValue={selectedData !== null && selectedData['desconto']}
                 helperText={errors.desconto?.message || "Obrigatório"}
                 error={!!errors.desconto}
                 {...register("desconto")}
