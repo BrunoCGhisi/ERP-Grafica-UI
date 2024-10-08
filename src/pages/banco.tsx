@@ -18,9 +18,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import { MiniDrawer } from "../shared/components";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm, Controller } from "react-hook-form";
+import { z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useOpenModal} from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../shared/components/ModalRoot";
 
 const bancoSchema = z.object({
   id: z.number().optional(),
@@ -28,39 +30,40 @@ const bancoSchema = z.object({
   valorTotal: z.number(),
 });
 
+interface dataRow {
+  id: number,
+  nome: string,
+  valorTotoal: number
+}
+
 type bancoSchemaType = z.infer<typeof bancoSchema>;
 
 const Banco = () => {
+  const [selectData, setSelectedData] = useState<dataRow | null>(null)
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
+  const {open, toggleModal} = useOpenModal()
+
+  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<bancoSchemaType>({
+    resolver: zodResolver(bancoSchema)
+  })
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
+  const addOn = () => {setAdOpen(true), reset()};
   const addOf = () => setAdOpen(false);
 
-  // Modal PUT -----------------------------------------------------------------------------------------------------
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: number) => {
-    const bancosFilter = banks.filter(
-      (banco: bancoSchemaType) => banco.id === id
-    );
-    if (bancosFilter.length > 0) {
-      setValue("nome", bancosFilter[0].nome);
-      setValue("valorTotal", bancosFilter[0].valorTotal);
-      setValue("id", bancosFilter[0].id);
-      setPOpen(true);
-    }
-  };
-  const putOf = () => setPOpen(false);
+  // População da Modal ----------------------------
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<bancoSchemaType>({
-    resolver: zodResolver(bancoSchema),
-  });
+  const handleEdit = (updateData: dataRow) => {
+    setSelectedData(updateData)
+    toggleModal()
+  } 
+
+  useEffect(() => {
+    if (selectedData) {
+      
+    }
+  })
 
   
 
