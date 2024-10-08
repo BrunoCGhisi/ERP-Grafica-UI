@@ -47,6 +47,10 @@ type fornecedorSchemaType = z.infer<typeof fornecedorSchema>
 const Compra = () => {
   
   const today = new Date();
+  const formatDate = (dateString: 'dataCompra') => {
+    const date = new Date(dateString); 
+    return date.toLocaleDateString('pt-BR'); 
+  };
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
@@ -54,10 +58,14 @@ const Compra = () => {
  
   const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema)
-
   });
 
+  // Modal ADD --------------------------------
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => {setAdOpen(true), reset()};
+  const addOf = () => setAdOpen(false);
 
+  // População da modal  --------------------------------
   const handleEdit = (updateData: dataRow) => {
     setSelectedData(updateData)
     toggleModal()
@@ -75,6 +83,7 @@ const Compra = () => {
     }
   }, [selectedData, setValue]);
 
+// Trazendo fornecedores--------------------------------------------------  
   useEffect(() => {
     const getFornecedores = async () => {
       const response = await axios.get("http://localhost:3000/cliente/fornecedores");
@@ -83,12 +92,7 @@ const Compra = () => {
     getFornecedores();
   }, []);
 
-
-  // Modal ADD
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
-  const addOf = () => setAdOpen(false);
-
+// CRUDs--------------------------------------------------  
 
   async function getPurchases() {
     try {
@@ -115,6 +119,7 @@ const Compra = () => {
 
   async function putPurchases(data: compraSchemaType) {
     try {
+
       const response = await axios.put(`http://localhost:3000/compra?id=${data.id}`, data);
       if (response.status === 200) alert("compras atualizado com sucesso");
     } catch (error: any) {
@@ -141,6 +146,8 @@ const Compra = () => {
   useEffect(() => {
     getPurchases();
   }, [open]);
+
+// GRID ------------------------------------------------
 
   const columns: GridColDef<dataRow>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
@@ -181,7 +188,7 @@ const Compra = () => {
     id: compra.id,
     idFornecedor: compra.idFornecedor,
     isCompraOS: compra.isCompraOS,
-    dataCompra: compra.dataCompra,
+    dataCompra: formatDate(compra.dataCompra),
     numNota: compra.numNota,
     desconto: compra.desconto,
     isOpen: compra.isOpen,
@@ -316,7 +323,7 @@ const Compra = () => {
               </form>
             </Box>
           </Modal>
-{/* -------------------------------------------------------------------------------------------------------------------- */}
+{/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
           
           <Modal
             open={open}
@@ -394,8 +401,7 @@ const Compra = () => {
                     <MenuItem value={true}>Open</MenuItem>
                     <MenuItem value={false}>Close</MenuItem>
                   </Select>
-                )}
-              />
+                )}/>
 
               <Button type="submit" variant="outlined" startIcon={<DoneIcon />}>
                 Atualizar

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Box,
+import {Box,
   InputLabel,
   Select,
   MenuItem,
@@ -21,9 +20,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ModalRoot } from "../shared/components/ModalRoot";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -31,7 +32,7 @@ const clienteSchema = z.object({
   nomeFantasia: z.string(),
   cpfCnpj: z.string(),
   telefone: z.string(),
-  email: z.string(),
+  email: z.string().email(),
   isFornecedor: z.boolean(),
   cep: z.string(),
   estado: z.string(),
@@ -48,6 +49,7 @@ type clienteSchemaType = z.infer<typeof clienteSchema>;
 
 const Cliente = () => {
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
+  const {open, toggleModal} = useOpenModal();
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -85,6 +87,7 @@ const Cliente = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    control,
   } = useForm<clienteSchemaType>({
     resolver: zodResolver(clienteSchema),
   });
@@ -97,8 +100,6 @@ const Cliente = () => {
       new Error(error);
     }
   }
-
-  // const mydate = new Date().getDate()
 
   async function postCustomers(data: clienteSchemaType) {
     try {
@@ -383,150 +384,159 @@ const Cliente = () => {
               </form>
             </Box>
           </Modal>
-
+{/* -------------------------------------------------------------------------- */}
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-              <form onSubmit={handleSubmit(putCustomers)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  defaultValue=""
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="nomeFantasia"
-                  defaultValue=""
-                  helperText={errors.nomeFantasia?.message || "Obrigatório"}
-                  error={!!errors.nomeFantasia}
-                  {...register("nomeFantasia")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="cpfCnpj"
-                  defaultValue=""
-                  helperText={errors.cpfCnpj?.message || "Obrigatório"}
-                  error={!!errors.cpfCnpj}
-                  {...register("cpfCnpj")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="telefone"
-                  defaultValue=""
-                  helperText={errors.telefone?.message || "Obrigatório"}
-                  error={!!errors.telefone}
-                  {...register("telefone")}
-                />
+            <ModalRoot children={
+            <form onSubmit={handleSubmit(putCustomers)}>
+              <TextField
+                id="outlined-helperText"
+                label="Nome"
+                defaultValue=""
+                helperText={errors.nome?.message || "Obrigatório"}
+                error={!!errors.nome}
+                {...register("nome")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="nomeFantasia"
+                defaultValue=""
+                helperText={errors.nomeFantasia?.message || "Obrigatório"}
+                error={!!errors.nomeFantasia}
+                {...register("nomeFantasia")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="cpfCnpj"
+                defaultValue=""
+                helperText={errors.cpfCnpj?.message || "Obrigatório"}
+                error={!!errors.cpfCnpj}
+                {...register("cpfCnpj")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="telefone"
+                defaultValue=""
+                helperText={errors.telefone?.message || "Obrigatório"}
+                error={!!errors.telefone}
+                {...register("telefone")}
+              />
 
-                <TextField
-                  id="outlined-helperText"
-                  label="email"
-                  defaultValue=""
-                  helperText={errors.email?.message || "Obrigatório"}
-                  error={!!errors.email}
-                  {...register("email")}
-                />
-                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <TextField
+                id="outlined-helperText"
+                label="email"
+                defaultValue=""
+                helperText={errors.email?.message || "Obrigatório"}
+                error={!!errors.email}
+                {...register("email")}
+              />
+              
+              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <Controller
+                control={control}
+                name="isFornecedor"
+                defaultValue={true}
+                render={({field}) => (
                 <Select
+                  onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
                   label="IsFornecedor"
                   error={!!errors.isFornecedor}
-                  {...register("isFornecedor")}
-                  defaultValue={"true"}
+                  value={field.value}
                 >
-                  <MenuItem value={"false"}>Cliente</MenuItem>
-                  <MenuItem value={"true"}>Fornecedor </MenuItem>
+                  <MenuItem value={false}>Cliente</MenuItem>
+                  <MenuItem value={true}>Fornecedor </MenuItem>
                 </Select>
+                )}/>
 
-                <TextField
-                  id="outlined-helperText"
-                  label="cep"
-                  defaultValue=""
-                  helperText={errors.cep?.message || "Obrigatório"}
-                  error={!!errors.cep}
-                  {...register("cep")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="estado"
-                  defaultValue=""
-                  helperText={errors.estado?.message || "Obrigatório"}
-                  error={!!errors.estado}
-                  {...register("estado")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="cidade"
-                  defaultValue=""
-                  helperText={errors.cidade?.message || "Obrigatório"}
-                  error={!!errors.cidade}
-                  {...register("cidade")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="numero"
-                  defaultValue=""
-                  helperText={errors.numero?.message || "Obrigatório"}
-                  error={!!errors.numero}
-                  {...register("numero")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="endereco"
-                  defaultValue=""
-                  helperText={errors.endereco?.message || "Obrigatório"}
-                  error={!!errors.endereco}
-                  {...register("endereco")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="complemento"
-                  defaultValue=""
-                  helperText={errors.complemento?.message || "Obrigatório"}
-                  error={!!errors.complemento}
-                  {...register("complemento")}
-                />
+              <TextField
+                id="outlined-helperText"
+                label="cep"
+                defaultValue=""
+                helperText={errors.cep?.message || "Obrigatório"}
+                error={!!errors.cep}
+                {...register("cep")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="estado"
+                defaultValue=""
+                helperText={errors.estado?.message || "Obrigatório"}
+                error={!!errors.estado}
+                {...register("estado")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="cidade"
+                defaultValue=""
+                helperText={errors.cidade?.message || "Obrigatório"}
+                error={!!errors.cidade}
+                {...register("cidade")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="numero"
+                defaultValue=""
+                helperText={errors.numero?.message || "Obrigatório"}
+                error={!!errors.numero}
+                {...register("numero")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="endereco"
+                defaultValue=""
+                helperText={errors.endereco?.message || "Obrigatório"}
+                error={!!errors.endereco}
+                {...register("endereco")}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="complemento"
+                defaultValue=""
+                helperText={errors.complemento?.message || "Obrigatório"}
+                error={!!errors.complemento}
+                {...register("complemento")}
+              />
 
-                <TextField
-                  id="outlined-helperText"
-                  label="numIe"
-                  defaultValue=""
-                  helperText={errors.numIe?.message || "Obrigatório"}
-                  error={!!errors.numIe}
-                  {...register("numIe")}
-                />
-                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <TextField
+                id="outlined-helperText"
+                label="numIe"
+                defaultValue=""
+                helperText={errors.numIe?.message || "Obrigatório"}
+                error={!!errors.numIe}
+                {...register("numIe")}
+              />
+              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <Controller
+                control={control}
+                name="statusIe"
+                defaultValue={true}
+                render={({field}) => (
                 <Select
+                  onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
-                  error={!!errors.statusIe}
-                  {...register("statusIe")}
-                  defaultValue={"true"}
+                  label="statusIe"
+                  value={field.value} 
                 >
-                  <MenuItem value={"true"}>Off</MenuItem>
-                  <MenuItem value={"false"}>On </MenuItem>
+                  <MenuItem value={true}>Off</MenuItem>
+                  <MenuItem value={false}>On </MenuItem>
                 </Select>
+              )}/>
+              <Button
+                type="submit"
+                variant="outlined"
+                startIcon={<DoneIcon />}
+              >
+                Alterar
+              </Button>
+            </form>}/>
 
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Alterar
-                </Button>
-              </form>
-            </Box>
           </Modal>
         </Box>
         <Box sx={GridStyle}>
