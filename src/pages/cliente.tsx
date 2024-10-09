@@ -25,62 +25,57 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModalRoot } from "../shared/components/ModalRoot";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
+import dayjs from "dayjs";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
-  nome: z.string(),
-  nomeFantasia: z.string(),
-  cpfCnpj: z.string(),
-  telefone: z.string(),
-  email: z.string().email(),
-  isFornecedor: z.boolean(),
-  cep: z.string(),
-  estado: z.string(),
-  cidade: z.string(),
-  numero: z.string(),
-  endereco: z.string(),
-  complemento: z.string(),
-  dataCadastro: z.string(),
-  numIe: z.string(),
-  statusIe: z.boolean(),
+  nome: z.string().optional(),
+  nomeFantasia: z.string().optional(),
+  cpfCnpj: z.string().optional(),
+  telefone: z.string().optional(),
+  email: z.string().email().optional(),
+  isFornecedor: z.boolean().optional(),
+  cep: z.string().optional(),
+  estado: z.string().optional(),
+  cidade: z.string().optional(),
+  numero: z.string().optional(),
+  endereco: z.string().optional(),
+  complemento: z.string().optional(),
+  dataCadastro: z.string().optional(),
+  numIe: z.string().optional(),
+  statusIe: z.boolean().optional(),
 });
+
+interface dataRow {
+  id: number,
+  nome: string,
+  nomeFantasia: string,
+  cpfCnpj: string,
+  telefone: string,
+  email: string,
+  isFornecedor: boolean,
+  cep: string,
+  estado: string,
+  cidade: string,
+  numero: string,
+  endereco: string,
+  complemento: string,
+  dataCadastro: string,
+  numIe: string,
+  statusIe: boolean,
+}
 
 type clienteSchemaType = z.infer<typeof clienteSchema>;
 
 const Cliente = () => {
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal();
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-  // Modal PUT
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: number) => {
-    const clienteFilter = customers.filter(
-      (cliente: clienteSchemaType) => cliente.id === id
-    );
-    if (clienteFilter.length > 0) {
-      setValue("id", clienteFilter[0].id);
-      setValue("nome", clienteFilter[0].nome);
-      setValue("nomeFantasia", clienteFilter[0].nomeFantasia);
-      setValue("cpfCnpj", clienteFilter[0].cpfCnpj);
-      setValue("telefone", clienteFilter[0].telefone);
-      setValue("email", clienteFilter[0].email);
-      setValue("isFornecedor", clienteFilter[0].isFornecedor);
-      setValue("cep", clienteFilter[0].cep);
-      setValue("estado", clienteFilter[0].estado);
-      setValue("cidade", clienteFilter[0].cidade);
-      setValue("endereco", clienteFilter[0].endereco);
-      setValue("complemento", clienteFilter[0].complemento);
-      setValue("dataCadastro", clienteFilter[0].dataCadastro);
-      setValue("numIe", clienteFilter[0].numIe);
-      setValue("statusIe", clienteFilter[0].statusIe);
-    }
-    setPOpen(true);
-  };
-  const putOf = () => setPOpen(false);
 
   const {
     register,
@@ -92,18 +87,51 @@ const Cliente = () => {
     resolver: zodResolver(clienteSchema),
   });
 
+  const handleEdit = (updateData: dataRow) => {
+    setSelectedData(updateData);
+    toggleModal()
+  }
+
+  useEffect(() => {
+    if (selectedData) {
+      setValue("id", selectedData.id);
+      setValue("nome", selectedData.nome);
+      setValue("nomeFantasia", selectedData.nomeFantasia);
+      setValue("dataCadastro", dayjs(selectedData.dataCadastro).format("YYYY-MM-DD")); // Formato ISO
+      setValue("cpfCnpj", selectedData.cpfCnpj);
+      setValue("telefone", selectedData.telefone);
+      setValue("email", selectedData.email);
+      setValue("isFornecedor", selectedData.isFornecedor);
+      setValue("cep", selectedData.cep);
+      setValue("estado", selectedData.estado);
+      setValue("cidade", selectedData.cidade);
+      setValue("numero", selectedData.numero);
+      setValue("endereco", selectedData.endereco);
+      setValue("complemento", selectedData.complemento);
+      setValue("numIe", selectedData.numIe);
+      setValue("statusIe", selectedData.statusIe);
+    }
+  }, [selectedData, setValue]);
+
+  useEffect(() => {
+    getCustomers();
+  }, [open]);
+// CRUDs--------------------------------------------------  
+
   async function getCustomers() {
     try {
       const response = await axios.get("http://localhost:3000/cliente");
-      setCustomers(response.data.clientes); // aqui pe o nome que vem do back antona burra
+      setCustomers(response.data.clientes); 
     } catch (error: any) {
       new Error(error);
     }
   }
 
   async function postCustomers(data: clienteSchemaType) {
+    console.log("cheguei post")
+    const {id, ...mydata} = data
     try {
-      const response = await axios.post("http://localhost:3000/cliente", data);
+      const response = await axios.post("http://localhost:3000/cliente", mydata);
       getCustomers();
       if (response.status === 200) alert("Cliente cadastro com sucesso!");
     } catch (error: any) {
@@ -127,7 +155,7 @@ const Cliente = () => {
     } catch (error: any) {
       console.error(error);
     } finally {
-      putOf();
+      toggleModal();
     }
   }
 
@@ -147,7 +175,7 @@ const Cliente = () => {
     getCustomers();
   }, []);
 
-  const columns: GridColDef<clienteSchemaType>[] = [
+  const columns: GridColDef<dataRow>[] = [
     { field: "id", headerName: "ID", editable: false, flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     {
@@ -199,7 +227,7 @@ const Cliente = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -252,14 +280,29 @@ const Cliente = () => {
                 Novo Cliente
               </Typography>
               <form onSubmit={handleSubmit(postCustomers)}>
+
                 <TextField
+                  {...register("nome")}
                   id="outlined-helperText"
                   label="Nome"
                   defaultValue=""
                   helperText={errors.nome?.message || "Obrigatório"}
                   error={!!errors.nome}
-                  {...register("nome")}
+                  
                 />
+
+                <TextField
+                  type="date"
+                  label="Data Cadastro"
+                  InputLabelProps={{ shrink: true } }
+                  size="medium"
+                  helperText={errors.dataCadastro?.message || "Obrigatório"}
+                  error={!!errors.dataCadastro}
+                  defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                  {...register('dataCadastro')}
+              />
+
+
                 <TextField
                   id="outlined-helperText"
                   label="nomeFantasia"
@@ -294,16 +337,24 @@ const Cliente = () => {
                   {...register("email")}
                 />
                 <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+
+                <Controller
+                control={control}
+                name="isFornecedor"
+                defaultValue={true}
+                render={({field}) => (
                 <Select
+                  onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
                   label="IsFornecedor"
                   error={!!errors.isFornecedor}
-                  {...register("isFornecedor")}
+                  value={field.value}
                 >
-                  <MenuItem value={"true"}>Cliente</MenuItem>
-                  <MenuItem value={"false"}>Fornecedor </MenuItem>
+                  <MenuItem value={false}>Cliente</MenuItem>
+                  <MenuItem value={true}>Fornecedor </MenuItem>
                 </Select>
+                )}/>
 
                 <TextField
                   id="outlined-helperText"
@@ -363,16 +414,23 @@ const Cliente = () => {
                   {...register("numIe")}
                 />
                 <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+
+                <Controller
+                control={control}
+                name="statusIe"
+                defaultValue={true}
+                render={({field}) => (
                 <Select
+                  onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
-                  error={!!errors.statusIe}
-                  {...register("statusIe")}
-                  defaultValue={"true"}
+                  label="statusIe"
+                  value={field.value} 
                 >
-                  <MenuItem value={"false"}>Off</MenuItem>
-                  <MenuItem value={"true"}>On </MenuItem>
+                  <MenuItem value={true}>Off</MenuItem>
+                  <MenuItem value={false}>On </MenuItem>
                 </Select>
+              )}/>
 
                 <Button
                   type="submit"
