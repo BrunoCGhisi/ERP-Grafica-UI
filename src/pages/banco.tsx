@@ -92,11 +92,8 @@ const Banco = () => {
 
   useEffect(() => {
     loadBanks();
-  }, []);
-
-  useEffect(() => {
-    getBanks();
   }, [open]);
+
 
   const columns: GridColDef<BancoDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
