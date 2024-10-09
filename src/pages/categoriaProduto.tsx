@@ -25,28 +25,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
-import { bancoSchema, bancoSchemaType } from "../shared/services/types";
-
-
-const productCategorySchema = z.object({
-  id: z.number().optional(),
-  categoria: z.string(),
-});
-
-interface dataRow {
-  id: number;
-  categoria: string;
-}
-
-type productCategorySchemaType = z.infer<typeof productCategorySchema>;
+import {
+  productCategorySchema,
+  ProductCategoryDataRow,
+  productCategorySchemaType,
+} from "../shared/services/types";
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
-  const {open, toggleModal} = useOpenModal()
+  const [productCategorys, setProductCategorys] = useState<
+    productCategorySchemaType[]
+  >([]);
+  const [selectedData, setSelectedData] =
+    useState<ProductCategoryDataRow | null>(null);
+  const { open, toggleModal } = useOpenModal();
 
-  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<productCategorySchemaType>({
-    resolver: zodResolver(productCategorySchema)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm<productCategorySchemaType>({
+    resolver: zodResolver(productCategorySchema),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
@@ -57,85 +58,48 @@ const CategoriaProduto = () => {
   const addOf = () => setAdOpen(false);
 
   // População da modal  --------------------------------
-  const handleEdit = (updateData: dataRow) => {
-    setSelectedData(updateData)
-    toggleModal()
-  } 
+  const handleEdit = (updateData: ProductCategoryDataRow) => {
+    setSelectedData(updateData);
+    toggleModal();
+  };
 
   useEffect(() => {
     if (selectedData) {
-      setValue("id", selectedData.id)
-      setValue("categoria", selectedData.categoria)
+      setValue("id", selectedData.id);
+      setValue("categoria", selectedData.categoria);
     }
-  }, [selectedData, setValue])
+  }, [selectedData, setValue]);
 
   // CRUD ----------------------------------------------------------------------------------------------------------------------------
-  async function getProductCategories() {
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/categoria_produto"
-      );
-      setProductCategorys(response.data.categorias_produtos);
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
+  const loadProductCategories = async () => {
+    const productCategoriesData = await getBanks();
+    setBanks(productCategoriesData);
+  };
 
-  async function postProductCategorys(data: productCategorySchemaType) {
-    const {id, ...mydata} = data
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/categoria_produto",
-        mydata
-      );
-      if (response.status === 200)
-        alert("Categoria do produto cadastrado com sucesso!");
-      getProductCategories();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      addOf();
-    }
-  }
-  async function putProductCategorys(data: productCategorySchemaType) {
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/categoria_produto?id=${data.id}`,
-        data
-      );
-      if (response.status === 200) alert("Categoria atualizada com sucesso!");
-      getProductCategories();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      toggleModal();
-    }
-  }
+  const handleAdd = async (data: bancoSchemaType) => {
+    await postBank(data);
+    loadBanks();
+    setAdOpen(false);
+  };
 
-  async function delProductCategorys(id: number) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:3000/categoria_produto?id=${id}`
-      );
-      if (response.status === 200) alert("Categoria deletado com sucesso!");
-      getProductCategories();
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
+  const handleUpdate = async (data: bancoSchemaType) => {
+    await putBank(data);
+    loadBanks();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteBank(id);
+    loadBanks();
+  };
 
   useEffect(() => {
-    getProductCategories();
-  }, []);
-
-  useEffect(() => {
-    getProductCategories();
+    loadBanks();
   }, [open]);
-
 
   // GRID ------------------------------------------------
 
-  const columns: GridColDef<dataRow>[] = [
+  const columns: GridColDef<ProductCategoryDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "categoria", headerName: "Categoria", editable: false, flex: 0 },
 
@@ -194,7 +158,6 @@ const CategoriaProduto = () => {
                 Novo banco
               </Typography>
               <form onSubmit={handleSubmit(postProductCategorys)}>
-                
                 <TextField
                   id="outlined-helperText"
                   label="categoriaProduto"
@@ -212,14 +175,14 @@ const CategoriaProduto = () => {
               </form>
             </Box>
           </Modal>
-{/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
           <Modal
             open={open}
             onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot> 
+            <ModalRoot>
               <form onSubmit={handleSubmit(putProductCategorys)}>
                 <TextField
                   id="outlined-helperText"
