@@ -9,59 +9,68 @@ import {
   Stack,
   IconButton,
 } from "@mui/material";
+
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, SpaceStyle } from "../shared/styles";
+import { GridStyle, ModalStyle, SpaceStyle } from "../shared/styles";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import { MiniDrawer } from "../shared/components";
-import { useForm } from "react-hook-form";
+
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../shared/components/ModalRoot";
+
+import { bancoSchema, bancoSchemaType } from "../shared/services/types";
+
 
 const productCategorySchema = z.object({
   id: z.number().optional(),
   categoria: z.string(),
 });
 
+interface dataRow {
+  id: number;
+  categoria: string;
+}
+
 type productCategorySchemaType = z.infer<typeof productCategorySchema>;
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<
-    productCategorySchemaType[]
-  >([]);
+  const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  const {open, toggleModal} = useOpenModal()
 
-  // Modal ADD
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
-  const addOf = () => setAdOpen(false);
-
-  // Modal PUT
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: number) => {
-    const prodCatFilter = productCategorys.filter(
-      (prodCat: productCategorySchemaType) => prodCat.id === id
-    );
-    if (prodCatFilter.length > 0) {
-      setValue("id", prodCatFilter[0].id);
-      setValue("categoria", prodCatFilter[0].categoria);
-    }
-    setPOpen(true);
-  };
-  const putOf = () => setPOpen(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<productCategorySchemaType>({
-    resolver: zodResolver(productCategorySchema),
+  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<productCategorySchemaType>({
+    resolver: zodResolver(productCategorySchema)
   });
 
+  // Modal ADD -----------------------------------------------------------------------------------------------------
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => {
+    setAdOpen(true), reset();
+  };
+  const addOf = () => setAdOpen(false);
+
+  // População da modal  --------------------------------
+  const handleEdit = (updateData: dataRow) => {
+    setSelectedData(updateData)
+    toggleModal()
+  } 
+
+  useEffect(() => {
+    if (selectedData) {
+      setValue("id", selectedData.id)
+      setValue("categoria", selectedData.categoria)
+    }
+  }, [selectedData, setValue])
+
   // CRUD ----------------------------------------------------------------------------------------------------------------------------
-  async function getProductCategorys() {
+  async function getProductCategories() {
     try {
       const response = await axios.get(
         "http://localhost:3000/categoria_produto"
@@ -73,14 +82,15 @@ const CategoriaProduto = () => {
   }
 
   async function postProductCategorys(data: productCategorySchemaType) {
+    const {id, ...mydata} = data
     try {
       const response = await axios.post(
         "http://localhost:3000/categoria_produto",
-        data
+        mydata
       );
       if (response.status === 200)
         alert("Categoria do produto cadastrado com sucesso!");
-      getProductCategorys();
+      getProductCategories();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -93,12 +103,12 @@ const CategoriaProduto = () => {
         `http://localhost:3000/categoria_produto?id=${data.id}`,
         data
       );
-      if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getProductCategorys();
+      if (response.status === 200) alert("Categoria atualizada com sucesso!");
+      getProductCategories();
     } catch (error: any) {
       console.error(error);
     } finally {
-      putOf();
+      toggleModal();
     }
   }
 
@@ -107,18 +117,25 @@ const CategoriaProduto = () => {
       const response = await axios.delete(
         `http://localhost:3000/categoria_produto?id=${id}`
       );
-      if (response.status === 200) alert("Banco deletado com sucesso!");
-      getProductCategorys();
+      if (response.status === 200) alert("Categoria deletado com sucesso!");
+      getProductCategories();
     } catch (error: any) {
       console.error(error);
     }
   }
 
   useEffect(() => {
-    getProductCategorys();
+    getProductCategories();
   }, []);
 
-  const columns: GridColDef<productCategorySchemaType>[] = [
+  useEffect(() => {
+    getProductCategories();
+  }, [open]);
+
+
+  // GRID ------------------------------------------------
+
+  const columns: GridColDef<dataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "categoria", headerName: "Categoria", editable: false, flex: 0 },
 
@@ -136,7 +153,7 @@ const CategoriaProduto = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -177,6 +194,7 @@ const CategoriaProduto = () => {
                 Novo banco
               </Typography>
               <form onSubmit={handleSubmit(postProductCategorys)}>
+                
                 <TextField
                   id="outlined-helperText"
                   label="categoriaProduto"
@@ -194,17 +212,14 @@ const CategoriaProduto = () => {
               </form>
             </Box>
           </Modal>
-
+{/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Categoria Produtos
-              </Typography>
+            <ModalRoot> 
               <form onSubmit={handleSubmit(putProductCategorys)}>
                 <TextField
                   id="outlined-helperText"
@@ -222,10 +237,10 @@ const CategoriaProduto = () => {
                   Alterar
                 </Button>
               </form>
-            </Box>
+            </ModalRoot>
           </Modal>
         </Box>
-        <Box>
+        <Box sx={GridStyle}>
           <DataGrid
             rows={rows}
             columns={columns}

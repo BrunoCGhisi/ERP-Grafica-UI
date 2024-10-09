@@ -18,110 +18,84 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import { MiniDrawer } from "../shared/components";
 
-import {useForm, Controller } from "react-hook-form";
-import { z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useOpenModal} from "../shared/hooks/useOpenModal";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
-const bancoSchema = z.object({
-  id: z.number().optional(),
-  nome: z.string(),
-  valorTotal: z.number(),
-});
-
-interface dataRow {
-  id: number,
-  nome: string,
-  valorTotoal: number
-}
-
-type bancoSchemaType = z.infer<typeof bancoSchema>;
+import { bancoSchema } from "../shared/services/types";
+import { BancoDataRow } from "../shared/services/types";
+import { bancoSchemaType } from "../shared/services/types";
+import { getBanks, postBank, putBank, deleteBank } from "../shared/services";
 
 const Banco = () => {
-  const [selectData, setSelectedData] = useState<dataRow | null>(null)
+  const [selectedData, setSelectedData] = useState<BancoDataRow | null>(null);
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
-  const {open, toggleModal} = useOpenModal()
+  const { open, toggleModal } = useOpenModal();
 
-  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<bancoSchemaType>({
-    resolver: zodResolver(bancoSchema)
-  })
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<bancoSchemaType>({
+    resolver: zodResolver(bancoSchema),
+  });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => {setAdOpen(true), reset()};
+  const addOn = () => {
+    setAdOpen(true), reset();
+  };
   const addOf = () => setAdOpen(false);
 
   // População da Modal ----------------------------
 
-  const handleEdit = (updateData: dataRow) => {
-    setSelectedData(updateData)
-    toggleModal()
-  } 
+  const handleEdit = (updateData: BancoDataRow) => {
+    setSelectedData(updateData);
+    toggleModal();
+  };
 
   useEffect(() => {
     if (selectedData) {
-      
+      setValue("id", selectedData.id);
+      setValue("nome", selectedData.nome);
+      setValue("valorTotal", selectedData.valorTotal);
     }
-  })
-
-  
-
+  }, [selectedData, setValue]);
 
   //CRUD -----------------------------------------------------------------------------------------------------
-  async function getBanks() {
-    try {
-      const response = await axios.get("http://localhost:3000/banco");
-      setBanks(response.data.bancos);
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
 
-  async function postBanks(data: bancoSchemaType) {
-    try {
-      const response = await axios.post("http://localhost:3000/banco", data);
-      if (response.status === 200) alert("Banco cadastrado com sucesso!");
-      getBanks();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      addOf();
-    }
-  }
+  const loadBanks = async () => {
+    const banksData = await getBanks();
+    setBanks(banksData) 
+  };
 
-  async function putBanks(data: bancoSchemaType) {
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/banco?id=${data.id}`,
-        data
-      );
-      if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getBanks();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      putOf();
-    }
-  }
+  const handleAdd = async (data: bancoSchemaType) => {
+    await postBank(data);
+    loadBanks();
+    setAdOpen(false);
+  };
 
-  async function delBanks(id: number) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:3000/banco?id=${id}`
-      );
-      if (response.status === 200) alert("Banco deletado com sucesso!");
-      getBanks();
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
+  const handleUpdate = async (data: bancoSchemaType) => {
+    await putBank(data);
+    loadBanks();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteBank(id);
+    loadBanks();
+  };
 
   useEffect(() => {
-    getBanks();
-  }, []);
+    loadBanks();
+  }, [open]);
 
-  const columns: GridColDef<bancoSchemaType>[] = [
+
+  const columns: GridColDef<BancoDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
@@ -135,10 +109,10 @@ const Banco = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && delBanks(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -179,8 +153,7 @@ const Banco = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo banco
               </Typography>
-
-              <form onSubmit={handleSubmit(postBanks)}>
+              <form onSubmit={handleSubmit(handleAdd)}>
                 <TextField
                   id="outlined-helperText"
                   label="Nome"
@@ -207,18 +180,16 @@ const Banco = () => {
             </Box>
           </Modal>
 
+          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
 
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-              <form onSubmit={handleSubmit(putBanks)}>
+            <ModalRoot>
+              <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"
                   label="Nome"
@@ -233,19 +204,16 @@ const Banco = () => {
                   error={!!errors.valorTotal}
                   {...register("valorTotal", { valueAsNumber: true })}
                 />
-
                 <Button
-                  type="submit" // colcoar esse putbanks no form, tipar para submit
+                  type="submit"
                   variant="outlined"
                   startIcon={<DoneIcon />}
                 >
-                  Alterar
+                  Atualizar
                 </Button>
               </form>
-            </Box>
+            </ModalRoot>
           </Modal>
-
-
         </Box>
 
         <Box sx={GridStyle}>
