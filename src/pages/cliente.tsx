@@ -29,12 +29,12 @@ import dayjs from "dayjs";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().optional(),
+  nome: z.string(),
   nomeFantasia: z.string().optional(),
-  cpfCnpj: z.string().optional(),
-  telefone: z.string().optional(),
-  email: z.string().email().optional(),
-  isFornecedor: z.boolean().optional(),
+  cpfCnpj: z.string(),
+  telefone: z.string(),
+  email: z.string().email(),
+  isFornecedor: z.boolean(),
   cep: z.string().optional(),
   estado: z.string().optional(),
   cidade: z.string().optional(),
@@ -68,14 +68,6 @@ interface dataRow {
 type clienteSchemaType = z.infer<typeof clienteSchema>;
 
 const Cliente = () => {
-  const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
-  const {open, toggleModal} = useOpenModal();
-  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
-  // Modal ADD
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
-  const addOf = () => setAdOpen(false);
-
 
   const {
     register,
@@ -83,9 +75,21 @@ const Cliente = () => {
     formState: { errors },
     setValue,
     control,
+    reset
   } = useForm<clienteSchemaType>({
     resolver: zodResolver(clienteSchema),
   });
+
+
+  const today = new Date()
+  const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
+  const {open, toggleModal} = useOpenModal();
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  // Modal ADD
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => {setAdOpen(true), reset()};
+  const addOf = () => setAdOpen(false);
+
 
   const handleEdit = (updateData: dataRow) => {
     setSelectedData(updateData);
@@ -97,7 +101,7 @@ const Cliente = () => {
       setValue("id", selectedData.id);
       setValue("nome", selectedData.nome);
       setValue("nomeFantasia", selectedData.nomeFantasia);
-      setValue("dataCadastro", dayjs(selectedData.dataCadastro).format("YYYY-MM-DD")); // Formato ISO
+      setValue("dataCadastro", dayjs(today).format("YYYY-MM-DD")); // Formato ISO
       setValue("cpfCnpj", selectedData.cpfCnpj);
       setValue("telefone", selectedData.telefone);
       setValue("email", selectedData.email);
@@ -129,14 +133,30 @@ const Cliente = () => {
 
   async function postCustomers(data: clienteSchemaType) {
     console.log("cheguei post")
-    const {id, ...mydata} = data
+    
     try {
-      const response = await axios.post("http://localhost:3000/cliente", mydata);
+      const response = await axios.post("http://localhost:3000/cliente", {
+        nome: data.nome,
+        nomeFantasia: data.nome,
+        cpfCnpj: data.cpfCnpj,
+        telefone: data.telefone,
+        email: data.email,
+        isFornecedor: data.isFornecedor,
+        cep: data.cep,
+        estado: data.estado,
+        cidade: data.cidade,
+        numero: data.numero,
+        endereco: data.endereco,
+        complemento: data.complemento,
+        numIe: data.numIe,
+        statusIe: data.statusIe,
+      });
       getCustomers();
       if (response.status === 200) alert("Cliente cadastro com sucesso!");
     } catch (error: any) {
       new Error(error);
     } finally {
+      toggleModal()
     }
   }
 
@@ -242,10 +262,10 @@ const Cliente = () => {
     cpfCnpj: cliente.cpfCnpj,
     email: cliente.email,
     telefone: cliente.telefone,
-    isFornecedor: cliente.isFornecedor,
+    isFornecedor: cliente.isFornecedor == true ?  "Fornecedor" : "Cliente",
     dataCadastro: cliente.dataCadastro,
     numIe: cliente.numIe,
-    statusIe: cliente.statusIe,
+    statusIe: cliente.statusIe == true ?  "Ativo" : "Inativo",
     endereco: cliente.endereco,
     cep: cliente.cep,
     estado: cliente.estado,
@@ -290,18 +310,6 @@ const Cliente = () => {
                   error={!!errors.nome}
                   
                 />
-
-                <TextField
-                  type="date"
-                  label="Data Cadastro"
-                  InputLabelProps={{ shrink: true } }
-                  size="medium"
-                  helperText={errors.dataCadastro?.message || "Obrigatório"}
-                  error={!!errors.dataCadastro}
-                  defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                  {...register('dataCadastro')}
-              />
-
 
                 <TextField
                   id="outlined-helperText"

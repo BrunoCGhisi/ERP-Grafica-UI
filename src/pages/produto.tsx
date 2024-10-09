@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
-import { ProductVO } from "../shared/services/types";
 import axios from "axios";
 import {
-  Accordion,
-  AccordionDetails,
   Box,
   InputLabel,
   Select,
   MenuItem,
   Modal,
-  AccordionSummary,
   Button,
-  Divider,
   IconButton,
   Stack,
   TextField,
@@ -21,58 +16,63 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ModalRoot } from "../shared/components/ModalRoot";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { Controller, useForm } from "react-hook-form";
+
+const produtoSchema = z.object({
+  id: z.number().optional(),
+  nome: z.string(),
+  tipo: z.boolean(),
+  keyWord: z.string(),
+  idCategoria: z.number(),
+  preco: z.number(),
+  tamanho: z.number(),
+  isEstoque: z.boolean(),
+  minEstoque: z.number(),
+  estoque: z.number(),
+})
+
+interface dataRow {
+  id: number,
+  nome: string,
+  tipo: boolean,
+  keyWord: string,
+  idCategoria: number,
+  preco: number,
+  tamanho: number,
+  isEstoque: boolean,
+  minEstoque: number,
+  estoque: number,
+}
+
+type produtoSchemaType = z.infer<typeof produtoSchema>
+
 const Produto = () => {
-  const [products, setProducts] = useState<ProductVO[]>([]);
-  const [productId, setProductId] = useState<string>("");
-  const [nome, setNome] = useState<string>("");
-  const [tipo, setTipo] = useState<string>("");
-  const [keyWord, setKeyWord] = useState<string>("");
-  const [idCategoria, setIdCategoria] = useState<string>("");
-  const [preco, setPreco] = useState<string>("");
-  const [tamanho, setTamanho] = useState<string>("");
-  const [isEstoque, setIsEstoque] = useState<string>("");
-  const [minEstoque, setMinEstoque] = useState<string>("");
-  const [estoque, setEstoque] = useState<string>("");
+
+  const {register, setValue, reset, control, formState: {errors}, handleSubmit} = useForm<produtoSchemaType>();
+  const [products, setProducts] = useState<produtoSchemaType[]>([]);
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  const {toggleModal, open} = useOpenModal();
+
+  const handleEdit = (updateDate: dataRow)=>{
+    setSelectedData(updateDate)
+    toggleModal()
+  }
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-  // Modal PUT
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (
-    id: string,
-    nome: string,
-    tipo: string,
-    keyWord: string,
-    idCategoria: string,
-    preco: string,
-    tamanho: string,
-    isEstoque: string,
-    minEstoque: string,
-    estoque: string
-  ) => {
-    setProductId(id);
-    setNome(nome);
-    setTipo(tipo);
-    setKeyWord(keyWord);
-    setIdCategoria(idCategoria);
-    setPreco(preco);
-    setTamanho(tamanho);
-    setIsEstoque(isEstoque);
-    setMinEstoque(minEstoque);
-    setEstoque(estoque);
-
-    setPOpen(true);
-  };
-  const putOf = () => setPOpen(false);
+  // CRUDs--------------------------------------------------  
 
   async function getProducts() {
     try {
@@ -83,54 +83,31 @@ const Produto = () => {
     }
   }
 
-  async function postProducts() {
+  async function postProducts(data: produtoSchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/produto", {
-        nome: nome,
-        tipo: tipo,
-        keyWord: keyWord,
-        idCategoria: idCategoria,
-        preco: preco,
-        tamanho: tamanho,
-        isEstoque: isEstoque,
-        minEstoque: minEstoque,
-        estoque: estoque,
-      });
+      const response = await axios.post("http://localhost:3000/produto", data);
       if (response.status === 200) alert("Produto cadastrado com sucesso!");
       getProducts();
     } catch (error: any) {
       console.error(error);
     } finally {
-      addOf();
+      toggleModal();
     }
   }
 
-  async function putProducts() {
+  async function putProducts(data: produtoSchemaType) {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/produto?id=${productId}`,
-        {
-          nome: nome,
-          tipo: tipo,
-          keyWord: keyWord,
-          idCategoria: idCategoria,
-          preco: preco,
-          tamanho: tamanho,
-          isEstoque: isEstoque,
-          minEstoque: minEstoque,
-          estoque: estoque,
-        }
-      );
+      const response = await axios.put(`http://localhost:3000/produto?id=${data.id}`, data);
       if (response.status === 200) alert("Produto atualizado com sucesso!");
       getProducts();
     } catch (error: any) {
       console.error(error);
     } finally {
-      putOf();
+      toggleModal();
     }
   }
 
-  async function delProducts(id: string) {
+  async function delProducts(id: number) {
     try {
       const response = await axios.delete(
         `http://localhost:3000/produto?id=${id}`
@@ -146,7 +123,7 @@ const Produto = () => {
     getProducts();
   }, []);
 
-  const columns: GridColDef<ProductVO>[] = [
+  const columns: GridColDef<dataRow>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
     { field: "nome", headerName: "nome", editable: false, flex: 0 },
     { field: "tipo", headerName: "tipo", editable: false, flex: 0 },
@@ -172,25 +149,11 @@ const Produto = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => delProducts(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && delProducts(row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton
-            onClick={() =>
-              putOn(
-                row.id,
-                row.nome,
-                row.tipo,
-                row.keyWord,
-                row.idCategoria,
-                row.preco,
-                row.tamanho,
-                row.isEstoque,
-                row.minEstoque,
-                row.estoque
-              )
-            }
-          >
+            onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -241,85 +204,96 @@ const Produto = () => {
               <TextField
                 id="outlined-helperText"
                 label="Nome"
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                defaultValue=""
+                helperText={errors.nome?.message || "Obrigatório"}
+                error={!!errors.nome}
+                {...register('nome')}
               />
 
               <InputLabel id="demo-simple-select-label">Tipo</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                value={tipo}
-                label="Tipo"
-                onChange={(e) => setTipo(e.target.value)}
-              >
-                <MenuItem value={0}>Não</MenuItem>
-                <MenuItem value={1}>Sim </MenuItem>
-              </Select>
+
+              <Controller
+                control={control}
+                name="tipo"
+                defaultValue={true}
+                render={({field}) => (<Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="Tipo"
+                  value={field.value}
+                  onChange={field.onChange}
+                >
+                  <MenuItem value={true}>Não</MenuItem>
+                  <MenuItem value={false}>Sim </MenuItem>
+                </Select>)}/>
 
               <TextField
                 id="outlined-helperText"
                 label="KeyWord"
-                helperText="Obrigatório"
-                value={keyWord}
-                onChange={(e) => setKeyWord(e.target.value)}
+                helperText={errors.keyWord?.message || "Obrigatório"}
+                error={!!errors.keyWord}
+                {...register('keyWord')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="ID Categoria"
-                helperText="Obrigatório"
-                value={idCategoria}
-                onChange={(e) => setIdCategoria(e.target.value)}
+                helperText={errors.idCategoria?.message || "Obrigatório"}
+                error={!!errors.idCategoria}
+                {...register('idCategoria')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="Preço"
-                helperText="Obrigatório"
-                value={preco}
-                onChange={(e) => setPreco(e.target.value)}
+                helperText={errors.preco?.message || "Obrigatório"}
+                error={!!errors.preco}
+                {...register('preco')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="Tamanho"
-                helperText="Obrigatório"
-                value={tamanho}
-                onChange={(e) => setTamanho(e.target.value)}
+                helperText={errors.tamanho?.message || "Obrigatório"}
+                error={!!errors.tamanho}
+                {...register('tamanho')}
               />
 
               <InputLabel id="demo-simple-select-label">isEstoque</InputLabel>
-              <Select
+
+              <Controller
+              control={control}
+              defaultValue={true}
+              name="isEstoque"
+              render={({field}) => (<Select
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isEstoque}
+                value={field.value}
                 label="Estoque é controlado?"
-                onChange={(e) => setIsEstoque(e.target.value)}
+                onChange={field.onChange}
               >
                 <MenuItem value={0}>Não</MenuItem>
                 <MenuItem value={1}>Sim </MenuItem>
-              </Select>
+              </Select>)} />
 
               <TextField
                 id="outlined-helperText"
                 label="Mínimo em Estoque"
-                helperText="Obrigatório"
-                value={minEstoque}
-                onChange={(e) => setMinEstoque(e.target.value)}
+                helperText={errors.minEstoque?.message || "Obrigatório"}
+                error={!!errors.minEstoque}
+                {...register('minEstoque')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="Estoque"
-                helperText="Obrigatório"
-                value={estoque}
-                onChange={(e) => setEstoque(e.target.value)}
+                helperText={errors.estoque?.message || "Obrigatório"}
+                error={!!errors.estoque}
+                {...register('estoque')}
               />
 
               <Button
-                onClick={postProducts}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
