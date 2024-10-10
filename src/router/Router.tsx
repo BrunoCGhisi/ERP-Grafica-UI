@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useAppThemeContext } from "../shared/contexts";
 
 import {
   Home,
@@ -19,11 +20,11 @@ import {
 
 import { ProtectedRoute } from "../shared/components";
 import { AdmRoute } from "../shared/components";
-import { ThemeProvider } from "@emotion/react";
-import { LightTheme, DarkTheme } from "../shared/themes";
 
-const Router = () => (
-  
+const Router = () => {
+  const { toggleTheme } = useAppThemeContext();
+
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/home" element={<Home />} />
@@ -95,10 +96,11 @@ const Router = () => (
         <Route path="/login" element={<Login />} />
         <Route path="/signUp" element={<SignUp />} />
         <Route path="/teste" element={<Testes />} />
-        <Route path="/t" element={<Template />} />
+        <Route path="/t" element={<Template  toggleTheme={toggleTheme}/>} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
-);
+  );
+};
 
 export default Router;
