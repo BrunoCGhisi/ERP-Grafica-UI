@@ -20,6 +20,6 @@ export const putCategories = async (data: productCategorySchemaType) => {
 };
 
 export const deleteCategories = async (id: number) => {
-    const response = await axios.delete(`${BASE_URL}?id=${id}`);
-    return response;
-  };
+  const response = await axios.delete(`${BASE_URL}?id=${id}`);
+  return response;
+};

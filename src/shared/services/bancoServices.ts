@@ -20,6 +20,6 @@ export const putBank = async (data: bancoSchemaType) => {
 };
 
 export const deleteBank = async (id: number) => {
-    const response = await axios.delete(`${BASE_URL}?id=${id}`);
-    return response;
-  };
+  const response = await axios.delete(`${BASE_URL}?id=${id}`);
+  return response;
+};

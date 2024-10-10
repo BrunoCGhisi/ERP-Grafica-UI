@@ -31,6 +31,12 @@ import {
   productCategorySchemaType,
 } from "../shared/services/types";
 
+import {
+  getCategories,
+  postCategories,
+  putCategories,
+  deleteCategories,
+} from "../shared/services";
 const CategoriaProduto = () => {
   const [productCategorys, setProductCategorys] = useState<
     productCategorySchemaType[]
@@ -72,29 +78,29 @@ const CategoriaProduto = () => {
 
   // CRUD ----------------------------------------------------------------------------------------------------------------------------
   const loadProductCategories = async () => {
-    const productCategoriesData = await getBanks();
-    setBanks(productCategoriesData);
+    const productCategoriesData = await getCategories();
+    setProductCategorys(productCategoriesData);
   };
 
-  const handleAdd = async (data: bancoSchemaType) => {
-    await postBank(data);
-    loadBanks();
+  const handleAdd = async (data: productCategorySchemaType) => {
+    await postCategories(data);
+    loadProductCategories();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: bancoSchemaType) => {
-    await putBank(data);
-    loadBanks();
+  const handleUpdate = async (data: productCategorySchemaType) => {
+    await putCategories(data);
+    loadProductCategories();
     toggleModal();
   };
 
   const handleDelete = async (id: number) => {
-    await deleteBank(id);
-    loadBanks();
+    await deleteCategories(id);
+    loadProductCategories();
   };
 
   useEffect(() => {
-    loadBanks();
+    loadProductCategories();
   }, [open]);
 
   // GRID ------------------------------------------------
@@ -113,7 +119,7 @@ const CategoriaProduto = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && delProductCategorys(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row.id)}
           >
             <DeleteIcon />
           </IconButton>
@@ -157,7 +163,7 @@ const CategoriaProduto = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo banco
               </Typography>
-              <form onSubmit={handleSubmit(postProductCategorys)}>
+              <form onSubmit={handleSubmit(handleAdd)}>
                 <TextField
                   id="outlined-helperText"
                   label="categoriaProduto"
@@ -183,7 +189,7 @@ const CategoriaProduto = () => {
             aria-describedby="modal-modal-description"
           >
             <ModalRoot>
-              <form onSubmit={handleSubmit(putProductCategorys)}>
+              <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"
                   label="categoria"
