@@ -1,41 +1,90 @@
 import React, { useState, useEffect } from "react";
-import { CustomerVO } from "../shared/services/types";
 import axios from "axios";
 import {
-  Accordion,
-  AccordionDetails,
   Box,
   InputLabel,
   Select,
   MenuItem,
   Modal,
-  AccordionSummary,
   Button,
-  Divider,
-  IconButton,
   Stack,
   TextField,
   Typography,
+  IconButton,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle } from "../shared/styles";
+import { DataGrid,GridColDef } from "@mui/x-data-grid";
+import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 //Icones
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DoneIcon from "@mui/icons-material/Done";
+
+
+import {useForm, Controller } from "react-hook-form";
+import { z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useOpenModal} from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../shared/components/ModalRoot";
+import { MiniDrawer } from "../shared/components";
+import dayjs from "dayjs";
+
+const vendaSchema = z.object({
+  id: z.number().optional(),
+  idCliente: z.number(),
+  idVendedor: z.number(),
+  data: z.string(),
+  isVendaOS: z.boolean(),
+  situacao : z.number(),  
+  desconto  : z.number().optional(), 
+})
+
+type vendaSchemaType = z.infer<typeof vendaSchema>
+
+const clienteSchema = z.object({
+  id: z.number().optional(),
+  nome: z.number()
+})
+type clienteSchemaType = z.infer<typeof clienteSchema>
+
+const usuario = z.object({
+  id: z.number().optional(),
+  nome: z.number()
+})
+type usuarioType = z.infer<typeof usuario>
+
+interface dataRow {
+  id: number,
+  idCliente: number,
+  idVendedor: number,
+  data: string,
+  isVendaOS: boolean,
+  situacao: number,  
+  desconto : number, 
+}
 
 const Venda = () => {
-  const [sales, setSales] = useState("");
-  const [salesId, setSalesId] = useState("");
-  const [idCliente, setIdCliente] = useState("");
-  const [idVendedor, setIdVendedor] = useState("");
-  const [data, setData] = useState("");
-  const [isVendaOS, setIsVendaOS] = useState("");
-  const [situacao, setSituacao] = useState("");
-  const [desconto, setDesconto] = useState("");
+  const today = new Date();
+  const [sales, setSales] = useState<vendaSchemaType[]>([]);
+  const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
+  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  const {toggleModal, open} = useOpenModal();
 
+  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<vendaSchemaType>({
+    resolver: zodResolver(vendaSchema)
+  });
+
+// Trazendo clientes--------------------------------------------------  
+  useEffect(() => {
+    const getClientes = async() => {
+      const response = await axios.get("http://localhost:3000/cliente/itens");
+      setClientes(response.data);
+    };
+    getClientes();
+  },[]);
+
+
+ // CRUD -------------------------------------------------------------------------------------------------------------------------------- 
   async function getSales() {
     try {
       const response = await axios.get("http://localhost:3000/venda");
@@ -45,69 +94,83 @@ const Venda = () => {
     }
   }
 
-  async function postSales() {
+  async function postSales(data: vendaSchemaType) {
     try {
-      const response = await axios.post("http://localhost:3000/venda", {
-        idCliente: idCliente,
-        idVendedor: idVendedor,
-        data: data,
-        isVendaOS: isVendaOS,
-        situacao: situacao,
-        desconto: desconto,
-      });
+      const response = await axios.post("http://localhost:3000/venda", data);
+      if (response.status === 200) alert("venda cadastrado com sucesso!");
+      getSales();
     } catch (error: any) {
       new Error(error);
     } finally {
+      addOf()
     }
   }
 
   //-MODAIS-----------------------------------------------------------------------------------------------------------------------
 
+
+  const handleEdit = (updateData: dataRow) => {
+    setSelectedData(updateData);
+    toggleModal()
+  }
+
+
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (
-    id: string,
-    nome: string,
-    nomeFantasia: string,
-    cpfCnpj: string,
-    email: string,
-    telefone: string,
-    isFornecedor: string,
-    dataCadastro: string,
-    numIe: string,
-    statusIe: string,
-    endereco: string,
-    cep: string,
-    estado: string,
-    numero: string,
-    cidade: string,
-    complemento: string
-  ) => {
-    setCustomerId(id);
-    setNome(nome);
-    setNomeFantasia(nomeFantasia);
-    setCpfCnpj(cpfCnpj);
-    setEmail(email);
-    setTelefone(telefone);
-    setIsFornecedor(isFornecedor);
-    setDataCadastro(dataCadastro);
-    setNumIe(numIe);
-    setStatusIe(statusIe);
-    setEndereco(endereco);
-    setCep(cep);
-    setEstado(estado);
-    setNumero(numero);
-    setCidade(cidade);
-    setComplemento(complemento);
+// GRID ------------------------------------------------
 
-    setPOpen(true);
-  };
-  const putOf = () => setPOpen(false);
+  const columns: GridColDef<dataRow>[] = [
+    { field: "id", headerName: "id", editable: false, flex: 0 },
+    {
+      field: "IdCliente",
+      headerName: "IdCliente",
+      editable: false,
+      flex: 0,
+    },
+    { field: "IdVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
+    { field: "data", headerName: "data", editable: false, flex: 0 },
+    { field: "isVendaOS", headerName: "isVendaOS", editable: false, flex: 0 },
+    { field: "situacao", headerName: "situacao", editable: false, flex: 0 },
+    { field: "desconto", headerName: "desconto", editable: false, flex: 0 },
 
-  //------------------------------------------------------------------------------------------------------------------------
+    {
+      field: "acoes",
+      headerName: "Ações",
+      width: 150,
+      align: "center",
+      type: "actions",
+      flex: 0,
+      renderCell: ({ row }) => (
+        <div>
+          <IconButton onClick={() => row.id !== undefined && delPurchases(row.id)}>
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => row.id !== undefined && handleEdit(row)}>
+            <EditIcon />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
+
+  const rows = sales.map((venda) => ({
+    id: venda.id,
+    IdCliente: venda.IdCliente,
+    IdVendedor: venda.IdVendedor,
+    data: formatDate(venda.data),
+    isVendaOS: venda.isVendaOS,
+    situacao: venda.situacao,
+    desconto: venda.desconto,
+    
+  }));
+  useEffect(() => {
+    reset()
+  }, [clienteSchema, reset])
+
+
 
   return (
     <Box>
@@ -134,286 +197,170 @@ const Venda = () => {
           >
             <Box sx={ModalStyle}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo Cliente
+                Nova Venda
               </Typography>
 
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="nomeFantasia"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={nomeFantasia}
-                onChange={(e) => setNomeFantasia(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cpfCnpj"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cpfCnpj}
-                onChange={(e) => setCpfCnpj(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="telefone"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="DATA"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={dataCadastro}
-                onChange={(e) => setDataCadastro(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <form onSubmit={handleSubmit(postSales)}>
+              <InputLabel id="demo-simple-select-label">Clientes</InputLabel>
               <Select
+                {...register('idCliente')}
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isFornecedor}
-                label="IsFornecedor"
-                onChange={(e) => setIsFornecedor(e.target.value)}
-              >
-                <MenuItem value={"0"}>Normal</MenuItem>
-                <MenuItem value={"1"}>Fornecedor </MenuItem>
-              </Select>
-              <TextField
-                id="outlined-helperText"
-                label="cep"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="estado"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cidade"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="numero"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="complemento"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={numIe}
-                onChange={(e) => setNumIe(e.target.value)}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                value={statusIe}
-                label="StatusIe"
-                onChange={(e) => setStatusIe(e.target.value)}
-              >
-                <MenuItem value={"0"}>Off</MenuItem>
-                <MenuItem value={"1"}>On </MenuItem>
+                label="idCliente"
+                error={!!errors.idCliente}
+                defaultValue={clientes.length > 0 ? clientes[0].nome : "Sem clientes"}>
+                  {clientes && clientes.map((cliente) => (
+                    
+                    <MenuItem value={cliente.id}>{cliente.nome}</MenuItem>))}
               </Select>
 
+
+              <TextField
+                type="date"
+                id="outlined-helperText"
+                label={"Data compra"}
+                InputLabelProps={{ shrink: true } }
+                helperText={errors.data?.message || "Obrigatório"}
+                error={!!errors.data}
+                defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                {...register('data')}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="Desconto"
+                defaultValue={0}
+                helperText={errors.desconto?.message || "Obrigatório"}
+                error={!!errors.desconto}
+                {...register('desconto')}
+              />
+
+              <Controller
+                control={control}
+                name="isVendaOS"
+                defaultValue={true}
+                render={({field}) =>(
+                  <Select
+                  onChange={field.onChange}
+                  value={field.value}
+                >
+                    <MenuItem value={true}>Compra</MenuItem>
+                    <MenuItem value={false}>OS</MenuItem>
+                  </Select>)}
+              />
+
+              <Controller
+                control={control}
+                name="situacao"
+                defaultValue={0}
+                render={({field}) =>(
+                  <Select
+                  onChange={field.onChange}
+                  value={field.value}
+                >
+                    <MenuItem value={0}>Em espera</MenuItem>
+                    <MenuItem value={1}>Em criação (arte)</MenuItem>
+                    <MenuItem value={2}>Em execução</MenuItem>
+                    <MenuItem value={3}>Em acabamento</MenuItem>
+                    <MenuItem value={4}>Finalizado</MenuItem>
+                    <MenuItem value={5}>Entregue</MenuItem>
+                  </Select>)}
+              />
+             
               <Button
-                onClick={postCustomers}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
                 Cadastrar
               </Button>
+              </form>
             </Box>
           </Modal>
 
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="nomeFantasia"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={nomeFantasia}
-                onChange={(e) => setNomeFantasia(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cpfCnpj"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cpfCnpj}
-                onChange={(e) => setCpfCnpj(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="telefone"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+           <ModalRoot>
+
+           <form onSubmit={handleSubmit(postSales)}>
+              <InputLabel id="demo-simple-select-label">Categorias</InputLabel>
               <Select
+                {...register('idCliente')}
                 labelId="select-label"
                 id="demo-simple-select"
-                value={isFornecedor}
-                label="IsFornecedor"
-                onChange={(e) => setIsFornecedor(e.target.value)}
-              >
-                <MenuItem value={"0"}>Normal</MenuItem>
-                <MenuItem value={"1"}>Fornecedor </MenuItem>
-              </Select>
-              <TextField
-                id="outlined-helperText"
-                label="cep"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="estado"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cidade"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="numero"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="complemento"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText="Obrigatório"
-                value={numIe}
-                onChange={(e) => setNumIe(e.target.value)}
-              />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
-              <Select
-                labelId="select-label"
-                id="demo-simple-select"
-                value={statusIe}
-                label="StatusIe"
-                onChange={(e) => setStatusIe(e.target.value)}
-              >
-                <MenuItem value={"0"}>Off</MenuItem>
-                <MenuItem value={"1"}>On </MenuItem>
+                label="idCliente"
+                error={!!errors.idCliente}
+                defaultValue={clientes.length > 0 ? clientes[0].nome : "Sem clientes"}>
+                  {clientes && clientes.map((cliente) => (
+                    
+                    <MenuItem value={cliente.id}>{cliente.nome}</MenuItem>))}
               </Select>
 
+
+              <TextField
+                type="date"
+                id="outlined-helperText"
+                label={"Data compra"}
+                InputLabelProps={{ shrink: true } }
+                helperText={errors.data?.message || "Obrigatório"}
+                error={!!errors.data}
+                defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                {...register('data')}
+              />
+              <TextField
+                id="outlined-helperText"
+                label="Desconto"
+                defaultValue={0}
+                helperText={errors.desconto?.message || "Obrigatório"}
+                error={!!errors.desconto}
+                {...register('desconto')}
+              />
+
+              <Controller
+                control={control}
+                name="isVendaOS"
+                defaultValue={true}
+                render={({field}) =>(
+                  <Select
+                  onChange={field.onChange}
+                  value={field.value}
+                >
+                    <MenuItem value={true}>Compra</MenuItem>
+                    <MenuItem value={false}>OS</MenuItem>
+                  </Select>)}
+              />
+
+              <Controller
+                control={control}
+                name="situacao"
+                defaultValue={0}
+                render={({field}) =>(
+                  <Select
+                  onChange={field.onChange}
+                  value={field.value}
+                >
+                    <MenuItem value={0}>Em espera</MenuItem>
+                    <MenuItem value={1}>Em criação (arte)</MenuItem>
+                    <MenuItem value={2}>Em execução</MenuItem>
+                    <MenuItem value={3}>Em acabamento</MenuItem>
+                    <MenuItem value={4}>Finalizado</MenuItem>
+                    <MenuItem value={5}>Entregue</MenuItem>
+                  </Select>)}
+              />
+             
               <Button
-                onClick={putCustomers}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
-                Alterar
+                Editar
               </Button>
-            </Box>
+              </form>
+
+           </ModalRoot>
           </Modal>
         </Box>
         <Box sx={GridStyle}>

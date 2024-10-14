@@ -27,6 +27,8 @@ import { ModalRoot } from "../shared/components/ModalRoot";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import dayjs from "dayjs";
 
+const today = new Date()
+
 const clienteSchema = z.object({
   id: z.number().optional(),
   nome: z.string(),
@@ -45,6 +47,7 @@ const clienteSchema = z.object({
   numIe: z.string().optional(),
   statusIe: z.boolean().optional(),
 });
+
 
 interface dataRow {
   id: number,
@@ -81,7 +84,7 @@ const Cliente = () => {
   });
 
 
-  const today = new Date()
+
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal();
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
@@ -101,7 +104,7 @@ const Cliente = () => {
       setValue("id", selectedData.id);
       setValue("nome", selectedData.nome);
       setValue("nomeFantasia", selectedData.nomeFantasia);
-      setValue("dataCadastro", dayjs(today).format("YYYY-MM-DD")); // Formato ISO
+      setValue("dataCadastro", "aaaaaaa"); // Formato ISO
       setValue("cpfCnpj", selectedData.cpfCnpj);
       setValue("telefone", selectedData.telefone);
       setValue("email", selectedData.email);
@@ -132,7 +135,7 @@ const Cliente = () => {
   }
 
   async function postCustomers(data: clienteSchemaType) {
-    console.log("cheguei post")
+    
     
     try {
       const response = await axios.post("http://localhost:3000/cliente", {
@@ -143,20 +146,21 @@ const Cliente = () => {
         email: data.email,
         isFornecedor: data.isFornecedor,
         cep: data.cep,
+        dataCadastro: "aaaaaaaaaaa",
         estado: data.estado,
         cidade: data.cidade,
         numero: data.numero,
         endereco: data.endereco,
         complemento: data.complemento,
         numIe: data.numIe,
-        statusIe: data.statusIe,
+        statusIe: data.statusIe
       });
       getCustomers();
       if (response.status === 200) alert("Cliente cadastro com sucesso!");
     } catch (error: any) {
       new Error(error);
     } finally {
-      toggleModal()
+      addOf()
     }
   }
 

@@ -27,17 +27,27 @@ import { ModalRoot } from "../shared/components/ModalRoot";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { Controller, useForm } from "react-hook-form";
 
+const insumoSchema = z.object({
+  id: z.number(),
+  nome: z.string()
+})
+type insumoSchemaType = z.infer<typeof insumoSchema>
+
+const categoriaSchema = z.object({
+  id: z.number(),
+  categoria: z.string()
+})
+type categoriaSchemaType = z.infer<typeof categoriaSchema>
+
 const produtoSchema = z.object({
   id: z.number().optional(),
   nome: z.string(),
   tipo: z.boolean(),
   keyWord: z.string(),
   idCategoria: z.number(),
-  preco: z.number(),
-  tamanho: z.number(),
-  isEstoque: z.boolean(),
-  minEstoque: z.number(),
-  estoque: z.number(),
+  idInsumo: z.number(),
+  preco: z.coerce.number(),
+  tamanho: z.coerce.number(),
 })
 
 interface dataRow {
@@ -46,19 +56,21 @@ interface dataRow {
   tipo: boolean,
   keyWord: string,
   idCategoria: number,
+  idInsumo: number,
   preco: number,
   tamanho: number,
-  isEstoque: boolean,
-  minEstoque: number,
-  estoque: number,
 }
 
 type produtoSchemaType = z.infer<typeof produtoSchema>
 
 const Produto = () => {
 
-  const {register, setValue, reset, control, formState: {errors}, handleSubmit} = useForm<produtoSchemaType>();
+  const {register, setValue, reset, control, formState: {errors}, handleSubmit} = useForm<produtoSchemaType>({
+    resolver: zodResolver(produtoSchema)
+  });
   const [products, setProducts] = useState<produtoSchemaType[]>([]);
+  const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
+  const [categorias, setCategorias] = useState<categoriaSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   const {toggleModal, open} = useOpenModal();
 
@@ -69,8 +81,38 @@ const Produto = () => {
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
+  const addOn = () => {setAdOpen(true), reset()};
   const addOf = () => setAdOpen(false);
+
+  useEffect(() => {
+    if (selectedData) {
+      setValue("id", selectedData.id);
+      setValue("nome", selectedData.nome);
+      setValue("tipo", selectedData.tipo);
+      setValue("keyWord",selectedData.keyWord);
+      setValue("idCategoria", selectedData.idCategoria);
+      setValue("idInsumo", selectedData.idInsumo);
+      setValue("preco", selectedData.preco);
+      setValue("tamanho", selectedData.tamanho);
+    }
+  }, [selectedData, setValue]); 
+
+  // Trazendo isnumos e categoria  --------------------------------
+  useEffect(() => {
+    const getInsumos = async () => {
+      const response = await axios.get("http://localhost:3000/insumo/itens");
+      setInsumos(response.data)
+    };
+    getInsumos();
+  }, [])
+
+  useEffect(() => {
+    const getCategorias = async () => {
+      const response = await axios.get("http://localhost:3000/categoria_produto/itens");
+      setCategorias(response.data)
+    };
+    getCategorias();
+  }, [])
 
   // CRUDs--------------------------------------------------  
 
@@ -84,14 +126,15 @@ const Produto = () => {
   }
 
   async function postProducts(data: produtoSchemaType) {
+    const {id, ...mydata} = data
     try {
-      const response = await axios.post("http://localhost:3000/produto", data);
+      const response = await axios.post("http://localhost:3000/produto", mydata);
       if (response.status === 200) alert("Produto cadastrado com sucesso!");
       getProducts();
     } catch (error: any) {
       console.error(error);
     } finally {
-      toggleModal();
+      addOf();
     }
   }
 
@@ -134,11 +177,14 @@ const Produto = () => {
       editable: false,
       flex: 0,
     },
+    {
+      field: "idInsumo",
+      headerName: "idInsumo",
+      editable: false,
+      flex: 0,
+    },
     { field: "preco", headerName: "preco", editable: false, flex: 0 },
     { field: "tamanho", headerName: "tamanho", editable: false, flex: 0 },
-    { field: "isEstoque", headerName: "isEstoque", editable: false, flex: 0 },
-    { field: "minEstoque", headerName: "minEstoque", editable: false, flex: 0 },
-    { field: "estoque", headerName: "estoque", editable: false, flex: 0 },
 
     {
       field: "acoes",
@@ -167,12 +213,13 @@ const Produto = () => {
     tipo: produto.tipo,
     keyWord: produto.keyWord,
     idCategoria: produto.idCategoria,
+    idInsumo: produto.idInsumo,
     preco: produto.preco,
     tamanho: produto.tamanho,
-    isEstoque: produto.isEstoque,
-    minEstoque: produto.minEstoque,
-    estoque: produto.estoque,
   }));
+  useEffect(() => {
+    reset()
+  }, [insumoSchema, categoriaSchema, reset])
 
   return (
     <Box>
@@ -200,6 +247,34 @@ const Produto = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo produto
               </Typography>
+              
+              <form onSubmit={handleSubmit(postProducts)}>
+
+              <InputLabel id="demo-simple-select-label">Insumos</InputLabel>
+              <Select
+                {...register('idInsumo')}
+                labelId="select-label"
+                id="demo-simple-select"
+                label="idInsumo"
+                error={!!errors.idInsumo}
+                defaultValue={insumos.length > 0 ? insumos[0].nome : "Sem insumos"}>
+                  {insumos && insumos.map((insumo) => (
+                    <MenuItem value={insumo.id}>{insumo.nome}</MenuItem>))}
+              </Select>
+
+              <InputLabel id="demo-simple-select-label">Categorias</InputLabel>
+              <Select
+                {...register('idCategoria')}
+                labelId="select-label"
+                id="demo-simple-select"
+                label="idCategoria"
+                error={!!errors.idCategoria}
+                defaultValue={categorias.length > 0 ? categorias[0].categoria : "Sem categorias"}>
+                  {categorias && categorias.map((categoria) => (
+                    
+                    <MenuItem value={categoria.id}>{categoria.categoria}</MenuItem>))}
+              </Select>
+
 
               <TextField
                 id="outlined-helperText"
@@ -216,7 +291,8 @@ const Produto = () => {
                 control={control}
                 name="tipo"
                 defaultValue={true}
-                render={({field}) => (<Select
+                render={({field}) => (
+                <Select
                   labelId="select-label"
                   id="demo-simple-select"
                   label="Tipo"
@@ -236,18 +312,12 @@ const Produto = () => {
               />
 
               <TextField
-                id="outlined-helperText"
-                label="ID Categoria"
-                helperText={errors.idCategoria?.message || "Obrigatório"}
-                error={!!errors.idCategoria}
-                {...register('idCategoria')}
-              />
-
-              <TextField
+                type="number"
                 id="outlined-helperText"
                 label="Preço"
                 helperText={errors.preco?.message || "Obrigatório"}
                 error={!!errors.preco}
+                defaultValue={0}
                 {...register('preco')}
               />
 
@@ -259,39 +329,6 @@ const Produto = () => {
                 {...register('tamanho')}
               />
 
-              <InputLabel id="demo-simple-select-label">isEstoque</InputLabel>
-
-              <Controller
-              control={control}
-              defaultValue={true}
-              name="isEstoque"
-              render={({field}) => (<Select
-                labelId="select-label"
-                id="demo-simple-select"
-                value={field.value}
-                label="Estoque é controlado?"
-                onChange={field.onChange}
-              >
-                <MenuItem value={0}>Não</MenuItem>
-                <MenuItem value={1}>Sim </MenuItem>
-              </Select>)} />
-
-              <TextField
-                id="outlined-helperText"
-                label="Mínimo em Estoque"
-                helperText={errors.minEstoque?.message || "Obrigatório"}
-                error={!!errors.minEstoque}
-                {...register('minEstoque')}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="Estoque"
-                helperText={errors.estoque?.message || "Obrigatório"}
-                error={!!errors.estoque}
-                {...register('estoque')}
-              />
-
               <Button
                 type="submit"
                 variant="outlined"
@@ -299,106 +336,109 @@ const Produto = () => {
               >
                 Cadastrar
               </Button>
+              </form>
             </Box>
           </Modal>
-
+{/* ------------------------------------------------------------------------------------------------------- */}
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
+            <ModalRoot>
+
+            <form onSubmit={handleSubmit(putProducts)}>
+
+            <InputLabel id="demo-simple-select-label">Insumos</InputLabel>
+              <Select
+                {...register('idInsumo')}
+                labelId="select-label"
+                id="demo-simple-select"
+                label="idInsumo"
+                error={!!errors.idInsumo}
+                defaultValue={insumos.length > 0 ? insumos[0].nome : "Sem insumos"}>
+                  {insumos && insumos.map((insumo) => (
+                    <MenuItem value={insumo.id}>{insumo.nome}</MenuItem>))}
+              </Select>
+
+              <InputLabel id="demo-simple-select-label">Categorias</InputLabel>
+              <Select
+                {...register('idCategoria')}
+                labelId="select-label"
+                id="demo-simple-select"
+                label="idCategoria"
+                error={!!errors.idCategoria}
+                defaultValue={categorias.length > 0 ? categorias[0].categoria : "Sem categorias"}>
+                  {categorias && categorias.map((categoria) => (
+                    
+                    <MenuItem value={categoria.id}>{categoria.categoria}</MenuItem>))}
+              </Select>
+
 
               <TextField
                 id="outlined-helperText"
-                label="Tipo"
-                helperText="Obrigatório"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
+                label="Nome"
+                defaultValue=""
+                helperText={errors.nome?.message || "Obrigatório"}
+                error={!!errors.nome}
+                {...register('nome')}
               />
+
+              <InputLabel id="demo-simple-select-label">Tipo</InputLabel>
+
+              <Controller
+                control={control}
+                name="tipo"
+                defaultValue={true}
+                render={({field}) => (
+                <Select
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  label="Tipo"
+                  value={field.value}
+                  onChange={field.onChange}
+                >
+                  <MenuItem value={true}>Não</MenuItem>
+                  <MenuItem value={false}>Sim </MenuItem>
+                </Select>)}/>
 
               <TextField
                 id="outlined-helperText"
                 label="KeyWord"
-                helperText="Obrigatório"
-                value={keyWord}
-                onChange={(e) => setKeyWord(e.target.value)}
+                helperText={errors.keyWord?.message || "Obrigatório"}
+                error={!!errors.keyWord}
+                {...register('keyWord')}
               />
 
               <TextField
-                id="outlined-helperText"
-                label="ID Categoria"
-                helperText="Obrigatório"
-                value={idCategoria}
-                onChange={(e) => setIdCategoria(e.target.value)}
-              />
-
-              <TextField
+                type="number"
                 id="outlined-helperText"
                 label="Preço"
-                helperText="Obrigatório"
-                value={preco}
-                onChange={(e) => setPreco(e.target.value)}
+                helperText={errors.preco?.message || "Obrigatório"}
+                error={!!errors.preco}
+                defaultValue={0}
+                {...register('preco')}
               />
 
               <TextField
                 id="outlined-helperText"
                 label="Tamanho"
-                helperText="Obrigatório"
-                value={tamanho}
-                onChange={(e) => setTamanho(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="Estoque Disponível"
-                helperText="Obrigatório"
-                value={isEstoque}
-                onChange={(e) => setIsEstoque(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="Mínimo em Estoque"
-                helperText="Obrigatório"
-                value={minEstoque}
-                onChange={(e) => setMinEstoque(e.target.value)}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="Estoque"
-                helperText="Obrigatório"
-                value={estoque}
-                onChange={(e) => setEstoque(e.target.value)}
+                helperText={errors.tamanho?.message || "Obrigatório"}
+                error={!!errors.tamanho}
+                {...register('tamanho')}
               />
 
               <Button
-                onClick={putProducts}
+                type="submit"
                 variant="outlined"
                 startIcon={<DoneIcon />}
               >
-                Alterar
+                Editar
               </Button>
-            </Box>
+            </form>
+
+            </ModalRoot>
           </Modal>
         </Box>
         <Box sx={GridStyle}>
