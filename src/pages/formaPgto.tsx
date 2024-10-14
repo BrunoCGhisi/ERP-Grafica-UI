@@ -9,6 +9,7 @@ import {
   Stack,
   IconButton,
 } from "@mui/material";
+
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
@@ -18,108 +19,90 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../shared/components/ModalRoot";
 
-const formaPgtoSchema = z.object({
-  id: z.number().optional(),
-  tipo: z.string(),
-  idBanco: z.number().optional(),
-});
+import {
+  formaPgtoSchema,
+  FormaPgtoDataRow,
+  formaPgtoSchemaType,
+} from "../shared/services/types";
 
-type formaPgtoSchemaType = z.infer<typeof formaPgtoSchema>;
+import {
+  getPaymentWays,
+  postPaymentWays,
+  putPaymentWays,
+  deletePaymentWays,
+} from "../shared/services";
 
 const FormaPgto = () => {
   const [paymentWays, setPaymentWays] = useState<formaPgtoSchemaType[]>([]);
-
-  // Modal ADD
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
-  const addOf = () => setAdOpen(false);
-
-  // Modal PUT
-  const [popen, setPOpen] = useState<boolean>(false);
-  const putOn = (id: number) => {
-    console.log("cheguei aqui", id);
-    const formasPgtoFilter = paymentWays.filter(
-      (formaPgto: formaPgtoSchemaType) => formaPgto.id === id
-    );
-    if (formasPgtoFilter.length > 0) {
-      setValue("tipo", formasPgtoFilter[0].tipo);
-      setValue("idBanco", formasPgtoFilter[0].idBanco);
-      setValue("id", formasPgtoFilter[0].id);
-      setPOpen(true);
-    }
-  };
-  const putOf = () => setPOpen(false);
+  const [selectedData, setSelectedData] = useState<FormaPgtoDataRow | null>(
+    null
+  );
+  const { open, toggleModal } = useOpenModal();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    control,
     setValue,
+    formState: { errors },
   } = useForm<formaPgtoSchemaType>({
     resolver: zodResolver(formaPgtoSchema),
   });
 
-  //CRUD -----------------------------------------------------------------------------------------------------
-  async function getPaymentWays() {
-    try {
-      const response = await axios.get("http://localhost:3000/forma_pgto");
-      setPaymentWays(response.data.formas_pgto);
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
+  // Modal ADD -----------------------------------------------------------------------------------------------------
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => {
+    setAdOpen(true), reset();
+  };
+  const addOf = () => setAdOpen(false);
 
-  async function postPaymentWays(data: formaPgtoSchemaType) {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/forma_pgto",
-        data
-      );
-      console.log("cheguei aqui");
-      if (response.status === 200) alert("forma_pgto cadastrado com sucesso!");
-      getPaymentWays();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      addOf();
-    }
-  }
-
-  async function putPaymentWays(data: formaPgtoSchemaType) {
-    console.log("Dados enviados para atualização:", data);
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/forma_pgto?id=${data.id}`,
-        data
-      );
-      if (response.status === 200) alert("Usuário atualizado com sucesso!");
-      getPaymentWays();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      putOf();
-    }
-  }
-
-  async function delPaymentWays(id: number) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:3000/forma_pgto?id=${id}`
-      );
-      if (response.status === 200) alert("forma_pgto deletado com sucesso!");
-      getPaymentWays();
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
+  // População da modal  -----------------------------------------------------------------------------------------------------
+  const handleEdit = (updateData: FormaPgtoDataRow) => {
+    setSelectedData(updateData);
+    toggleModal();
+  };
 
   useEffect(() => {
-    getPaymentWays();
-  }, []);
+    if (selectedData) {
+      setValue("id", selectedData.id);
+      setValue("tipo", selectedData.tipo);
+      setValue("idBanco", selectedData.idBanco);
+    }
+  }, [selectedData, setValue]);
+
+  //CRUD -----------------------------------------------------------------------------------------------------
+  const loadPaymentWays = async () => {
+    const productCategoriesData = await getPaymentWays();
+    setPaymentWays(productCategoriesData);
+  };
+
+  const handleAdd = async (data: formaPgtoSchemaType) => {
+    await postPaymentWays(data);
+    loadPaymentWays();
+    setAdOpen(false);
+  };
+
+  const handleUpdate = async (data: formaPgtoSchemaType) => {
+    await putPaymentWays(data);
+    loadPaymentWays();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    await deletePaymentWays(id);
+    loadPaymentWays();
+  };
+
+  useEffect(() => {
+    loadPaymentWays();
+  }, [open]);
 
   const columns: GridColDef<formaPgtoSchemaType>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
@@ -136,11 +119,11 @@ const FormaPgto = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && delPaymentWays(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row.id)}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && putOn(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
             <EditIcon />
           </IconButton>
         </div>
@@ -182,7 +165,7 @@ const FormaPgto = () => {
                 Novo banco
               </Typography>
 
-              <form onSubmit={handleSubmit(postPaymentWays)}>
+              <form onSubmit={handleSubmit(handleAdd)}>
                 <TextField
                   id="outlined-helperText"
                   label="Tipo"
@@ -208,18 +191,15 @@ const FormaPgto = () => {
               </form>
             </Box>
           </Modal>
-
+          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
           <Modal
-            open={popen}
-            onClose={putOf}
+            open={open}
+            onClose={toggleModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Banco
-              </Typography>
-              <form onSubmit={handleSubmit(putPaymentWays)}>
+            <ModalRoot>
+              <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"
                   label="Tipo"
@@ -234,7 +214,6 @@ const FormaPgto = () => {
                   error={!!errors.idBanco}
                   {...register("idBanco", { valueAsNumber: true })}
                 />
-
                 <Button
                   type="submit"
                   variant="outlined"
@@ -243,7 +222,7 @@ const FormaPgto = () => {
                   Alterar
                 </Button>
               </form>
-            </Box>
+            </ModalRoot>
           </Modal>
         </Box>
         <Box sx={GridStyle}>

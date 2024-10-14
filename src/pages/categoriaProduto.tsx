@@ -37,10 +37,11 @@ import {
   putCategories,
   deleteCategories,
 } from "../shared/services";
+
 const CategoriaProduto = () => {
   const [productCategorys, setProductCategorys] = useState<
     productCategorySchemaType[]
-  >([]);
+>([]);
   const [selectedData, setSelectedData] =
     useState<ProductCategoryDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
@@ -63,7 +64,7 @@ const CategoriaProduto = () => {
   };
   const addOf = () => setAdOpen(false);
 
-  // População da modal  --------------------------------
+  // População da modal  -----------------------------------------------------------------------------------------------------
   const handleEdit = (updateData: ProductCategoryDataRow) => {
     setSelectedData(updateData);
     toggleModal();

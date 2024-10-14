@@ -1,11 +1,15 @@
-// VO = Value Object, isso é um objeto que VAI ser percorrido pela WEB, é uma boa prática declarar dessa forma
-// Estou tipando Category VO com as variaveis que ficam dentro da tabela Categoria
-// Nesse caso:
+import { z } from "zod";
 
-export type PaymentWayVO = {
-    id:     string  //Se torna uma string
-    tipo:   string  //Se torna uma string
-    idBanco:  string  //se torna uma string
+export const formaPgtoSchema = z.object({
+  id: z.number().optional(),
+  tipo: z.string(),
+  idBanco: z.number().optional(),
+});
+
+export interface FormaPgtoDataRow {
+  id: number;
+  tipo: string;
+  idBanco: number;
 }
 
-//proximo passo é index.ts
+export type formaPgtoSchemaType = z.infer<typeof formaPgtoSchema>;
