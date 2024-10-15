@@ -29,7 +29,7 @@ import {
   formaPgtoSchema,
   FormaPgtoDataRow,
   formaPgtoSchemaType,
-} from "../shared/services/types/PaymentWayVO";
+} from "../shared/services/types";
 
 import {
   getPaymentWays,
