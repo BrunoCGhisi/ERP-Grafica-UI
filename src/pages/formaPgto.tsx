@@ -29,7 +29,7 @@ import {
   formaPgtoSchema,
   FormaPgtoDataRow,
   formaPgtoSchemaType,
-} from "../shared/services/types";
+} from "../shared/services/types/PaymentWayVO";
 
 import {
   getPaymentWays,
@@ -104,7 +104,7 @@ const FormaPgto = () => {
     loadPaymentWays();
   }, [open]);
 
-  const columns: GridColDef<formaPgtoSchemaType>[] = [
+  const columns: GridColDef<FormaPgtoDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "tipo", headerName: "Tipo", editable: false, flex: 0 },
     { field: "idBanco", headerName: "IdBanco", editable: false, flex: 0 },
