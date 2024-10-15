@@ -16,6 +16,7 @@ import {
   Venda,
   NoPage,
   Testes,
+  Insumo
 } from "../pages";
 
 import { ProtectedRoute } from "../shared/components";
@@ -90,6 +91,15 @@ const Router = () => {
           element={
             <ProtectedRoute>
               <Venda />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/insumo"
+          element={
+            <ProtectedRoute>
+              <Insumo />
             </ProtectedRoute>
           }
         />

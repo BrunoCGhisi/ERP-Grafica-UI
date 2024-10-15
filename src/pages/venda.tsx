@@ -20,7 +20,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-
+import { getToken } from "../shared/services/payload";
 import {useForm, Controller } from "react-hook-form";
 import { z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -29,13 +29,13 @@ import { ModalRoot } from "../shared/components/ModalRoot";
 import { MiniDrawer } from "../shared/components";
 import dayjs from "dayjs";
 
-const vendaSchema = z.object({
+const vendaSchema = z.object({    
   id: z.number().optional(),
-  idCliente: z.number(),
-  idVendedor: z.number(),
-  data: z.string(),
-  isVendaOS: z.boolean(),
-  situacao : z.number(),  
+  idCliente: z.number().optional(),
+  idVendedor: z.coerce.number().optional(),
+  data: z.string().optional(),
+  isVendaOS: z.boolean().optional(),
+  situacao : z.coerce.number().optional(),  
   desconto  : z.number().optional(), 
 })
 
@@ -47,11 +47,11 @@ const clienteSchema = z.object({
 })
 type clienteSchemaType = z.infer<typeof clienteSchema>
 
-const usuario = z.object({
+const usuarioSchema = z.object({
   id: z.number().optional(),
   nome: z.number()
 })
-type usuarioType = z.infer<typeof usuario>
+type usuarioSchemaType = z.infer<typeof usuarioSchema>
 
 interface dataRow {
   id: number,
@@ -64,6 +64,22 @@ interface dataRow {
 }
 
 const Venda = () => {
+  
+  const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
+  const [nome, setNome] = useState<string | null>(null); 
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const tokenData = await getToken();
+      if (tokenData) {
+        setUserId(tokenData.userId);
+        setNome(tokenData.nome);
+      }
+    };
+
+    fetchToken();
+  }, []);
+
   const today = new Date();
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
@@ -158,8 +174,8 @@ const Venda = () => {
 
   const rows = sales.map((venda) => ({
     id: venda.id,
-    IdCliente: venda.IdCliente,
-    IdVendedor: venda.IdVendedor,
+    IdCliente: venda.idCliente,
+    IdVendedor: venda.idVendedor,
     data: formatDate(venda.data),
     isVendaOS: venda.isVendaOS,
     situacao: venda.situacao,
@@ -201,6 +217,17 @@ const Venda = () => {
               </Typography>
 
               <form onSubmit={handleSubmit(postSales)}>
+
+              <TextField
+                id="outlined-helperText"
+                label="Vendedor"
+                inputProps={{ readOnly: true }}
+                defaultValue={userId}
+                helperText={errors.idVendedor?.message || "Obrigatório"}
+                error={!!errors.idVendedor}
+                {...register('idVendedor')}
+              />
+
               <InputLabel id="demo-simple-select-label">Clientes</InputLabel>
               <Select
                 {...register('idCliente')}
@@ -213,6 +240,7 @@ const Venda = () => {
                     
                     <MenuItem value={cliente.id}>{cliente.nome}</MenuItem>))}
               </Select>
+
 
 
               <TextField
@@ -231,8 +259,9 @@ const Venda = () => {
                 defaultValue={0}
                 helperText={errors.desconto?.message || "Obrigatório"}
                 error={!!errors.desconto}
-                {...register('desconto')}
+                {...register('desconto', { valueAsNumber: true })}
               />
+
 
               <Controller
                 control={control}
@@ -323,14 +352,12 @@ const Venda = () => {
                 control={control}
                 name="isVendaOS"
                 defaultValue={true}
-                render={({field}) =>(
-                  <Select
-                  onChange={field.onChange}
-                  value={field.value}
-                >
+                render={({ field }) => (
+                  <Select onChange={field.onChange} value={field.value}>
                     <MenuItem value={true}>Compra</MenuItem>
                     <MenuItem value={false}>OS</MenuItem>
-                  </Select>)}
+                  </Select>
+                )}
               />
 
               <Controller
