@@ -142,7 +142,6 @@ const FormaPgto = () => {
       <MiniDrawer />
       <Box sx={SpaceStyle}>
         <Typography>Formas Pagamento </Typography>
-
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
