@@ -43,7 +43,6 @@ const clienteSchema = z.object({
   numero: z.string().optional(),
   endereco: z.string().optional(),
   complemento: z.string().optional(),
-  dataCadastro: z.string().optional(),
   numIe: z.string().optional(),
   statusIe: z.boolean().optional(),
 });
@@ -63,7 +62,6 @@ interface dataRow {
   numero: string,
   endereco: string,
   complemento: string,
-  dataCadastro: string,
   numIe: string,
   statusIe: boolean,
 }
@@ -104,7 +102,6 @@ const Cliente = () => {
       setValue("id", selectedData.id);
       setValue("nome", selectedData.nome);
       setValue("nomeFantasia", selectedData.nomeFantasia);
-      setValue("dataCadastro", "aaaaaaa"); // Formato ISO
       setValue("cpfCnpj", selectedData.cpfCnpj);
       setValue("telefone", selectedData.telefone);
       setValue("email", selectedData.email);
@@ -146,7 +143,6 @@ const Cliente = () => {
         email: data.email,
         isFornecedor: data.isFornecedor,
         cep: data.cep,
-        dataCadastro: "aaaaaaaaaaa",
         estado: data.estado,
         cidade: data.cidade,
         numero: data.numero,
