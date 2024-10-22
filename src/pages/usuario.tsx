@@ -36,10 +36,18 @@ import {
 
 import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
 
+import { getToken } from "../shared/services/payload";
+
+
+
 const Usuario = () => {
   const [user, setUser] = useState<usuarioSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
+
+  const [userId, setUserId] = useState<number | null>(null); 
+  const [nome, setNome] = useState<string | null>(null); 
+  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
 
   const {
     register,
@@ -102,6 +110,18 @@ const Usuario = () => {
     loadUsers();
   }, [open]);
 
+  useEffect(() => {
+    const fetchToken = async () => {
+      const tokenData = await getToken();
+      if (tokenData) {
+        setUserId(tokenData.userId);
+        setNome(tokenData.nome);
+        setIsAdm(tokenData.isAdm);
+      }
+    };
+    fetchToken();
+  }, []);
+
   const columns: GridColDef<UsuarioDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
@@ -117,14 +137,17 @@ const Usuario = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
-            <EditIcon />
-          </IconButton>
+          {isAdm ? (
+  <>
+    <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
+      <DeleteIcon />
+    </IconButton>
+    <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+      <EditIcon />
+    </IconButton>
+  </>
+) : null}
+          
         </div>
       ),
     },
@@ -142,6 +165,7 @@ const Usuario = () => {
       <MiniDrawer />
       <Box sx={SpaceStyle}>
         <Typography>Usuários</Typography>
+        
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
@@ -217,7 +241,7 @@ const Usuario = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot title="Editando Usuarios">
+            <ModalRoot title="Editando Nome">
               <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"
@@ -226,20 +250,7 @@ const Usuario = () => {
                   error={!!errors.nome}
                   {...register("nome")}
                 />
-                <TextField
-                  id="outlined-helperText"
-                  label="Email"
-                  helperText={errors.email?.message || "Obrigatório"}
-                  error={!!errors.email}
-                  {...register("email")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="Senha"
-                  helperText={errors.senha?.message || "Obrigatório"}
-                  error={!!errors.senha}
-                  {...register("senha")}
-                />
+                
                 <InputLabel id="demo-simple-select-label">
                   Adm ou Funcionário
                 </InputLabel>

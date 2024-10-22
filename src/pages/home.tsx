@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { MiniDrawer } from "../shared/components";
 import { SpaceStyle } from "../shared/styles";
-import { getToken } from "../shared/services/payload"; // Importa a função do serviço
+import { getToken } from "../shared/services/payload"; 
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
-  const [nome, setNome] = useState<string | null>(null); // Estado para armazenar o userId
-  const [isAdm, setIsAdm] = useState<boolean | null>(null); // Estado para armazenar o userId
+  const [userId, setUserId] = useState<number | null>(null); 
+  const [nome, setNome] = useState<string | null>(null); 
+  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
 
   const handleLogout = () => {
     localStorage.removeItem("token");

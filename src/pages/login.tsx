@@ -27,16 +27,12 @@ const Login = () => {
   }
 
   async function NavigateSign() {
-    navigate("/signUp")
+    navigate("/signUp");
   }
 
   return (
     <Box>
-      
-
       <Box>
-        
-
         <Stack spacing={2} sx={{ width: "300px", margin: "20px auto" }}>
           <Typography variant="h4">Login</Typography>
           <TextField
