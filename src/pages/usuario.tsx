@@ -129,7 +129,6 @@ const Usuario = () => {
       ),
     },
   ];
-
   const rows = user.map((usuario) => ({
     id: usuario.id,
     nome: usuario.nome,
@@ -176,15 +175,15 @@ const Usuario = () => {
                 <TextField
                   id="outlined-helperText"
                   label="Email"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  value={!!errors.email}
+                  helperText={errors.email?.message || "Obrigatório"}
+                  error={!!errors.email}
                   {...register("email")}
                 />
                 <TextField
                   id="outlined-helperText"
                   label="Senha"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  value={!!errors.senha}
+                  helperText={errors.senha?.message || "Obrigatório"}
+                  error={!!errors.senha}
                   {...register("senha")}
                 />
                 <InputLabel id="demo-simple-select-label">
@@ -230,15 +229,15 @@ const Usuario = () => {
                 <TextField
                   id="outlined-helperText"
                   label="Email"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  value={!!errors.email}
+                  helperText={errors.email?.message || "Obrigatório"}
+                  error={!!errors.email}
                   {...register("email")}
                 />
                 <TextField
                   id="outlined-helperText"
                   label="Senha"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  value={!!errors.senha}
+                  helperText={errors.senha?.message || "Obrigatório"}
+                  error={!!errors.senha}
                   {...register("senha")}
                 />
                 <InputLabel id="demo-simple-select-label">
@@ -251,8 +250,8 @@ const Usuario = () => {
                   defaultValue={false}
                   render={({ field }) => (
                     <Select onChange={field.onChange} value={field.value}>
-                      <MenuItem value={true}>Administrador</MenuItem>
-                      <MenuItem value={false}>Funcionário</MenuItem>
+                      <MenuItem value={true}>Administrador </MenuItem>
+                      <MenuItem value={false}>Funcionário </MenuItem>
                     </Select>
                   )}
                 />

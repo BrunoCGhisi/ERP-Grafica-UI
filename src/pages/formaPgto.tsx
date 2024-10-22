@@ -40,9 +40,7 @@ import {
 
 const FormaPgto = () => {
   const [paymentWays, setPaymentWays] = useState<formaPgtoSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<FormaPgtoDataRow | null>(
-    null
-  );
+  const [selectedData, setSelectedData] = useState<FormaPgtoDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
   const {
