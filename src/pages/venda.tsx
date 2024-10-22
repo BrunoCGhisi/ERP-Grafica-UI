@@ -29,17 +29,9 @@ import { ModalRoot } from "../shared/components/ModalRoot";
 import { MiniDrawer } from "../shared/components";
 import dayjs from "dayjs";
 
-const vendaSchema = z.object({    
-  id: z.number().optional(),
-  idCliente: z.number().optional(),
-  idVendedor: z.coerce.number().optional(),
-  data: z.string().optional(),
-  isVendaOS: z.boolean().optional(),
-  situacao : z.coerce.number().optional(),  
-  desconto  : z.number().optional(), 
-})
+import { vendaSchema, VendaDataRow, vendaSchemaType } from "../shared/services/types";
+import { getSales, postSale, putSale, deleteSale } from "../shared/services";
 
-type vendaSchemaType = z.infer<typeof vendaSchema>
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -66,14 +58,12 @@ interface dataRow {
 const Venda = () => {
   
   const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
-  const [nome, setNome] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchToken = async () => {
       const tokenData = await getToken();
       if (tokenData) {
         setUserId(tokenData.userId);
-        setNome(tokenData.nome);
       }
     };
 
@@ -86,7 +76,7 @@ const Venda = () => {
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
   const {toggleModal, open} = useOpenModal();
 
-  const {register, handleSubmit, reset, control, setValue, formState: {errors}} = useForm<vendaSchemaType>({
+  const {register, handleSubmit, reset, control, formState: {errors}} = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema)
   });
 
@@ -100,28 +90,33 @@ const Venda = () => {
   },[]);
 
 
- // CRUD -------------------------------------------------------------------------------------------------------------------------------- 
-  async function getSales() {
-    try {
-      const response = await axios.get("http://localhost:3000/venda");
-      setSales(response.data.vendas);
-    } catch (error: any) {
-      new Error(error);
-    }
-  }
+  //CRUD -----------------------------------------------------------------------------------------------------
 
-  async function postSales(data: vendaSchemaType) {
-    try {
-      const response = await axios.post("http://localhost:3000/venda", data);
-      if (response.status === 200) alert("venda cadastrado com sucesso!");
-      getSales();
-    } catch (error: any) {
-      new Error(error);
-    } finally {
-      addOf()
-    }
-  }
+  const loadSales = async () => {
+    const salesData = await getSales();
+    setSales(salesData) 
+  };
 
+  const handleAdd = async (data: vendaSchemaType) => {
+    await postSale(data);
+    loadSales();
+    setAdOpen(false);
+  };
+
+  const handleUpdate = async (data: vendaSchemaType) => {
+    await putSale(data);
+    loadSales();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteSale(id);
+    loadSales();
+  };
+
+  useEffect(() => {
+    loadSales();
+  }, [open]);
   //-MODAIS-----------------------------------------------------------------------------------------------------------------------
 
 
@@ -137,15 +132,15 @@ const Venda = () => {
 
 // GRID ------------------------------------------------
 
-  const columns: GridColDef<dataRow>[] = [
+  const columns: GridColDef<VendaDataRow>[] = [
     { field: "id", headerName: "id", editable: false, flex: 0 },
     {
-      field: "IdCliente",
+      field: "idCliente",
       headerName: "IdCliente",
       editable: false,
       flex: 0,
     },
-    { field: "IdVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
+    { field: "idVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
     { field: "data", headerName: "data", editable: false, flex: 0 },
     { field: "isVendaOS", headerName: "isVendaOS", editable: false, flex: 0 },
     { field: "situacao", headerName: "situacao", editable: false, flex: 0 },
@@ -160,7 +155,7 @@ const Venda = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && delPurchases(row.id)}>
+          <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton
@@ -171,6 +166,10 @@ const Venda = () => {
       ),
     },
   ];
+  const formatDate = (dateString: 'data') => {
+    const date = new Date(dateString); 
+    return date.toLocaleDateString('pt-BR'); 
+  };
 
   const rows = sales.map((venda) => ({
     id: venda.id,
@@ -216,7 +215,7 @@ const Venda = () => {
                 Nova Venda
               </Typography>
 
-              <form onSubmit={handleSubmit(postSales)}>
+              <form onSubmit={handleSubmit(handleAdd)}>
 
               <TextField
                 id="outlined-helperText"
@@ -312,9 +311,9 @@ const Venda = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-           <ModalRoot>
+           <ModalRoot title="Editar venda">
 
-           <form onSubmit={handleSubmit(postSales)}>
+           <form onSubmit={handleSubmit(handleUpdate)}>
               <InputLabel id="demo-simple-select-label">Categorias</InputLabel>
               <Select
                 {...register('idCliente')}

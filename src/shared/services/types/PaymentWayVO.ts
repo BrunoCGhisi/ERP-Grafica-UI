@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formaPgtoSchema = z.object({
+export const paymentSchema = z.object({
   id: z.number().optional(),
   tipo: z.string(),
   idBanco: z.number().optional(),
@@ -12,4 +12,4 @@ export interface FormaPgtoDataRow {
   idBanco: number;
 }
 
-export type formaPgtoSchemaType = z.infer<typeof formaPgtoSchema>;
+export type paymentSchemaType = z.infer<typeof paymentSchema>;

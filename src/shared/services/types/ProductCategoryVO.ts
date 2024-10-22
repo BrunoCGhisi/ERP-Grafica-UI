@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const productCategorySchema = z.object({
+export const proCategorySchema = z.object({
   id: z.number().optional(),
   categoria: z.string(),
 });
@@ -10,4 +10,4 @@ export interface ProductCategoryDataRow {
   categoria: string;
 }
 
-export type productCategorySchemaType = z.infer<typeof productCategorySchema>;
+export type proCategorySchemaType = z.infer<typeof proCategorySchema>;

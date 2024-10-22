@@ -26,9 +26,9 @@ import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
 import {
-  productCategorySchema,
+  proCategorySchema,
   ProductCategoryDataRow,
-  productCategorySchemaType,
+  proCategorySchemaType,
 } from "../shared/services/types";
 
 import {
@@ -39,7 +39,7 @@ import {
 } from "../shared/services";
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<productCategorySchemaType[]>([]);
+  const [productCategorys, setProductCategorys] = useState<proCategorySchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<ProductCategoryDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
@@ -50,8 +50,8 @@ const CategoriaProduto = () => {
     control,
     setValue,
     formState: { errors },
-  } = useForm<productCategorySchemaType>({
-    resolver: zodResolver(productCategorySchema),
+  } = useForm<proCategorySchemaType>({
+    resolver: zodResolver(proCategorySchema),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
@@ -80,13 +80,13 @@ const CategoriaProduto = () => {
     setProductCategorys(productCategoriesData);
   };
 
-  const handleAdd = async (data: productCategorySchemaType) => {
+  const handleAdd = async (data: proCategorySchemaType) => {
     await postCategories(data);
     loadProductCategories();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: productCategorySchemaType) => {
+  const handleUpdate = async (data: proCategorySchemaType) => {
     await putCategories(data);
     loadProductCategories();
     toggleModal();

@@ -23,21 +23,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
 import {
-  usuarioSchema,
+  userSchema,
   UsuarioDataRow,
-  usuarioSchemaType,
+  userSchemaType,
 } from "../shared/services/types";
 
 import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
 
 const Usuario = () => {
-  const [user, setUser] = useState<usuarioSchemaType[]>([]);
+  const [user, setUser] = useState<userSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
@@ -48,8 +47,8 @@ const Usuario = () => {
     control,
     setValue,
     formState: { errors },
-  } = useForm<usuarioSchemaType>({
-    resolver: zodResolver(usuarioSchema),
+  } = useForm<userSchemaType>({
+    resolver: zodResolver(userSchema),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
@@ -81,13 +80,13 @@ const Usuario = () => {
     setUser(usersData);
   };
 
-  const handleAdd = async (data: usuarioSchemaType) => {
+  const handleAdd = async (data: userSchemaType) => {
     await postUser(data);
     loadUsers();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: usuarioSchemaType) => {
+  const handleUpdate = async (data: userSchemaType) => {
     await putUser(data);
     loadUsers();
     toggleModal();

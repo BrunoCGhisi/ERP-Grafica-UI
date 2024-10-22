@@ -24,9 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
-import { bancoSchema } from "../shared/services/types";
-import { BancoDataRow } from "../shared/services/types";
-import { bancoSchemaType } from "../shared/services/types";
+import { bancoSchema, BancoDataRow, bancoSchemaType } from "../shared/services/types";
 import { getBanks, postBank, putBank, deleteBank } from "../shared/services";
 
 const Banco = () => {
