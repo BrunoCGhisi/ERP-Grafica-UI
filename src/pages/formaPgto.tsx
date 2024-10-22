@@ -195,7 +195,7 @@ const FormaPgto = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot>
+            <ModalRoot title="Editando Formas de Pagamento">
               <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"

@@ -330,7 +330,7 @@ const Compra = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-          <ModalRoot children={ // meu componente 
+          <ModalRoot title="Editando Compra" children={ // meu componente 
             
             <form onSubmit={handleSubmit(putPurchases)}>
               <TextField

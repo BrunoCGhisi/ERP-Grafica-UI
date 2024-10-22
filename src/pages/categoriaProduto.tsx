@@ -186,7 +186,7 @@ const CategoriaProduto = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot>
+            <ModalRoot title="Editando Categoria dos Produtos" >
               <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"

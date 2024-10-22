@@ -457,7 +457,7 @@ const Cliente = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot children={
+            <ModalRoot title="Editando Cliente" children={ 
             <form onSubmit={handleSubmit(putCustomers)}>
               <TextField
                 id="outlined-helperText"

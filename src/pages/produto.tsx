@@ -346,7 +346,7 @@ const Produto = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot>
+            <ModalRoot title="Editando Produtos">
 
             <form onSubmit={handleSubmit(putProducts)}>
 

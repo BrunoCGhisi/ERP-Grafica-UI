@@ -217,7 +217,7 @@ const Usuario = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalRoot>
+            <ModalRoot title="Editando Usuarios">
               <form onSubmit={handleSubmit(handleUpdate)}>
                 <TextField
                   id="outlined-helperText"
