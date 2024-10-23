@@ -144,7 +144,7 @@ const Insumo = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer>
       <Box sx={SpaceStyle}>
         <Typography>Insumos</Typography>
 
@@ -274,6 +274,7 @@ const Insumo = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

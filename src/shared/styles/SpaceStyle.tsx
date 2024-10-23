@@ -1,7 +1,7 @@
 const SpaceStyle ={
     display: "flex",
     flexDirection: "column",
-    marginLeft: 20,
+    marginLeft: 10,
     marginTop: 10,
     gap: 5,
 }

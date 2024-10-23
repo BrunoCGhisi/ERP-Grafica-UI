@@ -161,7 +161,7 @@ const Usuario = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer>
       <Box sx={SpaceStyle}>
         <Typography>Usuários</Typography>
 
@@ -300,6 +300,7 @@ const Usuario = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

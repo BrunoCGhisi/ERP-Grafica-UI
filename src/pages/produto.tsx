@@ -223,7 +223,7 @@ const Produto = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer>
       <Box sx={SpaceStyle}>
         <Typography>Produtos </Typography>
         <Box>
@@ -456,6 +456,7 @@ const Produto = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

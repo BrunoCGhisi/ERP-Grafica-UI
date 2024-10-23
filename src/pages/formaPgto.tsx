@@ -137,7 +137,7 @@ const FormaPgto = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer> 
       <Box sx={SpaceStyle}>
         <Typography>Formas Pagamento </Typography>
         <Box>
@@ -237,6 +237,7 @@ const FormaPgto = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

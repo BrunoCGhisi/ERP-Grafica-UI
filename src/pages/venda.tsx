@@ -188,7 +188,7 @@ useEffect(() => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer>
       <Box sx={SpaceStyle}>
         <Typography>estamos dentro das vendas</Typography>
         <Typography>(Não somos uma venda)</Typography>
@@ -403,6 +403,7 @@ useEffect(() => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

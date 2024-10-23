@@ -1,5 +1,5 @@
 import * as React from "react";
-//Material UI
+// Material UI
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
@@ -9,7 +9,6 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -19,20 +18,24 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
-//Icones
-
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'; // Banco
-import ClassIcon from '@mui/icons-material/Class'; // categoria
-import BadgeIcon from '@mui/icons-material/Badge'; // cliente
-import LocalMallIcon from '@mui/icons-material/LocalMall'; //compra
-import CreditCardIcon from '@mui/icons-material/CreditCard'; //forma pagamento
-import InventoryIcon from '@mui/icons-material/Inventory'; //insumos
+// Ícones
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import ClassIcon from '@mui/icons-material/Class';
+import BadgeIcon from '@mui/icons-material/Badge';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import LayersIcon from '@mui/icons-material/Layers';
-import AccountBoxIcon from '@mui/icons-material/AccountBox'; //usuario
-import SellIcon from '@mui/icons-material/Sell'; //venda
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SellIcon from '@mui/icons-material/Sell';
 
-//Tamanho do drawer aberto
+import { ReactNode } from "react";
+
 const drawerWidth = 230;
+
+interface DrawerProps {
+  children: ReactNode;
+}
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -60,7 +63,6 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -103,7 +105,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-const MiniDrawer = () => {
+export function MiniDrawer({ children }: DrawerProps) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -140,7 +142,6 @@ const MiniDrawer = () => {
 
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          
           <Typography>GraficaName</Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
@@ -179,8 +180,6 @@ const MiniDrawer = () => {
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
                   }}
-
-                  //Impondo icones baseado no index do item na lista
                 >
                   {index === 0 && <AccountBalanceIcon />}
                   {index === 1 && <ClassIcon />}
@@ -191,17 +190,19 @@ const MiniDrawer = () => {
                   {index === 6 && <LayersIcon />}
                   {index === 7 && <AccountBoxIcon />}
                   {index === 8 && <SellIcon />}
-                  
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
-          
-                  </List>
+        </List>
       </Drawer>
+
+      <Box height="100vh" marginTop={2}>
+        {children}
+      </Box>
     </Box>
   );
-};
+}
 
 export default MiniDrawer;

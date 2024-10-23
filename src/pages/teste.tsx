@@ -1,58 +1,251 @@
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+
+import axios from "axios";
+import {
+  Box,
+  Modal,
+  Button,
+  Typography,
+  TextField,
+  Stack,
+  IconButton,
+} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import DoneIcon from "@mui/icons-material/Done";
+import { MiniDrawer } from "../shared/components";
+
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, TextField } from "@mui/material";
+import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../shared/components/ModalRoot";
 
-// Definindo o esquema de validação usando Zod
-const testeSchema = z.object({
-    nome: z.string(), // Validação para string não vazia
-    valorTotal: z.number() // Validação para número
-});
+import { bancoSchema, BancoDataRow, bancoSchemaType, proCategorySchema, proCategorySchemaType } from "../shared/services/types";
+import { TestWrapper } from "../shared/services/types/TestVO";
+import { getBanks, postBank, putBank, deleteBank } from "../shared/services/testeService";
+import { getCategories } from "../shared/services";
 
-// Inferindo o tipo a partir do esquema do Zod
-type testeSchemaType = z.infer<typeof testeSchema>;
+const teste = () => {
+  const [productCategorys, setProductCategorys] = useState<proCategorySchemaType[]>([]);
+  const [selectedData, setSelectedData] = useState<BancoDataRow | null>(null);
+  const [banks, setBanks] = useState<bancoSchemaType[]>([]);
+  const { open, toggleModal } = useOpenModal();
 
-const Testes = () =>  {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<TestWrapper>({
+    resolver: zodResolver(bancoSchema),
+  });
 
-    // Inicializando o useForm com o zodResolver e o tipo inferido
-    const { register, handleSubmit} = useForm<testeSchemaType>({
-        resolver: zodResolver(testeSchema),
-    });
-    
-    function handleTeste(data: testeSchemaType) {
-        console.log(data);
+  // Modal ADD -----------------------------------------------------------------------------------------------------
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => {
+    setAdOpen(true), reset();
+  };
+  const addOf = () => setAdOpen(false);
+
+  // População da Modal ----------------------------
+
+  const handleEdit = (updateData: BancoDataRow) => {
+    setSelectedData(updateData);
+    toggleModal();
+  };
+
+  useEffect(() => {
+    if (selectedData) {
+      setValue("id", selectedData.id);
+      setValue("nome", selectedData.nome);
+      setValue("valorTotal", selectedData.valorTotal);
     }
+  }, [selectedData, setValue]);
 
-    return (
-        <form onSubmit={handleSubmit(handleTeste)}>
-            {/* Campo Nome com validação */}
-            <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText={"Obrigatório"} // Exibe erro se houver
-                // Marca o campo como inválido se houver erro
-                {...register('nome')}
-            />
-            {/* Campo valorTotal com validação */}
-            <TextField
-                id="outlined-helperText"
-                label="Valor Total"
-                type="number"
-                helperText={"Obrigatório"} // Exibe erro se houver
-                 // Marca o campo como inválido se houver erro
-                {...register('valorTotal', { valueAsNumber: true })} // Converte valor para número
-            />
+  //CRUD -----------------------------------------------------------------------------------------------------
 
+  const loadBanks = async () => {
+    const banksData = await getBanks();
+    setBanks(banksData) 
+  };
+
+  const loadProductCategories = async () => {
+    const productCategoriesData = await getCategories();
+    setProductCategorys(productCategoriesData);
+  };
+
+  const handleAdd = async (data: bancoSchemaType) => {
+    await postBank(data);
+    loadBanks();
+    setAdOpen(false);
+  };
+
+  const handleUpdate = async (data: TestWrapper) => {
+    await putBank(data);
+    loadBanks();
+    loadProductCategories();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteBank(id);
+    loadBanks();
+  };
+
+  useEffect(() => {
+    loadBanks();
+  }, [open]);
+
+
+  const columns: GridColDef<BancoDataRow>[] = [
+    { field: "id", headerName: "ID", align: "left", flex: 0 },
+    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
+    { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
+
+    {
+      field: "acoes",
+      headerName: "Ações",
+      width: 150,
+      align: "center",
+      type: "actions",
+      flex: 0,
+      renderCell: ({ row }) => (
+        <div>
+          <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
+            <DeleteIcon />
+          </IconButton>
+          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+            <EditIcon />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
+
+  const rows = banks.map((banco) => ({
+    id: banco.id,
+    nome: banco.nome,
+    valorTotal: banco.valorTotal,
+  }));
+
+  return (
+    <Box>
+      <MiniDrawer />
+      <Box sx={SpaceStyle}>
+        <Typography>Estamos dentro do banco </Typography>
+        <Typography>(Não iremos cometer nenhum assalto...)</Typography>
+        <Box>
+          <Stack direction="row" spacing={2}>
             <Button
-                type="submit" 
-                variant="outlined">
-                Cadastrar
+              onClick={addOn}
+              variant="outlined"
+              startIcon={<AddCircleOutlineIcon />}
+            >
+              Adicionar
             </Button>
-        </form>
-    );
-}
+          </Stack>
 
-export default Testes;
+          <Modal
+            open={adopen}
+            onClose={addOf}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={ModalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Novo banco
+              </Typography>
+              <form onSubmit={handleSubmit(handleAdd)}>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText={errors.bancoDataRow?.nome?.message || "Obrigatório"}
+                  error={!!errors.bancoDataRow?.nome}
+                  {...register("bancoDataRow.nome")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="ValorTotal"
+                  helperText={errors.bancoDataRow?.valorTotal?.message || "Obrigatório"}
+                  error={!!errors.bancoDataRow?.valorTotal}
+                  {...register("bancoDataRow.valorTotal")}
+                />
 
-//----------------------------------------------------------------------------------------------------- */}
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Cadastrar
+                </Button>
+              </form>
+            </Box>
+          </Modal>
 
+          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+
+          <Modal
+            open={open}
+            onClose={toggleModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <ModalRoot title="Editando Banco">
+              <form onSubmit={handleSubmit(handleUpdate)}>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText={errors.bancoDataRow?.nome?.message || "Obrigatório"}
+                  error={!!errors.bancoDataRow?.nome}
+                  {...register("bancoDataRow.nome")}
+                />
+                <TextField
+                 label="Valor Total"
+                 helperText={errors.bancoDataRow?.valorTotal?.message || "Obrigatório"}
+                 error={!!errors.bancoDataRow?.valorTotal}
+                 {...register("bancoDataRow.valorTotal")}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="Categoria"
+                  helperText={errors.productCategoryDataRow?.categoria?.message || "Obrigatório"}
+                  error={!!errors.productCategoryDataRow?.categoria}
+                  {...register("productCategoryDataRow.categoria")}
+                />
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Atualizar
+                </Button>
+              </form>
+            </ModalRoot>
+          </Modal>
+        </Box>
+
+        <Box sx={GridStyle}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 6,
+                },
+              },
+            }}
+            pageSizeOptions={[6]}
+          />
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default teste;
