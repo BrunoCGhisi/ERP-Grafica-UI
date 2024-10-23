@@ -39,22 +39,6 @@ const clienteSchema = z.object({
 })
 type clienteSchemaType = z.infer<typeof clienteSchema>
 
-const usuarioSchema = z.object({
-  id: z.number().optional(),
-  nome: z.number()
-})
-type usuarioSchemaType = z.infer<typeof usuarioSchema>
-
-interface dataRow {
-  id: number,
-  idCliente: number,
-  idVendedor: number,
-  data: string,
-  isVendaOS: boolean,
-  situacao: number,  
-  desconto : number, 
-}
-
 const Venda = () => {
   
   const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
@@ -71,12 +55,19 @@ const Venda = () => {
   }, []);
 
   const today = new Date();
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString); 
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('pt-BR'); 
+  };
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const {toggleModal, open} = useOpenModal();
 
-  const {register, handleSubmit, reset, control, formState: {errors}} = useForm<vendaSchemaType>({
+  const {register, handleSubmit, reset, setValue, control, formState: {errors}} = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema)
   });
 
@@ -120,11 +111,23 @@ const Venda = () => {
   //-MODAIS-----------------------------------------------------------------------------------------------------------------------
 
 
-  const handleEdit = (updateData: dataRow) => {
-    setSelectedData(updateData);
-    toggleModal()
-  }
+// População da modal  --------------------------------
+const handleEdit = (updateData: VendaDataRow) => {
+  setSelectedData(updateData)
+  toggleModal()
+} 
 
+useEffect(() => {
+  if (selectedData) {
+    setValue("id", selectedData.id);
+    setValue("idCliente", selectedData.idCliente);
+    setValue("idVendedor", selectedData.idVendedor);
+    setValue("dataAtual", dayjs(selectedData.dataAtual).format("YYYY-MM-DD")); // Formato ISO
+    setValue("isVendaOS", selectedData.isVendaOS);
+    setValue("situacao", selectedData.situacao);
+    setValue("desconto", selectedData.desconto);
+  }
+}, [selectedData, setValue]);
 
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -141,10 +144,10 @@ const Venda = () => {
       flex: 0,
     },
     { field: "idVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
-    { field: "data", headerName: "data", editable: false, flex: 0 },
-    { field: "isVendaOS", headerName: "isVendaOS", editable: false, flex: 0 },
-    { field: "situacao", headerName: "situacao", editable: false, flex: 0 },
-    { field: "desconto", headerName: "desconto", editable: false, flex: 0 },
+    { field: "dataAtual", headerName: "DataAtual", editable: false, flex: 0 },
+    { field: "isVendaOS", headerName: "IsVendaOS", editable: false, flex: 0 },
+    { field: "situacao", headerName: "Situacao", editable: false, flex: 0 },
+    { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
 
     {
       field: "acoes",
@@ -166,20 +169,15 @@ const Venda = () => {
       ),
     },
   ];
-  const formatDate = (dateString: 'data') => {
-    const date = new Date(dateString); 
-    return date.toLocaleDateString('pt-BR'); 
-  };
 
-  const rows = sales.map((venda) => ({
-    id: venda.id,
-    IdCliente: venda.idCliente,
-    IdVendedor: venda.idVendedor,
-    data: formatDate(venda.data),
+  const rows = sales.map((venda, index) => ({
+    id: venda.id ?? index, // Use the index as a fallback if venda.id is null or undefined
+    idCliente: venda.idCliente,
+    idVendedor: venda.idVendedor,
+    dataAtual: formatDate(venda.dataAtual),
     isVendaOS: venda.isVendaOS,
     situacao: venda.situacao,
     desconto: venda.desconto,
-    
   }));
   useEffect(() => {
     reset()
@@ -247,10 +245,10 @@ const Venda = () => {
                 id="outlined-helperText"
                 label={"Data compra"}
                 InputLabelProps={{ shrink: true } }
-                helperText={errors.data?.message || "Obrigatório"}
-                error={!!errors.data}
+                helperText={errors.dataAtual?.message || "Obrigatório"}
+                error={!!errors.dataAtual}
                 defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                {...register('data')}
+                {...register('dataAtual')}
               />
               <TextField
                 id="outlined-helperText"
@@ -333,10 +331,10 @@ const Venda = () => {
                 id="outlined-helperText"
                 label={"Data compra"}
                 InputLabelProps={{ shrink: true } }
-                helperText={errors.data?.message || "Obrigatório"}
-                error={!!errors.data}
+                helperText={errors.dataAtual?.message || "Obrigatório"}
+                error={!!errors.dataAtual}
                 defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                {...register('data')}
+                {...register('dataAtual')}
               />
               <TextField
                 id="outlined-helperText"
@@ -393,6 +391,7 @@ const Venda = () => {
           <DataGrid
             rows={rows}
             columns={columns}
+            getRowId={(row) => row.id ?? row.idCliente}
             initialState={{
               pagination: {
                 paginationModel: {
