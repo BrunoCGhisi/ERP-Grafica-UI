@@ -37,16 +37,14 @@ import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
 
 import { getToken } from "../shared/services/payload";
 
-
-
 const Usuario = () => {
   const [user, setUser] = useState<userSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
-  const [userId, setUserId] = useState<number | null>(null); 
-  const [nome, setNome] = useState<string | null>(null); 
-  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
+  const [userId, setUserId] = useState<number | null>(null);
+  const [nome, setNome] = useState<string | null>(null);
+  const [isAdm, setIsAdm] = useState<boolean | null>(null);
 
   const {
     register,
@@ -77,7 +75,6 @@ const Usuario = () => {
       setValue("id", selectedData.id);
       setValue("nome", selectedData.nome);
       setValue("email", selectedData.email);
-      setValue("senha", selectedData.senha);
       setValue("isAdm", selectedData.isAdm);
     }
   }, [selectedData, setValue]);
@@ -95,6 +92,7 @@ const Usuario = () => {
   };
 
   const handleUpdate = async (data: userSchemaType) => {
+    console.log("Dados enviados para a atualização:", data); // Debugging
     await putUser(data);
     loadUsers();
     toggleModal();
@@ -125,7 +123,6 @@ const Usuario = () => {
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     { field: "email", headerName: "Email", editable: false, flex: 0 },
-    { field: "senha", headerName: "Senha", editable: false, flex: 0 },
     { field: "isAdm", headerName: "Adm", editable: false, flex: 0 },
     {
       field: "acoes",
@@ -137,16 +134,19 @@ const Usuario = () => {
       renderCell: ({ row }) => (
         <div>
           {isAdm ? (
-  <>
-    <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
-      <DeleteIcon />
-    </IconButton>
-    <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
-      <EditIcon />
-    </IconButton>
-  </>
-) : null}
-          
+            <>
+              <IconButton
+                onClick={() => row.id !== undefined && handleDelete(row.id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => row.id !== undefined && handleEdit(row)}
+              >
+                <EditIcon />
+              </IconButton>
+            </>
+          ) : null}
         </div>
       ),
     },
@@ -164,7 +164,7 @@ const Usuario = () => {
       <MiniDrawer />
       <Box sx={SpaceStyle}>
         <Typography>Usuários</Typography>
-        
+
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
@@ -249,7 +249,15 @@ const Usuario = () => {
                   error={!!errors.nome}
                   {...register("nome")}
                 />
-                
+
+                <TextField
+                  id="outlined-helperText"
+                  label="Email"
+                  helperText={errors.email?.message || "Obrigatório"}
+                  error={!!errors.email}
+                  {...register("email")}
+                />
+
                 <InputLabel id="demo-simple-select-label">
                   Adm ou Funcionário
                 </InputLabel>
