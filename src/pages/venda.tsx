@@ -169,9 +169,9 @@ useEffect(() => {
       ),
     },
   ];
-
-  const rows = sales.map((venda, index) => ({
-    id: venda.id ?? index, // Use the index as a fallback if venda.id is null or undefined
+  console.log(sales.map((venda) => venda.dataAtual  ))
+  const rows = sales.map((venda) => ({
+    id: venda.id,// Use the index as a fallback if venda.id is null or undefined
     idCliente: venda.idCliente,
     idVendedor: venda.idVendedor,
     dataAtual: formatDate(venda.dataAtual),
@@ -391,7 +391,6 @@ useEffect(() => {
           <DataGrid
             rows={rows}
             columns={columns}
-            getRowId={(row) => row.id ?? row.idCliente}
             initialState={{
               pagination: {
                 paginationModel: {
