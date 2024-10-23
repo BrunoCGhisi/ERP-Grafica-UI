@@ -31,7 +31,7 @@ const Home = () => {
 
   return (
     <Box sx={SpaceStyle}>
-      <MiniDrawer />
+      <MiniDrawer>
       <Typography>Home do Aplicativo</Typography>
       {userId && <Typography>ID do Usuário: {userId}</Typography>}
       {nome && <Typography>Nome do Usuário: {nome}</Typography>}
@@ -39,6 +39,7 @@ const Home = () => {
       <Button onClick={handleLogout} variant="contained" color="primary">
         Log Out
       </Button>
+      </MiniDrawer>
     </Box>
   );
 };

@@ -6,7 +6,7 @@ export const bancoSchema = z.object({
     id: z.number().optional(),
     nome: z.string(),
     valorTotal: z.number(),
-  });
+});
   
 export interface BancoDataRow {
     id: number;
@@ -15,3 +15,8 @@ export interface BancoDataRow {
   }
 
 export type bancoSchemaType = z.infer<typeof bancoSchema>;
+
+export interface TestWrapper {
+    bancoDataRow: BancoDataRow
+    productCategoryDataRow: ProductCategoryDataRow
+  }

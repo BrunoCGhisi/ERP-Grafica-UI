@@ -126,7 +126,7 @@ const Banco = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer> 
       <Box sx={SpaceStyle}>
         <Typography>Estamos dentro do banco </Typography>
         <Typography>(Não iremos cometer nenhum assalto...)</Typography>
@@ -202,6 +202,14 @@ const Banco = () => {
                   error={!!errors.valorTotal}
                   {...register("valorTotal", { valueAsNumber: true })}
                 />
+
+                <TextField
+                  id="outlined-helperText"
+                  label="valorTotal"
+                  helperText={errors.valorTotal?.message || "Obrigatório"}
+                  error={!!errors.valorTotal}
+                  {...register("valorTotal", { valueAsNumber: true })}
+                />
                 <Button
                   type="submit"
                   variant="outlined"
@@ -229,6 +237,7 @@ const Banco = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

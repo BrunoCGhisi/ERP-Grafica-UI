@@ -276,7 +276,7 @@ const Cliente = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer> 
       <Box sx={SpaceStyle}>
         <Box>
           <Stack direction="row" spacing={2}>
@@ -620,6 +620,7 @@ const Cliente = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

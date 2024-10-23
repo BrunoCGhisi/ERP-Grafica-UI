@@ -200,7 +200,7 @@ const Compra = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer> 
       <Box sx={SpaceStyle}>
         <Typography>Estamos dentro do banco </Typography>
         <Typography>(Não iremos cometer nenhum assalto...)</Typography>
@@ -426,6 +426,7 @@ const Compra = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };

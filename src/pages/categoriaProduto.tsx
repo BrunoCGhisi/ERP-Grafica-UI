@@ -136,10 +136,10 @@ const CategoriaProduto = () => {
 
   return (
     <Box>
-      <MiniDrawer />
+      <MiniDrawer> 
       <Box sx={SpaceStyle}>
         <Typography>Categoria Produto </Typography>
-
+    
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
@@ -222,6 +222,7 @@ const CategoriaProduto = () => {
           />
         </Box>
       </Box>
+      </MiniDrawer>
     </Box>
   );
 };
