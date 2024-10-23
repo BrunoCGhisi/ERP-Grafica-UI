@@ -197,7 +197,8 @@ const MiniDrawer = () => {
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
+          
+                  </List>
       </Drawer>
     </Box>
   );
