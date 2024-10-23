@@ -89,7 +89,8 @@ const Venda = () => {
   };
 
   const handleAdd = async (data: vendaSchemaType) => {
-    await postSale(data);
+    const response = await postSale(data);
+    console.log(response.data.info) // verificar se vem vazio e colocar num alert vapo fiii
     loadSales();
     setAdOpen(false);
   };
