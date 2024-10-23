@@ -171,6 +171,7 @@ const Compra = () => {
       type: "actions",
       flex: 0,
       renderCell: ({ row }) => (
+        <>
         <div>
           <IconButton onClick={() => row.id !== undefined && delPurchases(row.id)}>
             <DeleteIcon />
@@ -180,6 +181,7 @@ const Compra = () => {
             <EditIcon />
           </IconButton>
         </div>
+        </>
       ),
     },
   ];
