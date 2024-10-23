@@ -9,13 +9,10 @@ interface ModalRootProps {
 
 export function ModalRoot({children, title}: ModalRootProps){
     return(
-    
     <Box sx={ModalStyle}>
-        
         <Typography id="modal-modal-title" variant="h6" component="h2">
             {title}
         </Typography>
-
         {children}
     </Box>
         

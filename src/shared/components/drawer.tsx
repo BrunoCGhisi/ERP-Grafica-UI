@@ -24,8 +24,9 @@ import ListItemText from "@mui/material/ListItemText";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'; // Banco
 import ClassIcon from '@mui/icons-material/Class'; // categoria
 import BadgeIcon from '@mui/icons-material/Badge'; // cliente
-import InventoryIcon from '@mui/icons-material/Inventory'; //compra
+import LocalMallIcon from '@mui/icons-material/LocalMall'; //compra
 import CreditCardIcon from '@mui/icons-material/CreditCard'; //forma pagamento
+import InventoryIcon from '@mui/icons-material/Inventory'; //insumos
 import LayersIcon from '@mui/icons-material/Layers';
 import AccountBoxIcon from '@mui/icons-material/AccountBox'; //usuario
 import SellIcon from '@mui/icons-material/Sell'; //venda
@@ -157,6 +158,7 @@ const MiniDrawer = () => {
             "Cliente",
             "Compra",
             "Forma_pgto",
+            "Insumo",
             "Produto",
             "Usuario",
             "Venda",
@@ -183,13 +185,14 @@ const MiniDrawer = () => {
                   {index === 0 && <AccountBalanceIcon />}
                   {index === 1 && <ClassIcon />}
                   {index === 2 && <BadgeIcon />}
-                  {index === 3 && <InventoryIcon />}
+                  {index === 3 && <LocalMallIcon />}
                   {index === 4 && <CreditCardIcon />}
-                  {index === 5 && <LayersIcon />}
-                  {index === 6 && <AccountBoxIcon />}
-                  {index === 7 && <SellIcon />}
+                  {index === 5 && <InventoryIcon />}
+                  {index === 6 && <LayersIcon />}
+                  {index === 7 && <AccountBoxIcon />}
+                  {index === 8 && <SellIcon />}
+                  
                 </ListItemIcon>
-
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
