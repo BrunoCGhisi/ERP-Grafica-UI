@@ -8,6 +8,7 @@ export const DarkTheme = createTheme({
       dark: orange[500],
       light: orange[300],
       contrastText: "#fff",
+      
     },
     secondary: {
       main: cyan[400],
@@ -18,6 +19,13 @@ export const DarkTheme = createTheme({
     background: {
       paper: "#303134",
       default: "#212124",
+    },
+    text: {
+      primary: "#fff",
+      secondary: "#bbb", 
+    },
+    action: {
+      active: "#fff", 
     },
   },
 });

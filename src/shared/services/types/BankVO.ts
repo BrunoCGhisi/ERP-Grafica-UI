@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ProductCategoryDataRow } from "./ProductCategoryVO";
 
 
 export const bancoSchema = z.object({
