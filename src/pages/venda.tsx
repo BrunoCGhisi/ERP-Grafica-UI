@@ -85,9 +85,8 @@ const Venda = () => {
 
   const loadSales = async () => {
     const salesData = await getSales();
-    setSales(salesData) 
-  };
-
+    setSales(salesData)
+};
   const handleAdd = async (data: vendaSchemaType) => {
     const response = await postSale(data);
     console.log(response.data.info) // verificar se vem vazio e colocar num alert vapo fiii
@@ -170,7 +169,6 @@ useEffect(() => {
       ),
     },
   ];
-  console.log(sales.map((venda) => venda.dataAtual  ))
   const rows = sales.map((venda) => ({
     id: venda.id,// Use the index as a fallback if venda.id is null or undefined
     idCliente: venda.idCliente,
