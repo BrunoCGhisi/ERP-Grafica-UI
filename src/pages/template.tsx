@@ -27,8 +27,6 @@ interface TemplateProps {
 }
 
 const Template = ({ toggleTheme }: TemplateProps) => {
-
-
   const [users, setUsers] = useState<UserVO[]>([]);
   const [userId, setUserId] = useState<string>("");
   const [nome, setNome] = useState<string>("");
@@ -160,134 +158,135 @@ const Template = ({ toggleTheme }: TemplateProps) => {
 
   return (
     <Box>
-      <MiniDrawer />
-      <Box sx={SpaceStyle}>
-        <Typography>Usuários</Typography>
-        <Box>
-          <Button onClick={toggleTheme}>Alterar tema</Button>
-          <Stack direction="row" spacing={2}>
-            <Button
-              onClick={addOn}
-              variant="outlined"
-              startIcon={<AddCircleOutlineIcon />}
+      <MiniDrawer>
+        <Box sx={SpaceStyle}>
+          <Typography>Usuários</Typography>
+          <Box>
+            <Button onClick={toggleTheme}>Alterar tema</Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                onClick={addOn}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Adicionar
+              </Button>
+            </Stack>
+
+            <Modal
+              open={adopen}
+              onClose={addOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              Adicionar
-            </Button>
-          </Stack>
+              <Box sx={ModalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Novo usuário
+                </Typography>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText="Obrigatório"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="Email"
+                  helperText="Obrigatório"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="IsAdm"
+                  helperText="Obrigatório"
+                  value={isAdm}
+                  onChange={(e) => setIsAdm(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="Senha"
+                  type="password" // Corrigido para senha
+                  helperText="Obrigatório"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <Button
+                  onClick={postUsers}
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Cadastrar
+                </Button>
+              </Box>
+            </Modal>
 
-          <Modal
-            open={adopen}
-            onClose={addOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo usuário
-              </Typography>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="Email"
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="IsAdm"
-                helperText="Obrigatório"
-                value={isAdm}
-                onChange={(e) => setIsAdm(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="Senha"
-                type="password" // Corrigido para senha
-                helperText="Obrigatório"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-              <Button
-                onClick={postUsers}
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Cadastrar
-              </Button>
-            </Box>
-          </Modal>
-
-          <Modal
-            open={popen}
-            onClose={putOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Editar Usuário
-              </Typography>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                helperText="Obrigatório"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="Email"
-                helperText="Obrigatório"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="Senha"
-                type="password" // Corrigido para senha
-                helperText="Obrigatório"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="IsAdm"
-                helperText="Obrigatório"
-                value={isAdm}
-                onChange={(e) => setIsAdm(e.target.value)}
-              />
-              <Button
-                onClick={putUsers}
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Alterar
-              </Button>
-            </Box>
-          </Modal>
-        </Box>
-        <Box sx={GridStyle}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 6,
+            <Modal
+              open={popen}
+              onClose={putOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={ModalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Editar Usuário
+                </Typography>
+                <TextField
+                  id="outlined-helperText"
+                  label="Nome"
+                  helperText="Obrigatório"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="Email"
+                  helperText="Obrigatório"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="Senha"
+                  type="password" // Corrigido para senha
+                  helperText="Obrigatório"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <TextField
+                  id="outlined-helperText"
+                  label="IsAdm"
+                  helperText="Obrigatório"
+                  value={isAdm}
+                  onChange={(e) => setIsAdm(e.target.value)}
+                />
+                <Button
+                  onClick={putUsers}
+                  variant="outlined"
+                  startIcon={<DoneIcon />}
+                >
+                  Alterar
+                </Button>
+              </Box>
+            </Modal>
+          </Box>
+          <Box sx={GridStyle}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[6]}
-          />
+              }}
+              pageSizeOptions={[6]}
+            />
+          </Box>
         </Box>
-      </Box>
+      </MiniDrawer>
     </Box>
   );
 };

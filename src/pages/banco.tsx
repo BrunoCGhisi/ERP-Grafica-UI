@@ -17,14 +17,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import { MiniDrawer } from "../shared/components";
-
+import { getToken } from "../shared/services";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
-import { bancoSchema, BancoDataRow, bancoSchemaType } from "../shared/services/types";
+import {
+  bancoSchema,
+  BancoDataRow,
+  bancoSchemaType,
+} from "../shared/services/types";
 import { getBanks, postBank, putBank, deleteBank } from "../shared/services";
 
 const Banco = () => {
@@ -44,9 +48,8 @@ const Banco = () => {
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => {
-    setAdOpen(true), reset();
-  };
+  const addOn = () => {setAdOpen(true), reset();
+};
   const addOf = () => setAdOpen(false);
 
   // População da Modal ----------------------------
@@ -68,7 +71,7 @@ const Banco = () => {
 
   const loadBanks = async () => {
     const banksData = await getBanks();
-    setBanks(banksData) 
+    setBanks(banksData);
   };
 
   const handleAdd = async (data: bancoSchemaType) => {
@@ -92,7 +95,6 @@ const Banco = () => {
     loadBanks();
   }, [open]);
 
-
   const columns: GridColDef<BancoDataRow>[] = [
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
@@ -107,7 +109,9 @@ const Banco = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
+          <IconButton
+            onClick={() => row.id !== undefined && handleDelete(row.id)}
+          >
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
@@ -126,117 +130,117 @@ const Banco = () => {
 
   return (
     <Box>
-      <MiniDrawer> 
-      <Box sx={SpaceStyle}>
-        <Typography>Estamos dentro do banco </Typography>
-        <Typography>(Não iremos cometer nenhum assalto...)</Typography>
-        <Box>
-          <Stack direction="row" spacing={2}>
-            <Button
-              onClick={addOn}
-              variant="outlined"
-              startIcon={<AddCircleOutlineIcon />}
+      <MiniDrawer>
+        <Box sx={SpaceStyle}>
+          <Typography>Estamos dentro do banco </Typography>
+          <Typography>(Não iremos cometer nenhum assalto...)</Typography>
+          <Box>
+            <Stack direction="row" spacing={2}>
+              <Button
+                onClick={addOn}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Adicionar
+              </Button>
+            </Stack>
+
+            <Modal
+              open={adopen}
+              onClose={addOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              Adicionar
-            </Button>
-          </Stack>
+              <Box sx={ModalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Novo banco
+                </Typography>
+                <form onSubmit={handleSubmit(handleAdd)}>
+                  <TextField
+                    id="outlined-helperText"
+                    label="Nome"
+                    helperText={errors.nome?.message || "Obrigatório"}
+                    error={!!errors.nome}
+                    {...register("nome")}
+                  />
+                  <TextField
+                    id="outlined-helperText"
+                    label="valorTotal"
+                    helperText={errors.valorTotal?.message || "Obrigatório"}
+                    error={!!errors.valorTotal}
+                    {...register("valorTotal", { valueAsNumber: true })}
+                  />
 
-          <Modal
-            open={adopen}
-            onClose={addOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo banco
-              </Typography>
-              <form onSubmit={handleSubmit(handleAdd)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="valorTotal"
-                  helperText={errors.valorTotal?.message || "Obrigatório"}
-                  error={!!errors.valorTotal}
-                  {...register("valorTotal", { valueAsNumber: true })}
-                />
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    startIcon={<DoneIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </form>
+              </Box>
+            </Modal>
 
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Cadastrar
-                </Button>
-              </form>
-            </Box>
-          </Modal>
+            {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
 
-          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+            <Modal
+              open={open}
+              onClose={toggleModal}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <ModalRoot title="Editando Banco">
+                <form onSubmit={handleSubmit(handleUpdate)}>
+                  <TextField
+                    id="outlined-helperText"
+                    label="Nome"
+                    helperText={errors.nome?.message || "Obrigatório"}
+                    error={!!errors.nome}
+                    {...register("nome")}
+                  />
+                  <TextField
+                    id="outlined-helperText"
+                    label="valorTotal"
+                    helperText={errors.valorTotal?.message || "Obrigatório"}
+                    error={!!errors.valorTotal}
+                    {...register("valorTotal", { valueAsNumber: true })}
+                  />
 
-          <Modal
-            open={open}
-            onClose={toggleModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <ModalRoot title="Editando Banco">
-              <form onSubmit={handleSubmit(handleUpdate)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="valorTotal"
-                  helperText={errors.valorTotal?.message || "Obrigatório"}
-                  error={!!errors.valorTotal}
-                  {...register("valorTotal", { valueAsNumber: true })}
-                />
+                  <TextField
+                    id="outlined-helperText"
+                    label="valorTotal"
+                    helperText={errors.valorTotal?.message || "Obrigatório"}
+                    error={!!errors.valorTotal}
+                    {...register("valorTotal", { valueAsNumber: true })}
+                  />
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    startIcon={<DoneIcon />}
+                  >
+                    Atualizar
+                  </Button>
+                </form>
+              </ModalRoot>
+            </Modal>
+          </Box>
 
-                <TextField
-                  id="outlined-helperText"
-                  label="valorTotal"
-                  helperText={errors.valorTotal?.message || "Obrigatório"}
-                  error={!!errors.valorTotal}
-                  {...register("valorTotal", { valueAsNumber: true })}
-                />
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Atualizar
-                </Button>
-              </form>
-            </ModalRoot>
-          </Modal>
-        </Box>
-
-        <Box sx={GridStyle}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 6,
+          <Box sx={GridStyle}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[6]}
-          />
+              }}
+              pageSizeOptions={[6]}
+            />
+          </Box>
         </Box>
-      </Box>
       </MiniDrawer>
     </Box>
   );
