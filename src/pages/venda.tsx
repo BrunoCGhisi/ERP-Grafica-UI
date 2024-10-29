@@ -234,7 +234,7 @@ useEffect(() => {
                 defaultValue={clientes.length > 0 ? clientes[0].nome : "Sem clientes"}>
                   {clientes && clientes.map((cliente) => (
                     
-                    <MenuItem value={cliente.id}>{cliente.nome}</MenuItem>))}
+                    <MenuItem key={cliente.id} value={cliente.id}>{cliente.nome}</MenuItem>))}
               </Select>
 
 
@@ -321,7 +321,7 @@ useEffect(() => {
                 defaultValue={clientes.length > 0 ? clientes[0].nome : "Sem clientes"}>
                   {clientes && clientes.map((cliente) => (
                     
-                    <MenuItem value={cliente.id}>{cliente.nome}</MenuItem>))}
+                    <MenuItem key={cliente.id} value={cliente.id}>{cliente.nome}</MenuItem>))}
               </Select>
 
 

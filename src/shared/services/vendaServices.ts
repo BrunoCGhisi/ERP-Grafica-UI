@@ -5,6 +5,7 @@ const BASE_URL = "http://localhost:3000/venda";
 
 export const getSales = async () => {
   const response = await axios.get(BASE_URL);
+  console.log(response.data.vendas)
   return response.data.vendas;
 };
 

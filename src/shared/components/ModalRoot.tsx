@@ -1,19 +1,19 @@
-import { Box, Typography } from "@mui/material"
-import { ReactNode } from "react"
-import  { ModalStyle } from '../styles'
- 
+import { Box, Typography } from "@mui/material";
+import { ReactNode, forwardRef } from "react";
+import { ModalStyle } from "../styles";
+
 interface ModalRootProps {
-    children: ReactNode;
-    title: string;
+  children: ReactNode;
+  title: string;
 }
 
-export function ModalRoot({children, title}: ModalRootProps){
-    return(
-    <Box sx={ModalStyle}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-            {title}
-        </Typography>
-        {children}
+export const ModalRoot = forwardRef<HTMLDivElement, ModalRootProps>(
+  ({ title, children }, ref) => (
+    <Box sx={ModalStyle} ref={ref}>
+      <Typography id="modal-modal-title" variant="h6" component="h2">
+        {title}
+      </Typography>
+      {children}
     </Box>
-        
-)}
+  )
+);
