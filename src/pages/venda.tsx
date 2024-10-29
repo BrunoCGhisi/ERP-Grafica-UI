@@ -59,6 +59,7 @@ const Venda = () => {
 
   const today = new Date();
   const formatDate = (dateString: string) => {
+    console.log(dateString)
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       return "Invalid Date";
@@ -107,7 +108,7 @@ const Venda = () => {
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
-    
+    console.log(data); 
     const response = await postSale(data);
     console.log(response.data.info); // verificar se vem vazio e colocar num alert vapo fiii
     loadSales();
@@ -192,7 +193,7 @@ const Venda = () => {
     id: venda.id, // Use the index as a fallback if venda.id is null or undefined
     idCliente: venda.idCliente,
     idVendedor: venda.idVendedor,
-    dataAtual: formatDate(venda.dataAtual),
+    dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"), 
     isVendaOS: venda.isVendaOS,
     situacao: venda.situacao,
     desconto: venda.desconto,
@@ -338,6 +339,16 @@ const Venda = () => {
                     {...register("quantidade")}
                   />
 
+                  <TextField
+                    type="number"
+                    id="outlined-helperText"
+                    label="Forma de Pagamento"
+                    helperText={errors.idForma_pgto?.message || "Obrigatório"}
+                    error={!!errors.idForma_pgto}
+                    defaultValue={0}
+                    {...register("idForma_pgto")}
+                  />
+
                   <Typography> Financeiro </Typography>
 
                   <TextField
@@ -397,7 +408,7 @@ const Venda = () => {
                     InputLabelProps={{ shrink: true }}
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                    defaultValue={dayjs(today).format("dd/mm/aaaa")}
                     {...register("dataAtual")}
                   />
                   <TextField

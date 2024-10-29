@@ -14,6 +14,7 @@ export const vendaSchema  = z.object({
   quantidade: z.coerce.number(),
   //Financeiro
   parcelas: z.coerce.number(),
+  idForma_pgto: z.coerce.number(),
 });
 
 export interface VendaDataRow {
