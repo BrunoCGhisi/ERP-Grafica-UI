@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const userSchema = z.object({
+export const usuarioSchema = z.object({
   id: z.number().optional(),
   nome: z.string(),
   email: z.string(),
@@ -16,4 +16,4 @@ export interface UsuarioDataRow {
   isAdm: boolean;
 }
 
-export type userSchemaType = z.infer<typeof userSchema>;
+export type usuarioSchemaType = z.infer<typeof usuarioSchema>;

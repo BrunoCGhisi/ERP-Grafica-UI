@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const vendaSchema = z.object({
+export const vendaSchema  = z.object({
   //venda
   id: z.number().optional(),
   idCliente: z.number(),
@@ -11,9 +11,9 @@ export const vendaSchema = z.object({
   desconto: z.number(),
   //vendaProduto
   idProduto: z.number(),
-  quantidade: z.number(),
+  quantidade: z.coerce.number(),
   //Financeiro
-  parcelas: z.number().optional(),
+  parcelas: z.coerce.number(),
 });
 
 export interface VendaDataRow {
@@ -26,4 +26,4 @@ export interface VendaDataRow {
   desconto: number;
 }
 
-export type vendaSchemaType = z.infer<typeof vendaSchema>;
+export type vendaSchemaType = z.infer<typeof vendaSchema >;

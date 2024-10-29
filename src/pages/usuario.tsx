@@ -23,28 +23,31 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
 import {
-  userSchema,
+  usuarioSchema,
   UsuarioDataRow,
-  userSchemaType,
+  usuarioSchemaType,
 } from "../shared/services/types";
 
 import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
 
 import { getToken } from "../shared/services/payload";
 
+
+
 const Usuario = () => {
-  const [user, setUser] = useState<userSchemaType[]>([]);
+  const [user, setUser] = useState<usuarioSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
-  const [userId, setUserId] = useState<number | null>(null);
-  const [nome, setNome] = useState<string | null>(null);
-  const [isAdm, setIsAdm] = useState<boolean | null>(null);
+  const [userId, setUserId] = useState<number | null>(null); 
+  const [nome, setNome] = useState<string | null>(null); 
+  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
 
   const {
     register,
@@ -53,8 +56,8 @@ const Usuario = () => {
     control,
     setValue,
     formState: { errors },
-  } = useForm<userSchemaType>({
-    resolver: zodResolver(userSchema),
+  } = useForm<usuarioSchemaType>({
+    resolver: zodResolver(usuarioSchema),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
@@ -75,6 +78,7 @@ const Usuario = () => {
       setValue("id", selectedData.id);
       setValue("nome", selectedData.nome);
       setValue("email", selectedData.email);
+      setValue("senha", selectedData.senha);
       setValue("isAdm", selectedData.isAdm);
     }
   }, [selectedData, setValue]);
@@ -85,14 +89,13 @@ const Usuario = () => {
     setUser(usersData);
   };
 
-  const handleAdd = async (data: userSchemaType) => {
+  const handleAdd = async (data: usuarioSchemaType) => {
     await postUser(data);
     loadUsers();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: userSchemaType) => {
-    console.log("Dados enviados para a atualização:", data); // Debugging
+  const handleUpdate = async (data: usuarioSchemaType) => {
     await putUser(data);
     loadUsers();
     toggleModal();
@@ -123,6 +126,7 @@ const Usuario = () => {
     { field: "id", headerName: "ID", align: "left", flex: 0 },
     { field: "nome", headerName: "Nome", editable: false, flex: 0 },
     { field: "email", headerName: "Email", editable: false, flex: 0 },
+    { field: "senha", headerName: "Senha", editable: false, flex: 0 },
     { field: "isAdm", headerName: "Adm", editable: false, flex: 0 },
     {
       field: "acoes",
@@ -134,19 +138,16 @@ const Usuario = () => {
       renderCell: ({ row }) => (
         <div>
           {isAdm ? (
-            <>
-              <IconButton
-                onClick={() => row.id !== undefined && handleDelete(row.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => row.id !== undefined && handleEdit(row)}
-              >
-                <EditIcon />
-              </IconButton>
-            </>
-          ) : null}
+  <>
+    <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
+      <DeleteIcon />
+    </IconButton>
+    <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+      <EditIcon />
+    </IconButton>
+  </>
+) : null}
+          
         </div>
       ),
     },
@@ -161,10 +162,10 @@ const Usuario = () => {
 
   return (
     <Box>
-      <MiniDrawer>
+      <MiniDrawer />
       <Box sx={SpaceStyle}>
         <Typography>Usuários</Typography>
-
+        
         <Box>
           <Stack direction="row" spacing={2}>
             <Button
@@ -249,15 +250,7 @@ const Usuario = () => {
                   error={!!errors.nome}
                   {...register("nome")}
                 />
-
-                <TextField
-                  id="outlined-helperText"
-                  label="Email"
-                  helperText={errors.email?.message || "Obrigatório"}
-                  error={!!errors.email}
-                  {...register("email")}
-                />
-
+                
                 <InputLabel id="demo-simple-select-label">
                   Adm ou Funcionário
                 </InputLabel>
@@ -300,7 +293,6 @@ const Usuario = () => {
           />
         </Box>
       </Box>
-      </MiniDrawer>
     </Box>
   );
 };

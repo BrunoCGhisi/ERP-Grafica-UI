@@ -26,9 +26,9 @@ import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 
 import {
-  paymentSchema,
+  formaPgtoSchema,
   FormaPgtoDataRow,
-  paymentSchemaType,
+  formaPgtoSchemaType,
 } from "../shared/services/types";
 
 import {
@@ -39,7 +39,7 @@ import {
 } from "../shared/services";
 
 const FormaPgto = () => {
-  const [paymentWays, setPaymentWays] = useState<paymentSchemaType[]>([]);
+  const [paymentWays, setPaymentWays] = useState<formaPgtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<FormaPgtoDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
@@ -50,8 +50,8 @@ const FormaPgto = () => {
     control,
     setValue,
     formState: { errors },
-  } = useForm<paymentSchemaType>({
-    resolver: zodResolver(paymentSchema),
+  } = useForm<formaPgtoSchemaType>({
+    resolver: zodResolver(ddd),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
@@ -81,13 +81,13 @@ const FormaPgto = () => {
     setPaymentWays(productCategoriesData);
   };
 
-  const handleAdd = async (data: paymentSchemaType) => {
+  const handleAdd = async (data: formaPgtoSchemaType) => {
     await postPaymentWays(data);
     loadPaymentWays();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: paymentSchemaType) => {
+  const handleUpdate = async (data: formaPgtoSchemaType) => {
     await putPaymentWays(data);
     loadPaymentWays();
     toggleModal();

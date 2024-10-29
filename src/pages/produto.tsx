@@ -261,7 +261,7 @@ const Produto = () => {
                   >
                     {insumos &&
                       insumos.map((insumo) => (
-                        <MenuItem value={insumo.id}>{insumo.nome}</MenuItem>
+                        <MenuItem key={insumo.id} value={insumo.id}>{insumo.nome}</MenuItem>
                       ))}
                   </Select>
 
@@ -282,7 +282,7 @@ const Produto = () => {
                   >
                     {categorias &&
                       categorias.map((categoria) => (
-                        <MenuItem value={categoria.id}>
+                        <MenuItem key={categoria.id} value={categoria.id}>
                           {categoria.categoria}
                         </MenuItem>
                       ))}
@@ -375,7 +375,7 @@ const Produto = () => {
                   >
                     {insumos &&
                       insumos.map((insumo) => (
-                        <MenuItem value={insumo.id}>{insumo.nome}</MenuItem>
+                        <MenuItem key={insumo.id} value={insumo.id}>{insumo.nome}</MenuItem>
                       ))}
                   </Select>
 
@@ -396,7 +396,7 @@ const Produto = () => {
                   >
                     {categorias &&
                       categorias.map((categoria) => (
-                        <MenuItem value={categoria.id}>
+                        <MenuItem key={categoria.id} value={categoria.id}>
                           {categoria.categoria}
                         </MenuItem>
                       ))}
