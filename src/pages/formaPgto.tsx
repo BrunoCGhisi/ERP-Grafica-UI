@@ -51,7 +51,7 @@ const FormaPgto = () => {
     setValue,
     formState: { errors },
   } = useForm<formaPgtoSchemaType>({
-    resolver: zodResolver(ddd),
+    resolver: zodResolver(formaPgtoSchema),
   });
 
   // Modal ADD -----------------------------------------------------------------------------------------------------

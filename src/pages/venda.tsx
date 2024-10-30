@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
   IconButton,
+  Alert,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
@@ -58,17 +59,14 @@ const Venda = () => {
   }, []);
 
   const today = new Date();
-  const formatDate = (dateString: string) => {
-    console.log(dateString)
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
-    }
-    return date.toLocaleDateString("pt-BR");
-  };
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+ 
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
+  const [formas_pgto, setFormas_pgto] = useState<produtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
 
@@ -101,6 +99,15 @@ const Venda = () => {
     getProducts();
   }, []);
 
+  // Trazendo formas pgto --------------------------------------------------
+  useEffect(() => {
+    const getPaymentWays= async () => {
+      const response = await axios.get("http://localhost:3000/forma_pgto");
+      setFormas_pgto(response.data);
+    };
+    getPaymentWays();
+  }, []);
+
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadSales = async () => {
@@ -108,9 +115,11 @@ const Venda = () => {
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
-    console.log(data); 
     const response = await postSale(data);
-    console.log(response.data.info); // verificar se vem vazio e colocar num alert vapo fiii
+    if (response.data.info){
+      setAlertMessage(response.data.info);
+      setShowAlert(true);
+    }
     loadSales();
     setAdOpen(false);
   };
@@ -339,6 +348,26 @@ const Venda = () => {
                     {...register("quantidade")}
                   />
 
+                  {/* <InputLabel id="demo-simple-select-label">
+                    Produtos
+                  </InputLabel>
+                  <Select
+                    {...register("idForma_pgto")}
+                    labelId="select-label"
+                    id="demo-simple-select"
+                    label="idForma_pgto"
+                    error={!!errors.idForma_pgto}
+                    defaultValue={
+                      formas_pgto.length > 0 ? formas_pgto[1].nome : "Sem formas_pgto"
+                    }
+                  >
+                    {formas_pgto &&
+                      formas_pgto.map((forma_pgto) => (
+                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.nome}</MenuItem>
+                      ))}
+                  </Select>
+
+
                   <TextField
                     type="number"
                     id="outlined-helperText"
@@ -347,7 +376,7 @@ const Venda = () => {
                     error={!!errors.idForma_pgto}
                     defaultValue={0}
                     {...register("idForma_pgto")}
-                  />
+                  /> */}
 
                   <Typography> Financeiro </Typography>
 
@@ -475,6 +504,11 @@ const Venda = () => {
           </Box>
         </Box>
       </MiniDrawer>
+
+      {showAlert && (
+        <Alert severity="info">{alertMessage}</Alert>
+      )       
+      }   
     </Box>
   );
 };
