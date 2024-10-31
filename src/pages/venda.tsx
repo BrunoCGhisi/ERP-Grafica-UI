@@ -29,6 +29,7 @@ import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 import { MiniDrawer } from "../shared/components";
 import dayjs from "dayjs";
+import './venda.css'
 
 import {
   vendaSchema,
@@ -61,7 +62,7 @@ const Venda = () => {
 
   const today = new Date();
 
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
  
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
@@ -117,7 +118,7 @@ const Venda = () => {
   };
   const handleAdd = async (data: vendaSchemaType) => {
     const response = await postSale(data);
-    if (response.data.info){
+    if (response.data.message){
       setAlertMessage(response.data.message);
       setShowAlert(true);
     }
@@ -212,12 +213,14 @@ const Venda = () => {
     reset();
   }, [clienteSchema, reset]);
 
+  useEffect(() => {
+    console.log(showAlert)
+  }, [showAlert]);
+
   return (
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Typography>estamos dentro das vendas</Typography>
-          <Typography>(Não somos uma venda)</Typography>
           <Box>
             <Stack direction="row" spacing={2}>
               <Button
@@ -494,9 +497,10 @@ const Venda = () => {
         </Box>
       </MiniDrawer>
 
-      {showAlert === true ? (
-        <Alert severity="info">{alertMessage}</Alert>
-      )       : null
+      {showAlert && (
+        <Alert
+        severity="info">sfjhsjkfhsdf</Alert>
+      )      
       }   
     </Box>
   );
