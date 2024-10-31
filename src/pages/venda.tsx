@@ -34,6 +34,7 @@ import {
   vendaSchema,
   VendaDataRow,
   vendaSchemaType,
+  formaPgtoSchemaType,
   produtoSchemaType,
 } from "../shared/services/types";
 import { getSales, postSale, putSale, deleteSale } from "../shared/services";
@@ -66,7 +67,7 @@ const Venda = () => {
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
-  const [formas_pgto, setFormas_pgto] = useState<produtoSchemaType[]>([]);
+  const [formas_pgto, setFormas_pgto] = useState<formaPgtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
 
@@ -103,7 +104,7 @@ const Venda = () => {
   useEffect(() => {
     const getPaymentWays= async () => {
       const response = await axios.get("http://localhost:3000/forma_pgto");
-      setFormas_pgto(response.data);
+      setFormas_pgto(response.data.formas_pgto);
     };
     getPaymentWays();
   }, []);
@@ -117,7 +118,7 @@ const Venda = () => {
   const handleAdd = async (data: vendaSchemaType) => {
     const response = await postSale(data);
     if (response.data.info){
-      setAlertMessage(response.data.info);
+      setAlertMessage(response.data.message);
       setShowAlert(true);
     }
     loadSales();
@@ -348,8 +349,8 @@ const Venda = () => {
                     {...register("quantidade")}
                   />
 
-                  {/* <InputLabel id="demo-simple-select-label">
-                    Produtos
+                  <InputLabel id="demo-simple-select-label">
+                    Forma de pagamento
                   </InputLabel>
                   <Select
                     {...register("idForma_pgto")}
@@ -358,25 +359,13 @@ const Venda = () => {
                     label="idForma_pgto"
                     error={!!errors.idForma_pgto}
                     defaultValue={
-                      formas_pgto.length > 0 ? formas_pgto[1].nome : "Sem formas_pgto"
+                      formas_pgto.length > 0 ? formas_pgto[1].tipo : "Sem formas_pgto"
                     }
                   >
-                    {formas_pgto &&
-                      formas_pgto.map((forma_pgto) => (
-                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.nome}</MenuItem>
+                    {formas_pgto && formas_pgto.map((forma_pgto) => (
+                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.tipo}</MenuItem>
                       ))}
                   </Select>
-
-
-                  <TextField
-                    type="number"
-                    id="outlined-helperText"
-                    label="Forma de Pagamento"
-                    helperText={errors.idForma_pgto?.message || "Obrigatório"}
-                    error={!!errors.idForma_pgto}
-                    defaultValue={0}
-                    {...register("idForma_pgto")}
-                  /> */}
 
                   <Typography> Financeiro </Typography>
 
@@ -505,9 +494,9 @@ const Venda = () => {
         </Box>
       </MiniDrawer>
 
-      {showAlert && (
+      {showAlert === true ? (
         <Alert severity="info">{alertMessage}</Alert>
-      )       
+      )       : null
       }   
     </Box>
   );
