@@ -62,8 +62,6 @@ const Venda = () => {
 
   const today = new Date();
 
-  const dataMui = dayjs(today).format("dd/mm/aaaa")
-
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
  
@@ -83,6 +81,9 @@ const Venda = () => {
     formState: { errors },
   } = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema),
+    defaultValues: {
+      vendas_produtos: [{ idProduto: 0, quantidade: 0 }] // Inicializa com um produto
+    }
   });
 
   // Trazendo clientes--------------------------------------------------
@@ -229,7 +230,10 @@ const Venda = () => {
     console.log(showAlert)
   }, [showAlert]);
 
+
+
   return (
+    
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
@@ -333,17 +337,17 @@ const Venda = () => {
                       </Select>
                     )}
                   />
-
+                   
                   <Typography> Venda Produto </Typography>
                   <InputLabel id="demo-simple-select-label">
                     Produtos
                   </InputLabel>
                   <Select
-                    {...register("idProduto")}
+                    {...register("vendas_produtos.0.idProduto")}
                     labelId="select-label"
                     id="demo-simple-select"
                     label="idProduto"
-                    error={!!errors.idProduto}
+                    error={!!errors.vendas_produtos?.[0]?.idProduto}
                     defaultValue={
                       produtos.length > 0 ? produtos[1].nome : "Sem produtos"
                     }
@@ -354,15 +358,16 @@ const Venda = () => {
                       ))}
                   </Select>
 
+
                   <TextField
                     type="number"
                     id="outlined-helperText"
                     label="Quantidade"
-                    helperText={errors.quantidade?.message || "Obrigatório"}
-                    error={!!errors.quantidade}
+                    helperText={errors.vendas_produtos?.[0]?.quantidade?.message || "Obrigatório"}
+                    error={!!errors.vendas_produtos?.[0]?.quantidade}
                     defaultValue={0}
-                    {...register("quantidade")}
-                  />
+                    {...register("vendas_produtos.0.quantidade")}
+                  /> 
 
                   <InputLabel id="demo-simple-select-label">
                     Forma de pagamento
@@ -437,13 +442,12 @@ const Venda = () => {
                   <TextField
                     type="date"
                     id="outlined-helperText"
-                    label={"Data compra"}
+                    label={"Data Venda"}
                     InputLabelProps={{ shrink: true }}
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
-                    defaultValue={dataMui}
-                    dataFormatada = {dayjs("dataAtual").format("yyyy-MM-dd")}
-                    {...register(dataFormatada)}
+                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                    {...register('dataAtual')}
                   />
                   <TextField
                     id="outlined-helperText"
@@ -481,6 +485,65 @@ const Venda = () => {
                       </Select>
                     )}
                   />
+
+                  <InputLabel id="demo-simple-select-label">
+                    Forma de pagamento
+                  </InputLabel>
+                  <Select
+                    {...register("idForma_pgto")}
+                    labelId="select-label"
+                    id="demo-simple-select"
+                    label="idForma_pgto"
+                    error={!!errors.idForma_pgto}
+                    defaultValue={
+                      formas_pgto.length > 0 ? formas_pgto[1].tipo : "Sem formas_pgto"
+                    }
+                  >
+                    {formas_pgto && formas_pgto.map((forma_pgto) => (
+                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.tipo}</MenuItem>
+                      ))}
+                  </Select>
+
+                  <TextField
+                    type="number"
+                    id="outlined-helperText"
+                    label="N° Parcelas"
+                    helperText={errors.parcelas?.message || "Obrigatório"}
+                    error={!!errors.parcelas}
+                    defaultValue={0}
+                    {...register("parcelas")}
+                  />
+
+                  <Typography> Venda Produto </Typography>
+                  <InputLabel id="demo-simple-select-label">
+                    Produtos
+                  </InputLabel>
+                  <Select
+                    {...register("idProduto")}
+                    labelId="select-label"
+                    id="demo-simple-select"
+                    label="idProduto"
+                    error={!!errors.idProduto}
+                    defaultValue={
+                      produtos.length > 0 ? produtos[1].nome : "Sem produtos"
+                    }
+                  >
+                    {produtos &&
+                      produtos.map((produto) => (
+                        <MenuItem key={produto.id} value={produto.id}>{produto.nome}</MenuItem>
+                      ))}
+                  </Select>
+
+                  <TextField
+                    type="number"
+                    id="outlined-helperText"
+                    label="Quantidade"
+                    helperText={errors.quantidade?.message || "Obrigatório"}
+                    error={!!errors.quantidade}
+                    defaultValue={0}
+                    {...register("quantidade")}
+                  />
+
 
                   <Button
                     type="submit"

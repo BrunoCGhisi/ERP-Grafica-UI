@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+
+const vendaProdutoSchema = z.object({
+  idProduto: z.number().optional(),
+  quantidade: z.coerce.number().optional(),
+});
+
 export const vendaSchema  = z.object({
   //venda
   id: z.number().optional(),
@@ -10,8 +16,7 @@ export const vendaSchema  = z.object({
   situacao: z.number(),
   desconto: z.number(),
   //vendaProduto
-  idProduto: z.number(),
-  quantidade: z.coerce.number(),
+  vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
   parcelas: z.coerce.number(),
   idForma_pgto: z.coerce.number(),
