@@ -62,7 +62,9 @@ const Venda = () => {
 
   const today = new Date();
 
-  const [showAlert, setShowAlert] = useState(true);
+  const dataMui = dayjs(today).format("dd/mm/aaaa")
+
+  const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
  
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
@@ -121,13 +123,23 @@ const Venda = () => {
     if (response.data.message){
       setAlertMessage(response.data.message);
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
     }
     loadSales();
     setAdOpen(false);
   };
 
   const handleUpdate = async (data: vendaSchemaType) => {
-    await putSale(data);
+    const response = await putSale(data);
+    if (response.data){
+      setAlertMessage(response.data);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
     loadSales();
     toggleModal();
   };
@@ -402,7 +414,7 @@ const Venda = () => {
               <ModalRoot title="Editar venda">
                 <form onSubmit={handleSubmit(handleUpdate)}>
                   <InputLabel id="demo-simple-select-label">
-                    Categorias
+                    Cliente
                   </InputLabel>
                   <Select
                     {...register("idCliente")}
@@ -429,8 +441,9 @@ const Venda = () => {
                     InputLabelProps={{ shrink: true }}
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
-                    defaultValue={dayjs(today).format("dd/mm/aaaa")}
-                    {...register("dataAtual")}
+                    defaultValue={dataMui}
+                    dataFormatada = {dayjs("dataAtual").format("yyyy-MM-dd")}
+                    {...register(dataFormatada)}
                   />
                   <TextField
                     id="outlined-helperText"
@@ -499,7 +512,7 @@ const Venda = () => {
 
       {showAlert && (
         <Alert
-        severity="info">sfjhsjkfhsdf</Alert>
+        severity="info">{alertMessage}</Alert>
       )      
       }   
     </Box>
