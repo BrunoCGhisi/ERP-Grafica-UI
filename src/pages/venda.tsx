@@ -73,6 +73,7 @@ const Venda = () => {
   const [formas_pgto, setFormas_pgto] = useState<formaPgtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
+  const [formaPagamento, setFormaPagamento] = useState(0);
 
   const {
     register,
@@ -99,10 +100,6 @@ const Venda = () => {
 
   const handleRemoveProduct = (index: number) => {
     remove(index);
-  };
-
-  const onSubmit = (data: vendaSchemaType) => {
-    console.log(data); // Processa a venda com múltiplos produtos
   };
 
   // Trazendo clientes--------------------------------------------------
@@ -140,6 +137,13 @@ const Venda = () => {
     };
     getPaymentWays();
   }, []);
+
+  useEffect(() => {
+    if (formaPagamento === 0 || formaPagamento === 1) {
+      // Define o valor do campo de parcelas para 1 e torna readOnly
+      setValue("parcelas", 1);
+    }
+  }, [formaPagamento, setValue]);
 
   //CRUD -----------------------------------------------------------------------------------------------------
 
@@ -364,9 +368,7 @@ const Venda = () => {
                     )}
                   />
 
-                  <InputLabel id="demo-simple-select-label">
-                    Banco
-                  </InputLabel>
+                  <InputLabel id="demo-simple-select-label">Banco</InputLabel>
 
                   <Select
                     {...register("idBanco")}
@@ -383,29 +385,31 @@ const Venda = () => {
                         </MenuItem>
                       ))}
                   </Select>
-
-                  <InputLabel id="demo-simple-select-label">
-                    Forma Pagamento
-                  </InputLabel>
-                  <Select
-                    {...register("idForma_pgto")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="forma_pgto"
-                    error={!!errors.idForma_pgto}
-                    defaultValue={
-                      formas_pgto.length > 0
-                        ? formas_pgto[0]
-                        : "Sem formas_pgto"
-                    }
-                  >
-                    {formas_pgto &&
-                      formas_pgto.map((forma_pgto) => (
-                        <MenuItem key={forma_pgto.id} value={forma_pgto.tipo}>
-                          {forma_pgto.tipo}
-                        </MenuItem>
-                      ))}
-                  </Select>
+                  
+                  <InputLabel>Forma de Pagamento</InputLabel>
+                  <Controller
+                    name="idForma_pgto"
+                    control={control}
+                    defaultValue={0}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={formaPagamento}
+                        onChange={(e) => {
+                          setFormaPagamento(e.target.value);
+                          field.onChange(e);
+                        }}
+                      >
+                        <MenuItem value={0}>À vista/Dinheiro</MenuItem>
+                        <MenuItem value={1}>Débito</MenuItem>
+                        <MenuItem value={2}>Crédito</MenuItem>
+                        <MenuItem value={3}>Pix</MenuItem>
+                        <MenuItem value={4}>Boleto</MenuItem>
+                        <MenuItem value={5}>À prazo</MenuItem>
+                        <MenuItem value={6}>Cheque</MenuItem>
+                      </Select>
+                    )}
+                  />
 
                   <Typography variant="h6">Produtos da Venda</Typography>
                   {fields.map((item, index) => (
@@ -457,30 +461,16 @@ const Venda = () => {
                     </Box>
                   ))}
 
-                  <Typography> Financeiro </Typography>
-
-                  {formas_pgto[0] ? (
-                    <TextField
-                      type="number"
-                      id="outlined-helperText"
-                      label="N° Parcelas"
-                      inputProps={{ readOnly: true }}
-                      helperText={errors.parcelas?.message || "Obrigatório"}
-                      error={!!errors.parcelas}
-                      defaultValue={1}
-                      {...register("parcelas")}
-                    />
-                  ) : (
-                    <TextField
-                      type="number"
-                      id="outlined-helperText"
-                      label="N° Parcelas"
-                      helperText={errors.parcelas?.message || "Obrigatório"}
-                      error={!!errors.parcelas}
-                      defaultValue={0}
-                      {...register("parcelas")}
-                    />
-                  )}
+                  <Typography>Financeiro</Typography>
+                  <TextField
+                    label="Parcelas"
+                    type="number"
+                    defaultValue={1}
+                    InputProps={{
+                      readOnly: formaPagamento === 0 || formaPagamento === 1,
+                    }}
+                    {...register("parcelas")}
+                  />
 
                   <Button
                     variant="outlined"
