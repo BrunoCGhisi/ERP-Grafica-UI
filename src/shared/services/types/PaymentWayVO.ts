@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const formaPgtoSchema = z.object({
   id: z.number().optional(),
-  tipo: z.string(),
+  tipo: z?.string(),
   idBanco: z.number().optional(),
 });
 

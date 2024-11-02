@@ -1,21 +1,22 @@
 import { z } from "zod";
 
-
 const vendaProdutoSchema = z.object({
   idProduto: z.number().optional(),
   quantidade: z.coerce.number().optional(),
 });
 
-export const vendaSchema  = z.object({
+export const vendaSchema = z.object({
   //venda
   id: z.number().optional(),
+  idBanco: z.number(),
   idCliente: z.number(),
   idVendedor: z.coerce.number(),
   dataAtual: z.string(),
   isVendaOS: z.boolean(),
   situacao: z.number(),
   desconto: z.number(),
-  //vendaProduto
+  tipo: z.number(),
+  //Venda Produto
   vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
   parcelas: z.coerce.number(),
@@ -32,4 +33,4 @@ export interface VendaDataRow {
   desconto: number;
 }
 
-export type vendaSchemaType = z.infer<typeof vendaSchema >;
+export type vendaSchemaType = z.infer<typeof vendaSchema>;

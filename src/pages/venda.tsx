@@ -22,14 +22,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { getToken } from "../shared/services/payload";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
 import { MiniDrawer } from "../shared/components";
 import dayjs from "dayjs";
-import './venda.css'
+import "./venda.css";
 
 import {
   vendaSchema,
@@ -37,12 +37,13 @@ import {
   vendaSchemaType,
   formaPgtoSchemaType,
   produtoSchemaType,
+  bancoSchemaType,
 } from "../shared/services/types";
 import { getSales, postSale, putSale, deleteSale } from "../shared/services";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
-  nome: z.number(),
+  nome: z.string(),
 });
 type clienteSchemaType = z.infer<typeof clienteSchema>;
 
@@ -63,9 +64,10 @@ const Venda = () => {
   const today = new Date();
 
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
- 
+  const [alertMessage, setAlertMessage] = useState("");
+
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
+  const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
   const [formas_pgto, setFormas_pgto] = useState<formaPgtoSchemaType[]>([]);
@@ -82,9 +84,26 @@ const Venda = () => {
   } = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema),
     defaultValues: {
-      vendas_produtos: [{ idProduto: 0, quantidade: 0 }] // Inicializa com um produto
-    }
+      vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
+    },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "vendas_produtos",
+  });
+
+  const handleAddProduct = () => {
+    append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    remove(index);
+  };
+
+  const onSubmit = (data: vendaSchemaType) => {
+    console.log(data); // Processa a venda com múltiplos produtos
+  };
 
   // Trazendo clientes--------------------------------------------------
   useEffect(() => {
@@ -95,7 +114,16 @@ const Venda = () => {
     getClientes();
   }, []);
 
-  // Trazendo Produtos--------------------------------------------------
+  // Trazendo bancos--------------------------------------------------
+  useEffect(() => {
+    const getBancos = async () => {
+      const response = await axios.get("http://localhost:3000/banco/itens");
+      setBancos(response.data);
+    };
+    getBancos();
+  }, []);
+
+  // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
     const getProducts = async () => {
       const response = await axios.get("http://localhost:3000/produto/itens");
@@ -106,7 +134,7 @@ const Venda = () => {
 
   // Trazendo formas pgto --------------------------------------------------
   useEffect(() => {
-    const getPaymentWays= async () => {
+    const getPaymentWays = async () => {
       const response = await axios.get("http://localhost:3000/forma_pgto");
       setFormas_pgto(response.data.formas_pgto);
     };
@@ -120,8 +148,9 @@ const Venda = () => {
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
+    console.log(data);
     const response = await postSale(data);
-    if (response.data.message){
+    if (response.data.message) {
       setAlertMessage(response.data.message);
       setShowAlert(true);
       setTimeout(() => {
@@ -134,7 +163,7 @@ const Venda = () => {
 
   const handleUpdate = async (data: vendaSchemaType) => {
     const response = await putSale(data);
-    if (response.data){
+    if (response.data) {
       setAlertMessage(response.data);
       setShowAlert(true);
       setTimeout(() => {
@@ -217,7 +246,7 @@ const Venda = () => {
     id: venda.id, // Use the index as a fallback if venda.id is null or undefined
     idCliente: venda.idCliente,
     idVendedor: venda.idVendedor,
-    dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"), 
+    dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
     isVendaOS: venda.isVendaOS,
     situacao: venda.situacao,
     desconto: venda.desconto,
@@ -227,13 +256,10 @@ const Venda = () => {
   }, [clienteSchema, reset]);
 
   useEffect(() => {
-    console.log(showAlert)
+    console.log(showAlert);
   }, [showAlert]);
 
-
-
   return (
-    
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
@@ -264,9 +290,9 @@ const Venda = () => {
                     id="outlined-helperText"
                     label="Vendedor"
                     inputProps={{ readOnly: true }}
-                    defaultValue={userId}
                     helperText={errors.idVendedor?.message || "Obrigatório"}
                     error={!!errors.idVendedor}
+                    defaultValue={userId}
                     {...register("idVendedor")}
                   />
 
@@ -337,67 +363,132 @@ const Venda = () => {
                       </Select>
                     )}
                   />
-                   
-                  <Typography> Venda Produto </Typography>
+
                   <InputLabel id="demo-simple-select-label">
-                    Produtos
+                    Banco
                   </InputLabel>
+
                   <Select
-                    {...register("vendas_produtos.0.idProduto")}
+                    {...register("idBanco")}
                     labelId="select-label"
                     id="demo-simple-select"
-                    label="idProduto"
-                    error={!!errors.vendas_produtos?.[0]?.idProduto}
-                    defaultValue={
-                      produtos.length > 0 ? produtos[1].nome : "Sem produtos"
-                    }
+                    label="Banco"
+                    error={!!errors.idBanco}
+                    defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
                   >
-                    {produtos &&
-                      produtos.map((produto) => (
-                        <MenuItem key={produto.id} value={produto.id}>{produto.nome}</MenuItem>
+                    {bancos &&
+                      bancos.map((banco) => (
+                        <MenuItem key={banco.id} value={banco.nome}>
+                          {banco.nome}
+                        </MenuItem>
                       ))}
                   </Select>
 
-
-                  <TextField
-                    type="number"
-                    id="outlined-helperText"
-                    label="Quantidade"
-                    helperText={errors.vendas_produtos?.[0]?.quantidade?.message || "Obrigatório"}
-                    error={!!errors.vendas_produtos?.[0]?.quantidade}
-                    defaultValue={0}
-                    {...register("vendas_produtos.0.quantidade")}
-                  /> 
-
                   <InputLabel id="demo-simple-select-label">
-                    Forma de pagamento
+                    Forma Pagamento
                   </InputLabel>
                   <Select
                     {...register("idForma_pgto")}
                     labelId="select-label"
                     id="demo-simple-select"
-                    label="idForma_pgto"
+                    label="forma_pgto"
                     error={!!errors.idForma_pgto}
                     defaultValue={
-                      formas_pgto.length > 0 ? formas_pgto[1].tipo : "Sem formas_pgto"
+                      formas_pgto.length > 0
+                        ? formas_pgto[0]
+                        : "Sem formas_pgto"
                     }
                   >
-                    {formas_pgto && formas_pgto.map((forma_pgto) => (
-                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.tipo}</MenuItem>
+                    {formas_pgto &&
+                      formas_pgto.map((forma_pgto) => (
+                        <MenuItem key={forma_pgto.id} value={forma_pgto.tipo}>
+                          {forma_pgto.tipo}
+                        </MenuItem>
                       ))}
                   </Select>
 
+                  <Typography variant="h6">Produtos da Venda</Typography>
+                  {fields.map((item, index) => (
+                    <Box
+                      key={item.id}
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                    >
+                      <Controller
+                        control={control}
+                        name={`vendas_produtos.${index}.idProduto` as const}
+                        defaultValue={0}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            error={!!errors.vendas_produtos?.[index]?.idProduto}
+                          >
+                            {produtos.map((produto) => (
+                              <MenuItem key={produto.id} value={produto.id}>
+                                {produto.nome}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        )}
+                      />
+
+                      <TextField
+                        {...register(
+                          `vendas_produtos.${index}.quantidade` as const
+                        )}
+                        type="number"
+                        error={!!errors.vendas_produtos?.[index]?.quantidade}
+                        helperText={
+                          errors.vendas_produtos?.[index]?.quantidade
+                            ?.message || "Quantidade"
+                        }
+                        label="Quantidade"
+                        defaultValue={1}
+                        InputProps={{ inputProps: { min: 1 } }}
+                      />
+
+                      <IconButton
+                        onClick={() => handleRemoveProduct(index)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  ))}
+
                   <Typography> Financeiro </Typography>
 
-                  <TextField
-                    type="number"
-                    id="outlined-helperText"
-                    label="N° Parcelas"
-                    helperText={errors.parcelas?.message || "Obrigatório"}
-                    error={!!errors.parcelas}
-                    defaultValue={0}
-                    {...register("parcelas")}
-                  />
+                  {formas_pgto[0] ? (
+                    <TextField
+                      type="number"
+                      id="outlined-helperText"
+                      label="N° Parcelas"
+                      inputProps={{ readOnly: true }}
+                      helperText={errors.parcelas?.message || "Obrigatório"}
+                      error={!!errors.parcelas}
+                      defaultValue={1}
+                      {...register("parcelas")}
+                    />
+                  ) : (
+                    <TextField
+                      type="number"
+                      id="outlined-helperText"
+                      label="N° Parcelas"
+                      helperText={errors.parcelas?.message || "Obrigatório"}
+                      error={!!errors.parcelas}
+                      defaultValue={0}
+                      {...register("parcelas")}
+                    />
+                  )}
+
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddProduct}
+                  >
+                    Adicionar Produto
+                  </Button>
 
                   <Button
                     type="submit"
@@ -409,7 +500,7 @@ const Venda = () => {
                 </form>
               </Box>
             </Modal>
-            {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+            {/* ------------------UPDATE---------------------------------------------------------------------------- */}
             <Modal
               open={open}
               onClose={toggleModal}
@@ -418,9 +509,7 @@ const Venda = () => {
             >
               <ModalRoot title="Editar venda">
                 <form onSubmit={handleSubmit(handleUpdate)}>
-                  <InputLabel id="demo-simple-select-label">
-                    Cliente
-                  </InputLabel>
+                  <InputLabel id="demo-simple-select-label">Cliente</InputLabel>
                   <Select
                     {...register("idCliente")}
                     labelId="select-label"
@@ -447,7 +536,7 @@ const Venda = () => {
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
                     defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                    {...register('dataAtual')}
+                    {...register("dataAtual")}
                   />
                   <TextField
                     id="outlined-helperText"
@@ -496,11 +585,16 @@ const Venda = () => {
                     label="idForma_pgto"
                     error={!!errors.idForma_pgto}
                     defaultValue={
-                      formas_pgto.length > 0 ? formas_pgto[1].tipo : "Sem formas_pgto"
+                      formas_pgto.length > 0
+                        ? formas_pgto[1].tipo
+                        : "Sem formas_pgto"
                     }
                   >
-                    {formas_pgto && formas_pgto.map((forma_pgto) => (
-                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>{forma_pgto.tipo}</MenuItem>
+                    {formas_pgto &&
+                      formas_pgto.map((forma_pgto) => (
+                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>
+                          {forma_pgto.tipo}
+                        </MenuItem>
                       ))}
                   </Select>
 
@@ -530,7 +624,9 @@ const Venda = () => {
                   >
                     {produtos &&
                       produtos.map((produto) => (
-                        <MenuItem key={produto.id} value={produto.id}>{produto.nome}</MenuItem>
+                        <MenuItem key={produto.id} value={produto.id}>
+                          {produto.nome}
+                        </MenuItem>
                       ))}
                   </Select>
 
@@ -543,7 +639,6 @@ const Venda = () => {
                     defaultValue={0}
                     {...register("quantidade")}
                   />
-
 
                   <Button
                     type="submit"
@@ -573,11 +668,7 @@ const Venda = () => {
         </Box>
       </MiniDrawer>
 
-      {showAlert && (
-        <Alert
-        severity="info">{alertMessage}</Alert>
-      )      
-      }   
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };
