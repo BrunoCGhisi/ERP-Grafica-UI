@@ -129,7 +129,8 @@ const Venda = () => {
     getProducts();
   }, []);
 
-  // Trazendo formas pgto --------------------------------------------------
+  {/* 
+  ------------------Trazendo formas pgto---------------------------------------------------------------------------- 
   useEffect(() => {
     const getPaymentWays = async () => {
       const response = await axios.get("http://localhost:3000/forma_pgto");
@@ -137,6 +138,8 @@ const Venda = () => {
     };
     getPaymentWays();
   }, []);
+
+  */}
 
   useEffect(() => {
     if (formaPagamento === 0 || formaPagamento === 1) {
@@ -154,6 +157,7 @@ const Venda = () => {
   const handleAdd = async (data: vendaSchemaType) => {
     console.log(data);
     const response = await postSale(data);
+    console.log(data);
     if (response.data.message) {
       setAlertMessage(response.data.message);
       setShowAlert(true);
