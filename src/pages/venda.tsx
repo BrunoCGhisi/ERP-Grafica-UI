@@ -49,7 +49,6 @@ type clienteSchemaType = z.infer<typeof clienteSchema>;
 
 const Venda = () => {
   const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
-
   useEffect(() => {
     const fetchToken = async () => {
       const tokenData = await getToken();
@@ -111,6 +110,11 @@ const Venda = () => {
     getClientes();
   }, []);
 
+  const getClientesNames = (id: number | undefined) => {
+    const clienteNome = clientes.find((cat) => cat.id === id);
+    return clienteNome ? clienteNome.nome : 'Desconhecido';
+  }
+
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
     const getBancos = async () => {
@@ -120,6 +124,7 @@ const Venda = () => {
     getBancos();
   }, []);
 
+
   // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
     const getProducts = async () => {
@@ -128,6 +133,7 @@ const Venda = () => {
     };
     getProducts();
   }, []);
+
 
   {/* 
   ------------------Trazendo formas pgto---------------------------------------------------------------------------- 
@@ -158,8 +164,8 @@ const Venda = () => {
     console.log(data);
     const response = await postSale(data);
     console.log(data);
-    if (response.data.message) {
-      setAlertMessage(response.data.message);
+    if (response.data.info) {
+      setAlertMessage(response.data.info);
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
@@ -252,7 +258,7 @@ const Venda = () => {
   ];
   const rows = sales.map((venda) => ({
     id: venda.id, // Use the index as a fallback if venda.id is null or undefined
-    idCliente: venda.idCliente,
+    idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
     isVendaOS: venda.isVendaOS,
@@ -384,7 +390,7 @@ const Venda = () => {
                   >
                     {bancos &&
                       bancos.map((banco) => (
-                        <MenuItem key={banco.id} value={banco.nome}>
+                        <MenuItem key={banco.id} value={banco.id}>
                           {banco.nome}
                         </MenuItem>
                       ))}
@@ -394,23 +400,23 @@ const Venda = () => {
                   <Controller
                     name="idForma_pgto"
                     control={control}
-                    defaultValue={0}
+                    defaultValue={1}
                     render={({ field }) => (
                       <Select
-                        {...field}
-                        value={formaPagamento}
-                        onChange={(e) => {
-                          setFormaPagamento(e.target.value);
-                          field.onChange(e);
-                        }}
+                      {...field}
+                      value={formaPagamento}
+                      onChange={(e) => {
+                        setFormaPagamento(e.target.value);
+                        field.onChange(e);
+                      }}
                       >
-                        <MenuItem value={0}>À vista/Dinheiro</MenuItem>
-                        <MenuItem value={1}>Débito</MenuItem>
-                        <MenuItem value={2}>Crédito</MenuItem>
-                        <MenuItem value={3}>Pix</MenuItem>
-                        <MenuItem value={4}>Boleto</MenuItem>
-                        <MenuItem value={5}>À prazo</MenuItem>
-                        <MenuItem value={6}>Cheque</MenuItem>
+                        <MenuItem value={1}>Dinheiro</MenuItem>
+                        <MenuItem value={2}>Débito</MenuItem>
+                        <MenuItem value={3}>Crédito</MenuItem>
+                        <MenuItem value={4}>Pix</MenuItem>
+                        <MenuItem value={5}>Boleto</MenuItem>
+                        <MenuItem value={6}>À prazo</MenuItem>
+                        <MenuItem value={7}>Cheque</MenuItem>
                       </Select>
                     )}
                   />
@@ -503,6 +509,7 @@ const Venda = () => {
             >
               <ModalRoot title="Editar venda">
                 <form onSubmit={handleSubmit(handleUpdate)}>
+                  
                   <InputLabel id="demo-simple-select-label">Cliente</InputLabel>
                   <Select
                     {...register("idCliente")}

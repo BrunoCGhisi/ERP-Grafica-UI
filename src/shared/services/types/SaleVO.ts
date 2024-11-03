@@ -8,19 +8,19 @@ const vendaProdutoSchema = z.object({
 export const vendaSchema = z.object({
   //venda
   id: z.number().optional(),
-  idBanco: z.number(),
-  idCliente: z.number(),
-  idVendedor: z.coerce.number(),
-  dataAtual: z.string(),
-  isVendaOS: z.boolean(),
-  situacao: z.number(),
-  desconto: z.number(),
-  tipo: z.number(),
+  idBanco: z.coerce.number().optional(),
+  idCliente: z.number().optional(),
+  idVendedor: z.coerce.number().optional(),
+  dataAtual: z.string().optional(),
+  isVendaOS: z.boolean().optional(),
+  situacao: z.number().optional(),
+  desconto: z.number().optional(),
+  tipo: z.number().optional(),
   //Venda Produto
   vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
-  parcelas: z.coerce.number(),
-  idForma_pgto: z.coerce.number(),
+  parcelas: z.coerce.number().optional(),
+  idForma_pgto: z.coerce.number().optional(),
 });
 
 export interface VendaDataRow {

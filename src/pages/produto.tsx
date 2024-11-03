@@ -96,6 +96,11 @@ const Produto = () => {
     getInsumos();
   }, []);
 
+  const getInsumosNames = (id: number) => {
+    const insumoNome = insumos.find((cat) => cat.id === id);
+    return insumoNome ? insumoNome.nome : 'Desconhecido';
+  }
+
   useEffect(() => {
     const getCategorias = async () => {
       const response = await axios.get(
@@ -105,6 +110,11 @@ const Produto = () => {
     };
     getCategorias();
   }, []);
+
+  const getCategoriasNames = (id: number) => {
+    const categoriaNome = categorias.find((cat) => cat.id === id);
+    return categoriaNome ? categoriaNome.categoria : 'Desconhecido';
+  }
 
   // CRUDs--------------------------------------------------
 
@@ -168,7 +178,7 @@ const Produto = () => {
     { field: "id", headerName: "id", editable: false, flex: 0 },
     { field: "nome", headerName: "nome", editable: false, flex: 0 },
     { field: "tipo", headerName: "tipo", editable: false, flex: 0 },
-    { field: "keyWord", headerName: "keyWord", editable: false, flex: 0 },
+    { field: "keyWord", headerName: "Descrição", editable: false, flex: 0 },
     {
       field: "idCategoria",
       headerName: "idCategoria",
@@ -211,8 +221,8 @@ const Produto = () => {
     nome: produto.nome,
     tipo: produto.tipo,
     keyWord: produto.keyWord,
-    idCategoria: produto.idCategoria,
-    idInsumo: produto.idInsumo,
+    idCategoria: getCategoriasNames(produto.idCategoria),
+    idInsumo: getInsumosNames(produto.idInsumo),
     preco: produto.preco,
     tamanho: produto.tamanho,
   }));
