@@ -112,8 +112,8 @@ const Venda = () => {
 
   const getClientesNames = (id: number | undefined) => {
     const clienteNome = clientes.find((cat) => cat.id === id);
-    return clienteNome ? clienteNome.nome : 'Desconhecido';
-  }
+    return clienteNome ? clienteNome.nome : "Desconhecido";
+  };
 
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
@@ -124,7 +124,6 @@ const Venda = () => {
     getBancos();
   }, []);
 
-
   // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
     const getProducts = async () => {
@@ -134,8 +133,8 @@ const Venda = () => {
     getProducts();
   }, []);
 
-
-  {/* 
+  {
+    /* 
   ------------------Trazendo formas pgto---------------------------------------------------------------------------- 
   useEffect(() => {
     const getPaymentWays = async () => {
@@ -145,7 +144,8 @@ const Venda = () => {
     getPaymentWays();
   }, []);
 
-  */}
+  */
+  }
 
   useEffect(() => {
     if (formaPagamento === 0 || formaPagamento === 1) {
@@ -395,7 +395,7 @@ const Venda = () => {
                         </MenuItem>
                       ))}
                   </Select>
-                  
+
                   <InputLabel>Forma de Pagamento</InputLabel>
                   <Controller
                     name="idForma_pgto"
@@ -403,12 +403,12 @@ const Venda = () => {
                     defaultValue={1}
                     render={({ field }) => (
                       <Select
-                      {...field}
-                      value={formaPagamento}
-                      onChange={(e) => {
-                        setFormaPagamento(e.target.value);
-                        field.onChange(e);
-                      }}
+                        {...field}
+                        value={formaPagamento}
+                        onChange={(e) => {
+                          setFormaPagamento(e.target.value);
+                          field.onChange(e);
+                        }}
                       >
                         <MenuItem value={1}>Dinheiro</MenuItem>
                         <MenuItem value={2}>Débito</MenuItem>
@@ -509,7 +509,6 @@ const Venda = () => {
             >
               <ModalRoot title="Editar venda">
                 <form onSubmit={handleSubmit(handleUpdate)}>
-                  
                   <InputLabel id="demo-simple-select-label">Cliente</InputLabel>
                   <Select
                     {...register("idCliente")}

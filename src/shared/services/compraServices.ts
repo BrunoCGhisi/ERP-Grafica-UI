@@ -1,25 +1,25 @@
 import axios from "axios";
-import { proCategorySchemaType } from "./types";
+import { compraSchemaType } from "./types";
 
-const BASE_URL = "http://localhost:3000/categoria_produto";
+const BASE_URL = "http://localhost:3000/compra";
 
-export const getCategories = async () => {
+export const getPurchases = async () => {
   const response = await axios.get(BASE_URL);
   return response.data.categorias_produtos;
 };
 
-export const postCategories = async (data: proCategorySchemaType) => {
+export const postPurchases = async (data: compraSchemaType) => {
   const { id, ...mydata } = data;
   const response = await axios.post(BASE_URL, mydata);
   return response;
 };
 
-export const putCategories = async (data: proCategorySchemaType) => {
+export const putPurchases = async (data: compraSchemaType) => {
   const response = await axios.put(`${BASE_URL}?id=${data.id}`, data);
   return response;
 };
 
-export const deleteCategories = async (id: number) => {
+export const deletePurchases = async (id: number) => {
   const response = await axios.delete(`${BASE_URL}?id=${id}`);
   return response;
 };

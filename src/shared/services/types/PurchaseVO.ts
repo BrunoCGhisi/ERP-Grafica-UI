@@ -1,14 +1,32 @@
-// VO = Value Object, isso é um objeto que VAI ser percorrido pela WEB, é uma boa prática declarar dessa forma
-// Estou tipando Category VO com as variaveis que ficam dentro da tabela Categoria
-// Nesse caso:
+import { z } from "zod";
 
-export type PurchaseVO = {
-    id:           string  //Se torna uma string
-    idFornecedor:   string  //Se torna uma string
-    isCompraOS:   string
-    dataCompra:   string
-    numNota:      string
-    desconto:     string
-}
+const compraProdutoSchema = z.object({
+    idProduto: z.number().optional(),
+    preco: z.coerce.number().optional(),
+    quantidade: z.coerce.number().optional(),
+    tamanho: z.coerce.number().optional()
+  });
 
-//proximo passo é index.ts
+export const compraSchema = z.object({
+    id: z.number().optional(),
+    idFornecedor: z.coerce.number(),
+    isCompraOS: z.boolean(),
+    dataCompra: z.string(),
+    numNota: z.coerce.number(),
+    desconto: z.coerce.number(),
+    isOpen: z.boolean(),
+    // compra produto
+    compras_produtos: z.array(compraProdutoSchema).default([]),
+  })
+  
+export interface CompraDataRow {
+    id: number,
+    idFornecedor: number,
+    isCompraOS: boolean,
+    dataCompra: string,
+    numNota: number,
+    desconto: number,
+    isOpen: boolean
+  }
+  
+export type compraSchemaType = z.infer<typeof compraSchema>
