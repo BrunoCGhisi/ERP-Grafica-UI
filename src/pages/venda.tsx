@@ -550,6 +550,7 @@ const Venda = () => {
                   <Controller
                     control={control}
                     name="isVendaOS"
+                   
                     defaultValue={true}
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
