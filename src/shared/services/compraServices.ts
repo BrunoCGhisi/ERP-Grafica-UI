@@ -5,7 +5,7 @@ const BASE_URL = "http://localhost:3000/compra";
 
 export const getPurchases = async () => {
   const response = await axios.get(BASE_URL);
-  return response.data.categorias_produtos;
+  return response.data.compras;
 };
 
 export const postPurchases = async (data: compraSchemaType) => {

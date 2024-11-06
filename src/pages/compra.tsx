@@ -31,7 +31,8 @@ import {
   compraSchemaType,
   CompraDataRow,
   bancoSchemaType, 
-  produtoSchemaType
+  produtoSchemaType,
+  insumoSchemaType
 } from "../shared/services/types";
 
 import {getPurchases, postPurchases, putPurchases, deletePurchases } from "../shared/services/compraServices";
@@ -56,10 +57,11 @@ const Compra = () => {
   };
   const [selectedData, setSelectedData] = useState<CompraDataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
+
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
-  const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
+  const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
   const [formaPagamento, setFormaPagamento] = useState(0);
   const { open, toggleModal } = useOpenModal();
 
@@ -73,7 +75,7 @@ const Compra = () => {
   } = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema),
     defaultValues: {
-      compras_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
+      compras_produtos: [{ idInsumo: 0, tamanho: 0, preco: 0 }], // Inicializa com um produto
     },
   });
 
@@ -82,8 +84,8 @@ const Compra = () => {
     name: "compras_produtos",
   });
 
-  const handleAddProduct = () => {
-    append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
+  const handleAddInsumo = () => {
+    append({ idInsumo: 0, tamanho: 0, preco: 0 }); // Adiciona um novo produto com quantidade inicial
   };
 
   const handleRemoveProduct = (index: number) => {
@@ -129,6 +131,11 @@ const Compra = () => {
     getFornecedores();
   }, []);
 
+  const getFornecedoresNames = (id: number | undefined) => {
+    const fornecedorNome = fornecedores.find((cat) => cat.id === id);
+    return fornecedorNome ? fornecedorNome.nome : "Desconhecido";
+  };
+
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
     const getBancos = async () => {
@@ -140,11 +147,11 @@ const Compra = () => {
 
   // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
-    const getProducts = async () => {
-      const response = await axios.get("http://localhost:3000/produto/itens");
-      setProdutos(response.data);
+    const getInsumos = async () => {
+      const response = await axios.get("http://localhost:3000/insumo/itens");
+      setInsumos(response.data);
     };
-    getProducts();
+    getInsumos();
   }, []);
 
   //CRUD -----------------------------------------------------------------------------------------------------
@@ -217,9 +224,9 @@ const Compra = () => {
 
   const rows = purchases.map((compra) => ({
     id: compra.id,
-    idFornecedor: compra.idFornecedor,
+    idFornecedor: getFornecedoresNames(compra.idFornecedor),
     isCompraOS: compra.isCompraOS,
-    dataCompra: formatDate(compra.dataCompra),
+    dataCompra: dayjs(compra.dataCompra).format("DD/MM/YYYY"),
     numNota: compra.numNota,
     desconto: compra.desconto,
     isOpen: compra.isOpen,
@@ -271,7 +278,7 @@ const Compra = () => {
                   >
                     {fornecedores &&
                       fornecedores.map((fornecedor) => (
-                        <MenuItem value={fornecedor.id}>
+                        <MenuItem value={fornecedor.id} key={fornecedor.id}>
                           {" "}
                           {fornecedor.nome}{" "}
                         </MenuItem>
@@ -341,6 +348,65 @@ const Compra = () => {
                       </Select>
                     )}
                   />
+
+                  <Typography variant="h6">Produtos da Venda</Typography>
+                  {fields.map((item, index) => (
+                    <Box
+                      key={item.id}
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                    >
+                      <Controller
+                        control={control}
+                        name={`compras_produtos.${index}.idInsumo` as const}
+                        defaultValue={0}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            error={!!errors.compras_produtos?.[index]?.idInsumo}
+                          >
+                            {produtos.map((produto) => (
+                              <MenuItem key={produto.id} value={produto.id}>
+                                {produto.nome}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        )}
+                      />
+
+                      <TextField
+                        {...register(
+                          `compras_produtos.${index}.tamanho` as const
+                        )}
+                        type="number"
+                        error={!!errors.compras_produtos?.[index]?.tamanho}
+                        helperText={
+                          errors.compras_produtos?.[index]?.tamanho
+                            ?.message || "Tamanho"
+                        }
+                        label="Tamanho"
+                        defaultValue={1}
+                        InputProps={{ inputProps: { min: 1 } }}
+                      />
+
+                      <IconButton
+                        onClick={() => handleRemoveProduct(index)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  ))}
+
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddInsumo}
+                  >
+                    Adicionar Produto
+                  </Button>
+
 
                   <Button
                     type="submit"
@@ -440,6 +506,8 @@ const Compra = () => {
                         </Select>
                       )}
                     />
+
+
 
                     <Button
                       type="submit"

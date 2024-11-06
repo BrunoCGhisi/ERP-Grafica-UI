@@ -133,20 +133,6 @@ const Venda = () => {
     getProducts();
   }, []);
 
-  {
-    /* 
-  ------------------Trazendo formas pgto---------------------------------------------------------------------------- 
-  useEffect(() => {
-    const getPaymentWays = async () => {
-      const response = await axios.get("http://localhost:3000/forma_pgto");
-      setFormas_pgto(response.data.formas_pgto);
-    };
-    getPaymentWays();
-  }, []);
-
-  */
-  }
-
   useEffect(() => {
     if (formaPagamento === 0 || formaPagamento === 1) {
       // Define o valor do campo de parcelas para 1 e torna readOnly
