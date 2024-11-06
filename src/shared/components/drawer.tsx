@@ -155,10 +155,10 @@ export function MiniDrawer({ children }: DrawerProps) {
         <List>
           {[
             "Banco",
-            "Categoria_produto",
+            "CategoriaProduto",
             "Cliente",
             "Compra",
-            "Forma_pgto",
+            "FormaPagamento",
             "Insumo",
             "Produto",
             "Usuario",

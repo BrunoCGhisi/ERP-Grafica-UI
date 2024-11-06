@@ -56,7 +56,7 @@ const Router = () => {
           }
         />
         <Route
-          path="/categoria_produto"
+          path="/categoriaProduto"
           element={
             <ProtectedRoute>
               <CategoriaProduto />
@@ -66,7 +66,7 @@ const Router = () => {
 
         {/*  
         <Route
-          path="/forma_pgto"
+          path="/formaPagamento"
           element={
             <ProtectedRoute>
               <FormaPgto />
