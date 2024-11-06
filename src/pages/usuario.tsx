@@ -38,16 +38,14 @@ import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
 
 import { getToken } from "../shared/services/payload";
 
-
-
 const Usuario = () => {
   const [user, setUser] = useState<usuarioSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
-  const [userId, setUserId] = useState<number | null>(null); 
-  const [nome, setNome] = useState<string | null>(null); 
-  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
+  const [userId, setUserId] = useState<number | null>(null);
+  const [nome, setNome] = useState<string | null>(null);
+  const [isAdm, setIsAdm] = useState<boolean | null>(null);
 
   const {
     register,
@@ -88,7 +86,7 @@ const Usuario = () => {
     const usersData = await getUsers();
     setUser(usersData);
   };
-
+  
   const handleAdd = async (data: usuarioSchemaType) => {
     await postUser(data);
     loadUsers();
@@ -138,16 +136,19 @@ const Usuario = () => {
       renderCell: ({ row }) => (
         <div>
           {isAdm ? (
-  <>
-    <IconButton onClick={() => row.id !== undefined && handleDelete(row.id)}>
-      <DeleteIcon />
-    </IconButton>
-    <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
-      <EditIcon />
-    </IconButton>
-  </>
-) : null}
-          
+            <>
+              <IconButton
+                onClick={() => row.id !== undefined && handleDelete(row.id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => row.id !== undefined && handleEdit(row)}
+              >
+                <EditIcon />
+              </IconButton>
+            </>
+          ) : null}
         </div>
       ),
     },
@@ -162,137 +163,138 @@ const Usuario = () => {
 
   return (
     <Box>
-      <MiniDrawer />
-      <Box sx={SpaceStyle}>
-        <Typography>Usuários</Typography>
-        
-        <Box>
-          <Stack direction="row" spacing={2}>
-            <Button
-              onClick={addOn}
-              variant="outlined"
-              startIcon={<AddCircleOutlineIcon />}
+      <MiniDrawer>
+        <Box sx={SpaceStyle}>
+          <Typography>Usuários</Typography>
+
+          <Box>
+            <Stack direction="row" spacing={2}>
+              <Button
+                onClick={addOn}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Adicionar
+              </Button>
+            </Stack>
+
+            <Modal
+              open={adopen}
+              onClose={addOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              Adicionar
-            </Button>
-          </Stack>
+              <Box sx={ModalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Novo usuário
+                </Typography>
 
-          <Modal
-            open={adopen}
-            onClose={addOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo usuário
-              </Typography>
+                <form onSubmit={handleSubmit(handleAdd)}>
+                  <TextField
+                    id="outlined-helperText"
+                    label="Nome"
+                    helperText={errors.nome?.message || "Obrigatório"}
+                    error={!!errors.nome}
+                    {...register("nome")}
+                  />
+                  <TextField
+                    id="outlined-helperText"
+                    label="Email"
+                    helperText={errors.email?.message || "Obrigatório"}
+                    error={!!errors.email}
+                    {...register("email")}
+                  />
+                  <TextField
+                    id="outlined-helperText"
+                    label="Senha"
+                    helperText={errors.senha?.message || "Obrigatório"}
+                    error={!!errors.senha}
+                    {...register("senha")}
+                  />
+                  <InputLabel id="demo-simple-select-label">
+                    Adm ou Funcionário
+                  </InputLabel>
+                  <Controller
+                    control={control}
+                    name="isAdm"
+                    defaultValue={false}
+                    render={({ field }) => (
+                      <Select onChange={field.onChange} value={field.value}>
+                        <MenuItem value={true}>Administrador</MenuItem>
+                        <MenuItem value={false}>Funcionário</MenuItem>
+                      </Select>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    startIcon={<DoneIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </form>
+              </Box>
+            </Modal>
+            {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+            <Modal
+              open={open}
+              onClose={toggleModal}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <ModalRoot title="Editando Nome">
+                <form onSubmit={handleSubmit(handleUpdate)}>
+                  <TextField
+                    id="outlined-helperText"
+                    label="Nome"
+                    helperText={errors.nome?.message || "Obrigatório"}
+                    error={!!errors.nome}
+                    {...register("nome")}
+                  />
 
-              <form onSubmit={handleSubmit(handleAdd)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="Email"
-                  helperText={errors.email?.message || "Obrigatório"}
-                  error={!!errors.email}
-                  {...register("email")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="Senha"
-                  helperText={errors.senha?.message || "Obrigatório"}
-                  error={!!errors.senha}
-                  {...register("senha")}
-                />
-                <InputLabel id="demo-simple-select-label">
-                  Adm ou Funcionário
-                </InputLabel>
-                <Controller
-                  control={control}
-                  name="isAdm"
-                  defaultValue={false}
-                  render={({ field }) => (
-                    <Select onChange={field.onChange} value={field.value}>
-                      <MenuItem value={true}>Administrador</MenuItem>
-                      <MenuItem value={false}>Funcionário</MenuItem>
-                    </Select>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Cadastrar
-                </Button>
-              </form>
-            </Box>
-          </Modal>
-          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-          <Modal
-            open={open}
-            onClose={toggleModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <ModalRoot title="Editando Nome">
-              <form onSubmit={handleSubmit(handleUpdate)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                
-                <InputLabel id="demo-simple-select-label">
-                  Adm ou Funcionário
-                </InputLabel>
+                  <InputLabel id="demo-simple-select-label">
+                    Adm ou Funcionário
+                  </InputLabel>
 
-                <Controller
-                  control={control}
-                  name="isAdm"
-                  defaultValue={false}
-                  render={({ field }) => (
-                    <Select onChange={field.onChange} value={field.value}>
-                      <MenuItem value={true}>Administrador </MenuItem>
-                      <MenuItem value={false}>Funcionário </MenuItem>
-                    </Select>
-                  )}
-                />
+                  <Controller
+                    control={control}
+                    name="isAdm"
+                    defaultValue={false}
+                    render={({ field }) => (
+                      <Select onChange={field.onChange} value={field.value}>
+                        <MenuItem value={true}>Administrador </MenuItem>
+                        <MenuItem value={false}>Funcionário </MenuItem>
+                      </Select>
+                    )}
+                  />
 
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Atualizar
-                </Button>
-              </form>
-            </ModalRoot>
-          </Modal>
-        </Box>
-        <Box sx={GridStyle}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 6,
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    startIcon={<DoneIcon />}
+                  >
+                    Atualizar
+                  </Button>
+                </form>
+              </ModalRoot>
+            </Modal>
+          </Box>
+          <Box sx={GridStyle}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[6]}
-          />
+              }}
+              pageSizeOptions={[6]}
+            />
+          </Box>
         </Box>
-      </Box>
+      </MiniDrawer>
     </Box>
   );
 };

@@ -10,7 +10,7 @@ import {
   Cliente,
   Usuario,
   CategoriaProduto,
-  FormaPgto,
+  //FormaPgto,
   Produto,
   Compra,
   Venda,
@@ -29,6 +29,7 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/home" element={<Home />} />
+        <Route index element={<Home />} />
 
         <Route
           path="/banco"
@@ -62,6 +63,8 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
+
+        {/*  
         <Route
           path="/forma_pgto"
           element={
@@ -70,6 +73,8 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
+        */}
+
         <Route
           path="/produto"
           element={
