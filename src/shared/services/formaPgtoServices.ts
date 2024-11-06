@@ -1,3 +1,5 @@
+
+{/*
 import axios from "axios";
 import { formaPgtoSchemaType } from "./types";
 
@@ -23,3 +25,4 @@ export const deletePaymentWays = async (id: number) => {
   const response = await axios.delete(`${BASE_URL}?id=${id}`);
   return response;
 };
+ */}
