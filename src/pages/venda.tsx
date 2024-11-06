@@ -495,7 +495,19 @@ const Venda = () => {
             >
               <ModalRoot title="Editar venda">
                 <form onSubmit={handleSubmit(handleUpdate)}>
-                  <InputLabel id="demo-simple-select-label">Cliente</InputLabel>
+                <TextField
+                    id="outlined-helperText"
+                    label="Vendedor"
+                    inputProps={{ readOnly: true }}
+                    helperText={errors.idVendedor?.message || "Obrigatório"}
+                    error={!!errors.idVendedor}
+                    defaultValue={userId}
+                    {...register("idVendedor")}
+                  />
+
+                  <InputLabel id="demo-simple-select-label">
+                    Clientes
+                  </InputLabel>
                   <Select
                     {...register("idCliente")}
                     labelId="select-label"
@@ -517,7 +529,7 @@ const Venda = () => {
                   <TextField
                     type="date"
                     id="outlined-helperText"
-                    label={"Data Venda"}
+                    label={"Data compra"}
                     InputLabelProps={{ shrink: true }}
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
@@ -530,13 +542,12 @@ const Venda = () => {
                     defaultValue={0}
                     helperText={errors.desconto?.message || "Obrigatório"}
                     error={!!errors.desconto}
-                    {...register("desconto")}
+                    {...register("desconto", { valueAsNumber: true })}
                   />
 
                   <Controller
                     control={control}
                     name="isVendaOS"
-                   
                     defaultValue={true}
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
@@ -562,70 +573,120 @@ const Venda = () => {
                     )}
                   />
 
-                  <InputLabel id="demo-simple-select-label">
-                    Forma de pagamento
-                  </InputLabel>
+                  <InputLabel id="demo-simple-select-label">Banco</InputLabel>
+
                   <Select
-                    {...register("idForma_pgto")}
+                    {...register("idBanco")}
                     labelId="select-label"
                     id="demo-simple-select"
-                    label="idForma_pgto"
-                    error={!!errors.idForma_pgto}
-                    defaultValue={
-                      formas_pgto.length > 0
-                        ? formas_pgto[1].tipo
-                        : "Sem formas_pgto"
-                    }
+                    label="Banco"
+                    error={!!errors.idBanco}
+                    defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
                   >
-                    {formas_pgto &&
-                      formas_pgto.map((forma_pgto) => (
-                        <MenuItem key={forma_pgto.id} value={forma_pgto.id}>
-                          {forma_pgto.tipo}
+                    {bancos &&
+                      bancos.map((banco) => (
+                        <MenuItem key={banco.id} value={banco.id}>
+                          {banco.nome}
                         </MenuItem>
                       ))}
                   </Select>
 
+                  <InputLabel>Forma de Pagamento</InputLabel>
+                  <Controller
+                    name="idForma_pgto"
+                    control={control}
+                    defaultValue={1}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={formaPagamento}
+                        onChange={(e) => {
+                          setFormaPagamento(e.target.value);
+                          field.onChange(e);
+                        }}
+                      >
+                        <MenuItem value={1}>Dinheiro</MenuItem>
+                        <MenuItem value={2}>Débito</MenuItem>
+                        <MenuItem value={3}>Crédito</MenuItem>
+                        <MenuItem value={4}>Pix</MenuItem>
+                        <MenuItem value={5}>Boleto</MenuItem>
+                        <MenuItem value={6}>À prazo</MenuItem>
+                        <MenuItem value={7}>Cheque</MenuItem>
+                      </Select>
+                    )}
+                  />
+
+                  <Typography variant="h6">Produtos da Venda</Typography>
+                  {fields.map((item, index) => (
+                    <Box
+                      key={item.id}
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                    >
+                      <Controller
+                        control={control}
+                        
+                        name={`vendas_produtos.${index}.idProduto` as const}
+                        defaultValue={0}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            
+                            error={!!errors.vendas_produtos?.[index]?.idProduto}
+                          >
+                            {produtos.map((produto) => (
+                              <MenuItem key={produto.id} value={produto.id}>
+                                
+                                {produto.nome}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        )}
+                      />
+
+                      <TextField
+                        {...register(
+                          `vendas_produtos.${index}.quantidade` as const
+                        )}
+                        type="number"
+                        error={!!errors.vendas_produtos?.[index]?.quantidade}
+                        helperText={
+                          errors.vendas_produtos?.[index]?.quantidade
+                            ?.message 
+                        }
+                        label="Quantidade"
+                        defaultValue={1}
+                        InputProps={{ inputProps: { min: 1 } }}
+                      />
+
+                      <IconButton
+                        onClick={() => handleRemoveProduct(index)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  ))}
+
+                  <Typography>Financeiro</Typography>
                   <TextField
+                    label="Parcelas"
                     type="number"
-                    id="outlined-helperText"
-                    label="N° Parcelas"
-                    helperText={errors.parcelas?.message || "Obrigatório"}
-                    error={!!errors.parcelas}
-                    defaultValue={0}
+                    defaultValue={1}
+                    InputProps={{
+                      readOnly: formaPagamento === 0 || formaPagamento === 1,
+                    }}
                     {...register("parcelas")}
                   />
 
-                  <Typography> Venda Produto </Typography>
-                  <InputLabel id="demo-simple-select-label">
-                    Produtos
-                  </InputLabel>
-                  <Select
-                    {...register("idProduto")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="idProduto"
-                    error={!!errors.idProduto}
-                    defaultValue={
-                      produtos.length > 0 ? produtos[1].nome : "Sem produtos"
-                    }
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddProduct}
                   >
-                    {produtos &&
-                      produtos.map((produto) => (
-                        <MenuItem key={produto.id} value={produto.id}>
-                          {produto.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <TextField
-                    type="number"
-                    id="outlined-helperText"
-                    label="Quantidade"
-                    helperText={errors.quantidade?.message || "Obrigatório"}
-                    error={!!errors.quantidade}
-                    defaultValue={0}
-                    {...register("quantidade")}
-                  />
+                    Adicionar Produto
+                  </Button>
 
                   <Button
                     type="submit"

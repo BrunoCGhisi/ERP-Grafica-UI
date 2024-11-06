@@ -1,3 +1,7 @@
+
+{/* 
+
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -188,7 +192,7 @@ const FormaPgto = () => {
               </form>
             </Box>
           </Modal>
-          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+          
           <Modal
             open={open}
             onClose={toggleModal}
@@ -243,3 +247,7 @@ const FormaPgto = () => {
 };
 
 export default FormaPgto;
+
+
+
+ */}
