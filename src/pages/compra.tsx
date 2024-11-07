@@ -57,6 +57,7 @@ const Compra = () => {
   };
   const [selectedData, setSelectedData] = useState<CompraDataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
+  const [compras_produtos, setCompras_produtos] = 
 
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
@@ -366,9 +367,9 @@ const Compra = () => {
                             {...field}
                             error={!!errors.compras_produtos?.[index]?.idInsumo}
                           >
-                            {produtos.map((produto) => (
-                              <MenuItem key={produto.id} value={produto.id}>
-                                {produto.nome}
+                            {compras_produtos.map((compra_produto) => (
+                              <MenuItem key={compra_produto.id} value={compra_produto.id}>
+                                {compra_produto.nome}
                               </MenuItem>
                             ))}
                           </Select>
