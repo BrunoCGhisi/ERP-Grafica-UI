@@ -140,7 +140,7 @@ const Compra = () => {
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
     const getBancos = async () => {
-      const response = await axios.get("http://localhost:3000/banco/itens");
+      const response = await axios.get("http://localhost:3000/banco");
       setBancos(response.data);
     };
     getBancos();
