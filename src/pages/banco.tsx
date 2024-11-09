@@ -206,14 +206,6 @@ const Banco = () => {
                     error={!!errors.valorTotal}
                     {...register("valorTotal", { valueAsNumber: true })}
                   />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="valorTotal"
-                    helperText={errors.valorTotal?.message || "Obrigatório"}
-                    error={!!errors.valorTotal}
-                    {...register("valorTotal", { valueAsNumber: true })}
-                  />
                   <Button
                     type="submit"
                     variant="outlined"
