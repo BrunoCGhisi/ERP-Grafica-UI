@@ -15,7 +15,6 @@ export const vendaSchema = z.object({
   isVendaOS: z.boolean().optional(),
   situacao: z.number().optional(),
   desconto: z.number().optional(),
-  tipo: z.number().optional(),
   //Venda Produto
   vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
@@ -31,6 +30,10 @@ export interface VendaDataRow {
   isVendaOS: boolean;
   situacao: number;
   desconto: number;
+  vendas_produtos: {idProduto: number; quantidade: number}[];
+  //Financeiro
+  parcelas: number;
+  idForma_pgto: number;
 }
 
 export type vendaSchemaType = z.infer<typeof vendaSchema>;

@@ -20,7 +20,6 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-
 import { getToken } from "../shared/services/payload";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -35,7 +34,6 @@ import {
   vendaSchema,
   VendaDataRow,
   vendaSchemaType,
-  formaPgtoSchemaType,
   produtoSchemaType,
   bancoSchemaType,
 } from "../shared/services/types";
@@ -69,7 +67,6 @@ const Venda = () => {
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
-  const [formas_pgto, setFormas_pgto] = useState<formaPgtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
@@ -118,8 +115,8 @@ const Venda = () => {
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
     const getBancos = async () => {
-      const response = await axios.get("http://localhost:3000/banco/itens");
-      setBancos(response.data);
+      const response = await axios.get("http://localhost:3000/banco");
+      setBancos(response.data.getBancos);
     };
     getBancos();
   }, []);
@@ -198,8 +195,15 @@ const Venda = () => {
       setValue("isVendaOS", selectedData.isVendaOS);
       setValue("situacao", selectedData.situacao);
       setValue("desconto", selectedData.desconto);
+      setValue("parcelas", selectedData.parcelas)
+      setValue("idForma_pgto", selectedData.idForma_pgto)
+      if (selectedData.vendas_produtos && selectedData.vendas_produtos.length > 0) {
+        selectedData.vendas_produtos.forEach(produto => {
+          append({ idProduto: produto.idProduto, quantidade: produto.quantidade });
+        });
+      }
     }
-  }, [selectedData, setValue]);
+  }, [selectedData, setValue, append]);
 
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
@@ -220,6 +224,7 @@ const Venda = () => {
     { field: "isVendaOS", headerName: "IsVendaOS", editable: false, flex: 0 },
     { field: "situacao", headerName: "Situacao", editable: false, flex: 0 },
     { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
+    
 
     {
       field: "acoes",
@@ -628,7 +633,7 @@ const Venda = () => {
                         control={control}
                         
                         name={`vendas_produtos.${index}.idProduto` as const}
-                        defaultValue={0}
+                        //defaultValue={0}
                         render={({ field }) => (
                           <Select
                             {...field}
@@ -656,7 +661,7 @@ const Venda = () => {
                             ?.message 
                         }
                         label="Quantidade"
-                        defaultValue={1}
+                        //defaultValue={1}
                         InputProps={{ inputProps: { min: 1 } }}
                       />
 

@@ -32,4 +32,4 @@ export interface CompraDataRow {
     isOpen: boolean
   }
   
-export type compraSchemaType = z.infer<typeof compraSchema>
+export type compraSchemaType = z.infer<typeof compraSchema>;

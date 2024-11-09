@@ -57,7 +57,7 @@ const Compra = () => {
   };
   const [selectedData, setSelectedData] = useState<CompraDataRow | null>(null);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
-  const [compras_produtos, setCompras_produtos] = 
+  //const [compras_produtos, setCompras_produtos] = 
 
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
