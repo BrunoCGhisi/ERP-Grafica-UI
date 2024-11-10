@@ -15,6 +15,7 @@ export const postSale = async (data: vendaSchemaType) => {
 };
 
 export const putSale = async (data: vendaSchemaType) => {
+  console.log("DA FUNC",data)
   const response = await axios.put(`${BASE_URL}?id=${data.id}`, data);
   return response;
 };
