@@ -1,5 +1,5 @@
 const GridStyle = {
-    height: 300, 
+    height: 400, 
     width: '100%'
 };
 
