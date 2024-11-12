@@ -182,6 +182,8 @@ const Produto = () => {
       flex: 0,
     },
     { field: "preco", headerName: "preco", editable: false, flex: 0 },
+    { field: "largura", headerName: "largura", editable: false, flex: 0 },
+    { field: "comprimento", headerName: "comprimento", editable: false, flex: 0 },
     { field: "tamanho", headerName: "tamanho", editable: false, flex: 0 },
 
     {
@@ -214,7 +216,9 @@ const Produto = () => {
     idCategoria: produto.idCategoria,
     idInsumo: produto.idInsumo,
     preco: produto.preco,
-    tamanho: produto.tamanho,
+    largura: produto.largura,
+    comprimento: produto.comprimento,
+    tamanho: produto.tamanho
   }));
   useEffect(() => {
     reset();
@@ -337,11 +341,21 @@ const Produto = () => {
 
                   <TextField
                     id="outlined-helperText"
-                    label="Tamanho"
-                    helperText={errors.tamanho?.message || "Obrigatório"}
-                    error={!!errors.tamanho}
-                    {...register("tamanho")}
+                    label="Largura"
+                    helperText={errors.largura?.message || "Obrigatório"}
+                    error={!!errors.largura}
+                    {...register("largura")}
                   />
+
+
+                  <TextField
+                    id="outlined-helperText"
+                    label="Comprimento"
+                    helperText={errors.comprimento?.message || "Obrigatório"}
+                    error={!!errors.comprimento}
+                    {...register("comprimento")}
+                  />
+
 
                   <Button
                     type="submit"
@@ -451,11 +465,20 @@ const Produto = () => {
 
                   <TextField
                     id="outlined-helperText"
-                    label="Tamanho"
-                    helperText={errors.tamanho?.message || "Obrigatório"}
-                    error={!!errors.tamanho}
-                    {...register("tamanho")}
+                    label="Largura"
+                    helperText={errors.largura?.message || "Obrigatório"}
+                    error={!!errors.largura}
+                    {...register("largura")}
                   />
+
+                  <TextField
+                    id="outlined-helperText"
+                    label="Comprimento"
+                    helperText={errors.comprimento?.message || "Obrigatório"}
+                    error={!!errors.comprimento}
+                    {...register("comprimento")}
+                  />
+
 
                   <Button
                     type="submit"

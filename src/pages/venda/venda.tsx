@@ -119,7 +119,7 @@ const Venda = () => {
   useEffect(() => {
     const getBancos = async () => {
       const response = await axios.get("http://localhost:3000/banco");
-      setBancos(response.data.getBancos);
+      setBancos(response.data.bancos);
     };
     getBancos();
   }, []);

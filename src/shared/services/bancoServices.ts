@@ -5,7 +5,7 @@ const BASE_URL = "http://localhost:3000/banco";
 
 export const getBanks = async () => {
   const response = await axios.get(BASE_URL);
-  return response.data.getBancos;
+  return response.data.bancos;
 };
 
 export const postBank = async (data: bancoSchemaType) => {

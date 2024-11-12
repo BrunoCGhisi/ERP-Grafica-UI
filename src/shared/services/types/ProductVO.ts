@@ -8,7 +8,9 @@ export const produtoSchema = z.object({
   idCategoria: z.number(),
   idInsumo: z.number(),
   preco: z.coerce.number(),
-  tamanho: z.coerce.number(),
+  tamanho: z.number().optional(),
+  largura: z.coerce.number(),
+  comprimento: z.coerce.number(),
 });
 
 export interface ProdutoDataRow {
@@ -20,5 +22,7 @@ export interface ProdutoDataRow {
   idInsumo: number;
   preco: number;
   tamanho: number;
+  largura: number;
+  comprimento: number;
 }
 export type produtoSchemaType = z.infer<typeof produtoSchema>;

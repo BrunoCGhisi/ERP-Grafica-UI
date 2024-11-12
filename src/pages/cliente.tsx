@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, InputHTMLAttributes, HTMLAttributes  } from "react";
+import InputMask from "react-input-mask";
 import axios from "axios";
 import {Box,
   InputLabel,
@@ -10,6 +11,7 @@ import {Box,
   Stack,
   TextField,
   Typography,
+  InputAdornment,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
@@ -27,14 +29,30 @@ import { ModalRoot } from "../shared/components/ModalRoot";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import dayjs from "dayjs";
 
-const today = new Date()
-
 const clienteSchema = z.object({
   id: z.number().optional(),
-  nome: z.string(),
+  nome: z.string().refine((doc) => doc.trim() !== "",{
+    message: "Campo obrigatório"
+  }),
   nomeFantasia: z.string().optional(),
-  cpfCnpj: z.string(),
-  telefone: z.string(),
+  cpfCnpj: z.string().
+  refine((doc) => /^[0-9]+$/.test(doc), {
+    message:'CPF/CNPJ deve conter apenas números.'
+  })
+  .refine((doc) => {
+    return doc.length >= 11;
+  }, 'CPF/CNPJ deve conter no mínimo 11 caracteres.')
+  .refine((doc) => {
+    return doc.length <= 14;
+  }, 'CPF/CNPJ deve conter no máximo 14 caracteres.')
+
+  ,
+  telefone: z.string().refine((doc) => {
+    return doc.length < 11;
+  },'Telefone inválido')
+  .refine((doc) => doc.trim() !== "",{
+    message: "Campo obrigatório"
+  }),
   email: z.string().email(),
   isFornecedor: z.boolean(),
   cep: z.string().optional(),
@@ -44,7 +62,7 @@ const clienteSchema = z.object({
   endereco: z.string().optional(),
   complemento: z.string().optional(),
   numIe: z.string().optional(),
-  statusIe: z.boolean().optional(),
+  statusIe: z.boolean(),
 });
 
 
@@ -263,7 +281,7 @@ const Cliente = () => {
     email: cliente.email,
     telefone: cliente.telefone,
     isFornecedor: cliente.isFornecedor == true ?  "Fornecedor" : "Cliente",
-    dataCadastro: cliente.dataCadastro,
+    dataCadastro: dayjs( cliente.dataCadastro).format("DD/MM/YYYY"),
     numIe: cliente.numIe,
     statusIe: cliente.statusIe == true ?  "Ativo" : "Inativo",
     endereco: cliente.endereco,
@@ -319,6 +337,7 @@ const Cliente = () => {
                   error={!!errors.nomeFantasia}
                   {...register("nomeFantasia")}
                 />
+
                 <TextField
                   id="outlined-helperText"
                   label="cpfCnpj"
@@ -327,14 +346,22 @@ const Cliente = () => {
                   error={!!errors.cpfCnpj}
                   {...register("cpfCnpj")}
                 />
-                <TextField
+
+                <InputMask
+                  mask="(99) 99999-9999"
+                  {...register("telefone",  { required: "O telefone é obrigatório" })}
+                >
+                {() => (
+                  <TextField
                   id="outlined-helperText"
                   label="telefone"
                   defaultValue=""
                   helperText={errors.telefone?.message || "Obrigatório"}
                   error={!!errors.telefone}
-                  {...register("telefone")}
+                  
                 />
+                )}
+                </InputMask> 
 
                 <TextField
                   id="outlined-helperText"
@@ -364,14 +391,23 @@ const Cliente = () => {
                 </Select>
                 )}/>
 
+                <InputMask
+                  mask="9999-9999"
+                  {...register("cep")}
+                
+                >
+                {() => (
                 <TextField
                   id="outlined-helperText"
                   label="cep"
                   defaultValue=""
                   helperText={errors.cep?.message || "Obrigatório"}
                   error={!!errors.cep}
-                  {...register("cep")}
+                  
                 />
+                )}
+                </InputMask>
+                
                 <TextField
                   id="outlined-helperText"
                   label="estado"
@@ -421,7 +457,7 @@ const Cliente = () => {
                   error={!!errors.numIe}
                   {...register("numIe")}
                 />
-                <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+                <InputLabel id="demo-simple-select-label">Inscrição Estadual</InputLabel>
 
                 <Controller
                 control={control}
@@ -435,8 +471,8 @@ const Cliente = () => {
                   label="statusIe"
                   value={field.value} 
                 >
-                  <MenuItem value={true}>Off</MenuItem>
-                  <MenuItem value={false}>On </MenuItem>
+                  <MenuItem value={true}>Não contribuinte</MenuItem>
+                  <MenuItem value={false}>Contribuinte</MenuItem>
                 </Select>
               )}/>
 
@@ -483,14 +519,21 @@ const Cliente = () => {
                 error={!!errors.cpfCnpj}
                 {...register("cpfCnpj")}
               />
-              <TextField
-                id="outlined-helperText"
-                label="telefone"
-                defaultValue=""
-                helperText={errors.telefone?.message || "Obrigatório"}
-                error={!!errors.telefone}
-                {...register("telefone")}
-              />
+              <InputMask
+                  mask="(99) 99999-9999"
+                  {...register("telefone",  { required: "O telefone é obrigatório" })}
+                >
+                {() => (
+                  <TextField
+                  id="outlined-helperText"
+                  label="telefone"
+                  defaultValue=""
+                  helperText={errors.telefone?.message || "Obrigatório"}
+                  error={!!errors.telefone}
+                  
+                />
+                )}
+                </InputMask> 
 
               <TextField
                 id="outlined-helperText"
@@ -501,7 +544,7 @@ const Cliente = () => {
                 {...register("email")}
               />
               
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <InputLabel id="demo-simple-select-label">Fornecedor ou Cliente</InputLabel>
               <Controller
                 control={control}
                 name="isFornecedor"
@@ -520,14 +563,18 @@ const Cliente = () => {
                 </Select>
                 )}/>
 
-              <TextField
-                id="outlined-helperText"
-                label="cep"
-                defaultValue=""
-                helperText={errors.cep?.message || "Obrigatório"}
-                error={!!errors.cep}
-                {...register("cep")}
-              />
+                <InputMask
+                  mask="9999-9999"
+                  {...register("cep")}>
+                  {() => (
+                  <TextField
+                    id="outlined-helperText"
+                    label="cep"
+                    defaultValue=""
+                    helperText={errors.cep?.message || "Obrigatório"}
+                    error={!!errors.cep}/>)}
+                </InputMask>
+
               <TextField
                 id="outlined-helperText"
                 label="estado"
@@ -577,7 +624,7 @@ const Cliente = () => {
                 error={!!errors.numIe}
                 {...register("numIe")}
               />
-              <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+              <InputLabel id="demo-simple-select-label">Inscrição Estadual</InputLabel>
               <Controller
                 control={control}
                 name="statusIe"
@@ -590,8 +637,8 @@ const Cliente = () => {
                   label="statusIe"
                   value={field.value} 
                 >
-                  <MenuItem value={true}>Off</MenuItem>
-                  <MenuItem value={false}>On </MenuItem>
+                  <MenuItem value={true}>Contribuinte</MenuItem>
+                  <MenuItem value={false}>Não Contribuinte</MenuItem>
                 </Select>
               )}/>
               <Button
