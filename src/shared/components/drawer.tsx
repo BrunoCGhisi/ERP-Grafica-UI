@@ -19,17 +19,20 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 // Ícones
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import ClassIcon from '@mui/icons-material/Class';
-import BadgeIcon from '@mui/icons-material/Badge';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import LayersIcon from '@mui/icons-material/Layers';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import SellIcon from '@mui/icons-material/Sell';
+import PieChartIcon from "@mui/icons-material/PieChart";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ClassIcon from "@mui/icons-material/Class";
+import BadgeIcon from "@mui/icons-material/Badge";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LayersIcon from "@mui/icons-material/Layers";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import SellIcon from "@mui/icons-material/Sell";
 
 import { ReactNode } from "react";
+import { PieChart } from "@mui/icons-material";
+import { Divider } from "@mui/material";
 
 const drawerWidth = 230;
 
@@ -154,6 +157,7 @@ export function MiniDrawer({ children }: DrawerProps) {
 
         <List>
           {[
+            "DashBoard",
             "Banco",
             "CategoriaProduto",
             "Cliente",
@@ -181,15 +185,17 @@ export function MiniDrawer({ children }: DrawerProps) {
                     justifyContent: "center",
                   }}
                 >
-                  {index === 0 && <AccountBalanceIcon />}
-                  {index === 1 && <ClassIcon />}
-                  {index === 2 && <BadgeIcon />}
-                  {index === 3 && <LocalMallIcon />}
-                  {index === 4 && <CreditCardIcon />}
-                  {index === 5 && <InventoryIcon />}
-                  {index === 6 && <LayersIcon />}
-                  {index === 7 && <AccountBoxIcon />}
-                  {index === 8 && <SellIcon />}
+                  {index === 0 && <PieChartIcon />}
+                  <Divider />
+                  {index === 1 && <AccountBalanceIcon />}
+                  {index === 2 && <ClassIcon />}
+                  {index === 3 && <BadgeIcon />}
+                  {index === 4 && <LocalMallIcon />}
+                  {index === 5 && <CreditCardIcon />}
+                  {index === 6 && <InventoryIcon />}
+                  {index === 7 && <LayersIcon />}
+                  {index === 8 && <AccountBoxIcon />}
+                  {index === 9 && <SellIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
