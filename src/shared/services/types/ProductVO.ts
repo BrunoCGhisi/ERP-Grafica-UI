@@ -21,5 +21,4 @@ export interface ProdutoDataRow {
   preco: number;
   tamanho: number;
 }
-
 export type produtoSchemaType = z.infer<typeof produtoSchema>;

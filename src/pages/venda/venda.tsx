@@ -14,21 +14,21 @@ import {
   Alert,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { getToken } from "../shared/services/payload";
+import { getToken } from "../../shared/services/payload";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
-import { MiniDrawer } from "../shared/components";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import { MiniDrawer } from "../../shared/components";
 import dayjs from "dayjs";
-import "./venda.css";
+import "../venda.css";
 
 import {
   vendaSchema,
@@ -36,8 +36,9 @@ import {
   vendaSchemaType,
   produtoSchemaType,
   bancoSchemaType,
-} from "../shared/services/types";
-import { getSales, postSale, putSale, deleteSale } from "../shared/services";
+} from "../../shared/services/types";
+import { getSales, postSale, putSale, deleteSale } from "../../shared/services";
+import { ModalEditVenda } from "./components/modal-edit-venda";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -62,7 +63,7 @@ const Venda = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-
+  const [idToEdit, setIdToEdit] = useState<any>(null)
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
@@ -70,6 +71,8 @@ const Venda = () => {
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
+
+  let vendas: vendaSchemaType[] = [];
 
   const {
     register,
@@ -141,6 +144,7 @@ const Venda = () => {
 
   const loadSales = async () => {
     const salesData = await getSales();
+    vendas = salesData;
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
@@ -176,15 +180,15 @@ const Venda = () => {
     loadSales();
   };
 
+  useEffect(() => {
+    loadSales();
+  }, [open]);
+
   // População da modal  --------------------------------
   const handleEdit = (updateData: VendaDataRow) => {
     setSelectedData(updateData);
     toggleModal();
   };
-
-  useEffect(() => {
-    loadSales();
-  }, [open]);
 
   useEffect(() => {
     if (selectedData) {
@@ -195,17 +199,11 @@ const Venda = () => {
       setValue("isVendaOS", selectedData.isVendaOS);
       setValue("situacao", selectedData.situacao);
       setValue("desconto", selectedData.desconto);
-      setValue("parcelas", selectedData.parcelas);
-      setValue("idForma_pgto", selectedData.idForma_pgto);
-      if (
-        selectedData.vendas_produtos &&
-        selectedData.vendas_produtos.length > 0
-      ) {
-        selectedData.vendas_produtos.forEach((produto) => {
-          append({
-            idProduto: produto.idProduto,
-            quantidade: produto.quantidade,
-          });
+      setValue("parcelas", selectedData.parcelas)
+      setValue("idForma_pgto", selectedData.idForma_pgto)
+      if (selectedData.vendas_produtos && selectedData.vendas_produtos.length > 0) {
+        selectedData.vendas_produtos.forEach(produto => {
+          append({ idProduto: produto.idProduto, quantidade: produto.quantidade });
         });
       }
     }
@@ -230,6 +228,7 @@ const Venda = () => {
     { field: "isVendaOS", headerName: "IsVendaOS", editable: false, flex: 0 },
     { field: "situacao", headerName: "Situacao", editable: false, flex: 0 },
     { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
+    
 
     {
       field: "acoes",
@@ -245,7 +244,7 @@ const Venda = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -497,213 +496,22 @@ const Venda = () => {
               </Box>
             </Modal>
             {/* ------------------UPDATE---------------------------------------------------------------------------- */}
-            <Modal
+            <ModalEditVenda
+              clientes={clientes}
+              bancos={bancos}
+              formaPagamento={formaPagamento}
+              handleAddProduct={handleAddProduct}
+              handleRemoveProduct={handleRemoveProduct}
               open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot title="Editar venda">
-                <form onSubmit={handleSubmit(handleUpdate)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Vendedor"
-                    inputProps={{ readOnly: true }}
-                    helperText={errors.idVendedor?.message || "Obrigatório"}
-                    error={!!errors.idVendedor}
-                    defaultValue={userId}
-                    {...register("idVendedor")}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">
-                    Clientes
-                  </InputLabel>
-                  <Select
-                    {...register("idCliente")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="idCliente"
-                    error={!!errors.idCliente}
-                    defaultValue={
-                      clientes.length > 0 ? clientes[0].nome : "Sem clientes"
-                    }
-                  >
-                    {clientes &&
-                      clientes.map((cliente) => (
-                        <MenuItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <TextField
-                    type="date"
-                    id="outlined-helperText"
-                    label={"Data compra"}
-                    InputLabelProps={{ shrink: true }}
-                    helperText={errors.dataAtual?.message || "Obrigatório"}
-                    error={!!errors.dataAtual}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                    {...register("dataAtual")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Desconto"
-                    defaultValue={0}
-                    helperText={errors.desconto?.message || "Obrigatório"}
-                    error={!!errors.desconto}
-                    {...register("desconto", { valueAsNumber: true })}
-                  />
-
-                  <Controller
-                    control={control}
-                    name="isVendaOS"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Compra</MenuItem>
-                        <MenuItem value={false}>OS</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    control={control}
-                    name="situacao"
-                    defaultValue={0}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={0}>Em espera</MenuItem>
-                        <MenuItem value={1}>Em criação (arte)</MenuItem>
-                        <MenuItem value={2}>Em execução</MenuItem>
-                        <MenuItem value={3}>Em acabamento</MenuItem>
-                        <MenuItem value={4}>Finalizado</MenuItem>
-                        <MenuItem value={5}>Entregue</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">Banco</InputLabel>
-
-                  <Select
-                    {...register("idBanco")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="Banco"
-                    error={!!errors.idBanco}
-                    defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
-                  >
-                    {bancos &&
-                      bancos.map((banco) => (
-                        <MenuItem key={banco.id} value={banco.id}>
-                          {banco.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <InputLabel>Forma de Pagamento</InputLabel>
-                  <Controller
-                    name="idForma_pgto"
-                    control={control}
-                    defaultValue={1}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        value={formaPagamento}
-                        onChange={(e) => {
-                          setFormaPagamento(e.target.value);
-                          field.onChange(e);
-                        }}
-                      >
-                        <MenuItem value={1}>Dinheiro</MenuItem>
-                        <MenuItem value={2}>Débito</MenuItem>
-                        <MenuItem value={3}>Crédito</MenuItem>
-                        <MenuItem value={4}>Pix</MenuItem>
-                        <MenuItem value={5}>Boleto</MenuItem>
-                        <MenuItem value={6}>À prazo</MenuItem>
-                        <MenuItem value={7}>Cheque</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Typography variant="h6">Produtos da Venda</Typography>
-                  {fields.map((item, index) => (
-                    <Box
-                      key={item.id}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                    >
-                      <Controller
-                        control={control}
-                        name={`vendas_produtos.${index}.idProduto` as const}
-                        //defaultValue={0}
-                        render={({ field }) => (
-                          <Select
-                            {...field}
-                            error={!!errors.vendas_produtos?.[index]?.idProduto}
-                          >
-                            {produtos.map((produto) => (
-                              <MenuItem key={produto.id} value={produto.id}>
-                                {produto.nome}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        )}
-                      />
-
-                      <TextField
-                        {...register(
-                          `vendas_produtos.${index}.quantidade` as const
-                        )}
-                        type="number"
-                        error={!!errors.vendas_produtos?.[index]?.quantidade}
-                        helperText={
-                          errors.vendas_produtos?.[index]?.quantidade?.message
-                        }
-                        label="Quantidade"
-                        //defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
-
-                      <IconButton
-                        onClick={() => handleRemoveProduct(index)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
-
-                  <Typography>Financeiro</Typography>
-                  <TextField
-                    label="Parcelas"
-                    type="number"
-                    defaultValue={1}
-                    InputProps={{
-                      readOnly: formaPagamento === 0 || formaPagamento === 1,
-                    }}
-                    {...register("parcelas")}
-                  />
-
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddCircleOutlineIcon />}
-                    onClick={handleAddProduct}
-                  >
-                    Adicionar Produto
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Editar
-                  </Button>
-                </form>
-              </ModalRoot>
-            </Modal>
+              produtos={produtos}
+              setAlertMessage={setAlertMessage}
+              setFormaPagamento={setFormaPagamento}
+              setShowAlert={setShowAlert}
+              toggleModal={toggleModal}
+              userId={userId}
+              idToEdit={idToEdit}
+              vendas={vendas}
+            />
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
