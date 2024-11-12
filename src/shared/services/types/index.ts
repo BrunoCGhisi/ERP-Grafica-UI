@@ -10,3 +10,5 @@ export * from './PurchaseVO';
 export * from './ProductVO';
 export * from './SaleVO';
 export * from './SupplieVO';
+
+export * from './Pies/'

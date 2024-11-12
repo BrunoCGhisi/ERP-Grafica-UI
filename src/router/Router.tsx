@@ -16,7 +16,8 @@ import {
   Venda,
   NoPage,
   Testes,
-  Insumo
+  Insumo,
+  PieMostProduct
 } from "../pages";
 
 import { ProtectedRoute } from "../shared/components";
@@ -28,7 +29,7 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/DashBoard" element={<Home />} />
         <Route index element={<Home />} />
 
         <Route
@@ -56,7 +57,16 @@ const Router = () => {
           }
         />
         <Route
-          path="/categoria_produto"
+          path="/PieMostProduct"
+          element={
+            <ProtectedRoute>
+              <PieMostProduct />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/categoriaProduto"
           element={
             <ProtectedRoute>
               <CategoriaProduto />
@@ -66,7 +76,7 @@ const Router = () => {
 
         {/*  
         <Route
-          path="/forma_pgto"
+          path="/formaPagamento"
           element={
             <ProtectedRoute>
               <FormaPgto />
