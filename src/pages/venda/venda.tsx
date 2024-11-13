@@ -36,6 +36,7 @@ import {
   vendaSchemaType,
   produtoSchemaType,
   bancoSchemaType,
+  vendaProdutoSchemaType,
 } from "../../shared/services/types";
 import { getSales, postSale, putSale, deleteSale } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
@@ -65,6 +66,7 @@ const Venda = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [idToEdit, setIdToEdit] = useState<any>(null)
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
+  const [vp, setVp] = useState<vendaProdutoSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
@@ -139,6 +141,16 @@ const Venda = () => {
       setValue("parcelas", 1);
     }
   }, [formaPagamento, setValue]);
+
+// Trazendo vendas produtos --------------------------------------------------
+  useEffect(() => {
+    const getVendasProdutos = async () => {
+      const response = await axios.get("http://localhost:3000/venda");
+      setVp(response.data.vendasProdutos);
+      console.log(response.data.vendasProdutos)
+    };
+    getVendasProdutos();
+  }, []);
 
   //CRUD -----------------------------------------------------------------------------------------------------
 
@@ -511,6 +523,7 @@ const Venda = () => {
                   userId={userId}
                   idToEdit={idToEdit}
                   vendas={sales}
+                  vendasProdutos={vp}
                   //vendasProdutos={vp}
                 />
               )

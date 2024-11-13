@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const vendaProdutoSchema = z.object({
+  idVenda: z.number().optional(),
   idProduto: z.number().optional(),
   quantidade: z.coerce.number().optional(),
 });
@@ -37,4 +38,5 @@ export interface VendaDataRow {
   idForma_pgto: number;
 }
 
+export type vendaProdutoSchemaType = z.infer<typeof vendaProdutoSchema>;
 export type vendaSchemaType = z.infer<typeof vendaSchema>;

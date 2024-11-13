@@ -8,7 +8,6 @@ export const produtoSchema = z.object({
   idCategoria: z.number(),
   idInsumo: z.number(),
   preco: z.coerce.number(),
-  tamanho: z.number().optional(),
   largura: z.coerce.number(),
   comprimento: z.coerce.number(),
 });
@@ -21,7 +20,6 @@ export interface ProdutoDataRow {
   idCategoria: number;
   idInsumo: number;
   preco: number;
-  tamanho: number;
   largura: number;
   comprimento: number;
 }

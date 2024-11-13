@@ -15,7 +15,7 @@ import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
 import { putSale } from "../../../shared/services";
-import { VendaDataRow, vendaSchema, vendaSchemaType } from "../../../shared/services/types";
+import { VendaDataRow, vendaSchema, vendaSchemaType,vendaProdutoSchemaType } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -34,6 +34,7 @@ interface ModalEditVenda {
     setAlertMessage: (alertMessage: string) => void
     setShowAlert: (open: boolean) => void
     produtos: produtoSchemaType[]
+    vendasProdutos: vendaProdutoSchemaType[]
     setFormaPagamento: (value: React.SetStateAction<number>) => void
     formaPagamento: number
     bancos : {
@@ -46,12 +47,15 @@ interface ModalEditVenda {
     vendas: vendaSchemaType[]
 }
 
-export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas}: ModalEditVenda){
+export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos}: ModalEditVenda){
   
-    const today = new Date()
+    //const today = new Date()
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
-    const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente)
+    const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente);
     const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
+    const venda_produto = vendasProdutos.filter((vp) => vp.idVenda === filterVendas[0]?.id);
+    
+    console.log("VENDAS PRODUTOS:", venda_produto)
     
 
     const {
@@ -68,11 +72,11 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
           dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
           idBanco: bancos[0].id,
           idVendedor: vendedor?.idVendedor ,
-          vendas_produtos: [{ idProduto: 0, quantidade: 1 }]
+          vendas_produtos: venda_produto.map((vp) => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
         },
         });
 
-        const handleAddProduct = () => {
+        const handleAddProduct = () => { // pq usamos isso?
           append({ idProduto: 0, quantidade: 1 }); 
         };
         const { fields, append, remove } = useFieldArray({
