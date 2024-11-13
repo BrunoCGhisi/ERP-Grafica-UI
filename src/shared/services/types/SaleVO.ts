@@ -9,6 +9,7 @@ export const vendaSchema = z.object({
   //venda
   id: z.number().optional(),
   idBanco: z.coerce.number().optional(),
+  nomeCliente: z.string().optional(),
   idCliente: z.number().optional(),
   idVendedor: z.coerce.number().optional(),
   dataAtual: z.string().optional(),

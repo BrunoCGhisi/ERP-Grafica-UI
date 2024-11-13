@@ -119,7 +119,7 @@ const Venda = () => {
   useEffect(() => {
     const getBancos = async () => {
       const response = await axios.get("http://localhost:3000/banco");
-      setBancos(response.data.bancos);
+      setBancos(response.data.getBancos);
     };
     getBancos();
   }, []);
@@ -496,25 +496,33 @@ const Venda = () => {
               </Box>
             </Modal>
             {/* ------------------UPDATE---------------------------------------------------------------------------- */}
-            <ModalEditVenda
-              clientes={clientes}
-              bancos={bancos}
-              formaPagamento={formaPagamento}
-              handleAddProduct={handleAddProduct}
-              handleRemoveProduct={handleRemoveProduct}
-              open={open}
-              produtos={produtos}
-              setAlertMessage={setAlertMessage}
-              setFormaPagamento={setFormaPagamento}
-              setShowAlert={setShowAlert}
-              toggleModal={toggleModal}
-              userId={userId}
-              idToEdit={idToEdit}
-              vendas={vendas}
-            />
+            {
+              open &&  (
+                <ModalEditVenda 
+                  clientes={clientes}
+                  bancos={bancos}
+                  formaPagamento={formaPagamento}
+                  open={open}
+                  produtos={produtos}
+                  setAlertMessage={setAlertMessage}
+                  setFormaPagamento={setFormaPagamento}
+                  setShowAlert={setShowAlert}
+                  toggleModal={toggleModal}
+                  userId={userId}
+                  idToEdit={idToEdit}
+                  vendas={sales}
+                  //vendasProdutos={vp}
+                />
+              )
+            }
+            
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
+              onRowClick={() => {
+                toggleModal()
+                //rows.filter((row) => row.id)
+              }}
               rows={rows}
               columns={columns}
               initialState={{

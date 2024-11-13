@@ -19,6 +19,10 @@ import { VendaDataRow, vendaSchema, vendaSchemaType } from "../../../shared/serv
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import {
+  produtoSchemaType,
+} from "../../../shared/services/types";
+import { z } from "zod";
 
 interface ModalEditVenda {
     open: boolean
@@ -29,31 +33,27 @@ interface ModalEditVenda {
     }[]
     setAlertMessage: (alertMessage: string) => void
     setShowAlert: (open: boolean) => void
-    produtos: {
-        nome: string
-        tipo: boolean
-        keyWord: string
-        idCategoria: number
-        idInsumo: number
-        preco: number
-        tamanho: number
-        id?: number | undefined
-    }[]
+    produtos: produtoSchemaType[]
     setFormaPagamento: (value: React.SetStateAction<number>) => void
     formaPagamento: number
-    handleAddProduct: () => void
-    handleRemoveProduct: (index: number) => void
     bancos : {
         nome: string;
-        valorTotal: number;
+        valorTotal: number; 
         id?: number | undefined;
     }[]
     userId: number | null
     idToEdit: any
+    vendas: vendaSchemaType[]
 }
 
-export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, handleRemoveProduct , handleAddProduct, vendas}: ModalEditVenda){
+export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas}: ModalEditVenda){
+  
     const today = new Date()
+    const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
+    const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente)
+    const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
+    
+
     const {
         register,
         handleSubmit,
@@ -63,17 +63,26 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
         } = useForm<vendaSchemaType>({
         resolver: zodResolver(vendaSchema),
         defaultValues: {
-            vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
+          idCliente: cliente[0].id,
+          desconto: filterVendas[0].desconto,
+          dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
+          idBanco: bancos[0].id,
+          idVendedor: vendedor?.idVendedor ,
+          vendas_produtos: [{ idProduto: 0, quantidade: 1 }]
         },
         });
 
-    const { fields } = useFieldArray({
-        control,
-        name: "vendas_produtos",
+        const handleAddProduct = () => {
+          append({ idProduto: 0, quantidade: 1 }); 
+        };
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: "vendas_produtos",
         });
-
-    const filterVendas = vendas.filter((venda: number) => venda.id === idToEdit);
-    console.log()
+        const handleRemoveProduct = (index: number) => {
+          remove(index);
+        };
+    
 
 
     async function handleUpdate(data: vendaSchemaType){
@@ -92,7 +101,6 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
         }
 
     
-    
     return (
         <Modal
               open={open}
@@ -101,7 +109,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
               aria-describedby="modal-modal-description"
             >
               <ModalRoot title="Editar venda">
-                <form onSubmit={handleSubmit(handleUpdate)}>
+                <form onSubmit={handleSubmit(handleUpdate)} style={{width: '100%'}}>
                 <TextField
                     id="outlined-helperText"
                     label="Vendedor"
@@ -115,23 +123,29 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                   <InputLabel id="demo-simple-select-label">
                     Clientes
                   </InputLabel>
-                  <Select
-                    {...register("idCliente")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="idCliente"
-                    error={!!errors.idCliente}
-                    defaultValue={
-                      clientes.length > 0 ? clientes[0].nome : "Sem clientes"
-                    }
-                  >
-                    {clientes &&
-                      clientes.map((cliente) => (
-                        <MenuItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
+
+                  <Controller
+                    name="idCliente"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        style={{ width: 300 }}
+                        labelId="select-label"
+                        id="demo-simple-select"
+                        error={!!errors.idCliente}
+                        {...field} 
+                      >
+                        {clientes &&
+                          clientes.map((cliente) => (
+                            <MenuItem key={cliente.id} value={cliente.id}>
+                              {cliente.nome}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
+
+
 
                   <TextField
                     type="date"
@@ -140,7 +154,6 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                     InputLabelProps={{ shrink: true }}
                     helperText={errors.dataAtual?.message || "Obrigatório"}
                     error={!!errors.dataAtual}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
                     {...register("dataAtual")}
                   />
                   <TextField
@@ -183,6 +196,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                   <InputLabel id="demo-simple-select-label">Banco</InputLabel>
 
                   <Select
+                  style={{width: 300}}
                     {...register("idBanco")}
                     labelId="select-label"
                     id="demo-simple-select"
@@ -205,6 +219,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                     defaultValue={1}
                     render={({ field }) => (
                       <Select
+                      style={{width: 300}}
                         {...field}
                         value={formaPagamento}
                         onChange={(e) => {
