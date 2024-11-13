@@ -16,6 +16,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
+import InputAdornment from "@mui/material/InputAdornment";
 import { MiniDrawer } from "../shared/components";
 import { getToken } from "../shared/services";
 import { useForm, Controller } from "react-hook-form";
@@ -48,8 +49,9 @@ const Banco = () => {
 
   // Modal ADD -----------------------------------------------------------------------------------------------------
   const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => {setAdOpen(true), reset();
-};
+  const addOn = () => {
+    setAdOpen(true), reset();
+  };
   const addOf = () => setAdOpen(false);
 
   // População da Modal ----------------------------
@@ -96,10 +98,39 @@ const Banco = () => {
   }, [open]);
 
   const columns: GridColDef<BancoDataRow>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
-    { field: "valorTotal", headerName: "valorTotal", editable: false, flex: 0 },
+    { field: "id", headerName: "ID", align: "left", flex: 0},
+    { 
+      field: "nome", 
+    headerName: "Nome", 
+    editable: false, 
+    flex: 0, 
+  },
+    {
+      field: "valorTotal",
+      headerName: "Saldo",
+      editable: false,
+      flex: 0,
+      align: "center",
+      type: "actions",
 
+      renderCell: (params) => (
+        <Box
+          sx={{
+            backgroundColor: params.value < 0 ? "error.light" : "transparent",
+            color: params.value < 0 ? "#fff" : "#000",
+            opacity: params.value < 0 ? "60%" : "100%",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",  
+          }}
+        >
+          {params.value}
+        </Box>
+      ),
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -165,10 +196,15 @@ const Banco = () => {
                   />
                   <TextField
                     id="outlined-helperText"
-                    label="valorTotal"
+                    label="Saldo"
                     helperText={errors.valorTotal?.message || "Obrigatório"}
                     error={!!errors.valorTotal}
                     {...register("valorTotal", { valueAsNumber: true })}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">R$</InputAdornment>
+                      ),
+                    }}
                   />
 
                   <Button
@@ -201,10 +237,15 @@ const Banco = () => {
                   />
                   <TextField
                     id="outlined-helperText"
-                    label="valorTotal"
+                    label="Saldo"
                     helperText={errors.valorTotal?.message || "Obrigatório"}
                     error={!!errors.valorTotal}
                     {...register("valorTotal", { valueAsNumber: true })}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">R$</InputAdornment>
+                      ),
+                    }}
                   />
                   <Button
                     type="submit"
