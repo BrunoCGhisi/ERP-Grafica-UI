@@ -28,7 +28,10 @@ const PieMostProduct = () => {
     id: produto.idProduto,
     value: produto.totalVendido,
     label: produto.nome,
+    
   }));
+
+
 
   return (
     <Box>
