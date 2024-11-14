@@ -98,38 +98,44 @@ const Banco = () => {
   }, [open]);
 
   const columns: GridColDef<BancoDataRow>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0},
-    { 
-      field: "nome", 
-    headerName: "Nome", 
-    editable: false, 
-    flex: 0, 
-  },
+    {
+      field: "nome",
+      headerName: "Banco",
+      editable: false,
+      flex: 0,
+      minWidth: 700,
+      maxWidth: 800,
+    },
     {
       field: "valorTotal",
       headerName: "Saldo",
       editable: false,
       flex: 0,
-      align: "center",
-      type: "actions",
 
-      renderCell: (params) => (
-        <Box
-          sx={{
-            backgroundColor: params.value < 0 ? "error.light" : "transparent",
-            color: params.value < 0 ? "#fff" : "#000",
-            opacity: params.value < 0 ? "60%" : "100%",
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",  
-          }}
-        >
-          {params.value}
-        </Box>
-      ),
+      minWidth: 200,
+      maxWidth: 250,
+
+      renderCell: (params) => {
+        const formattedValue = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(params.value);
+
+        return (
+          <Box
+            sx={{
+              backgroundColor: params.value < 0 ? "error.light" : "transparent",
+              color: params.value < 0 ? "#fff" : "#000",
+              opacity: params.value < 0 ? "60%" : "100%",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+            }}
+          >
+            {formattedValue}
+          </Box>
+        );
+      },
     },
     {
       field: "acoes",
@@ -184,12 +190,12 @@ const Banco = () => {
             >
               <Box sx={ModalStyle}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Novo banco
+                  Cadastrando Banco
                 </Typography>
                 <form onSubmit={handleSubmit(handleAdd)}>
                   <TextField
                     id="outlined-helperText"
-                    label="Nome"
+                    label="Banco"
                     helperText={errors.nome?.message || "Obrigatório"}
                     error={!!errors.nome}
                     {...register("nome")}
@@ -230,7 +236,7 @@ const Banco = () => {
                 <form onSubmit={handleSubmit(handleUpdate)}>
                   <TextField
                     id="outlined-helperText"
-                    label="Nome"
+                    label="Banco"
                     helperText={errors.nome?.message || "Obrigatório"}
                     error={!!errors.nome}
                     {...register("nome")}
