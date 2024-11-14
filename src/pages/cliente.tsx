@@ -1,5 +1,5 @@
 import { useState, useEffect, InputHTMLAttributes, HTMLAttributes  } from "react";
-import InputMask from "react-input-mask";
+import { NumericFormat, PatternFormat } from 'react-number-format';
 import axios from "axios";
 import {Box,
   InputLabel,
@@ -44,15 +44,11 @@ const clienteSchema = z.object({
   }, 'CPF/CNPJ deve conter no mínimo 11 caracteres.')
   .refine((doc) => {
     return doc.length <= 14;
-  }, 'CPF/CNPJ deve conter no máximo 14 caracteres.')
+  }, 'CPF/CNPJ deve conter no máximo 14 caracteres.'),
 
-  ,
-  telefone: z.string().refine((doc) => {
-    return doc.length < 11;
-  },'Telefone inválido')
-  .refine((doc) => doc.trim() !== "",{
-    message: "Campo obrigatório"
-  }),
+
+  telefone: z.string().transform((val) => val.replace(/[^0-9]/g, "")).refine((doc) => {
+    return doc.length >= 11;}, 'CPF/CNPJ deve conter no mínimo 11 caracteres.'),
   email: z.string().email(),
   isFornecedor: z.boolean(),
   cep: z.string().optional(),
@@ -346,22 +342,24 @@ const Cliente = () => {
                   error={!!errors.cpfCnpj}
                   {...register("cpfCnpj")}
                 />
-
-                <InputMask
-                  mask="(99) 99999-9999"
-                  {...register("telefone",  { required: "O telefone é obrigatório" })}
-                >
-                {() => (
-                  <TextField
-                  id="outlined-helperText"
-                  label="telefone"
-                  defaultValue=""
-                  helperText={errors.telefone?.message || "Obrigatório"}
-                  error={!!errors.telefone}
                   
-                />
-                )}
-                </InputMask> 
+                  <Controller
+                    name="telefone"
+                    control={control}
+                    render={({ field }) => (
+                      <PatternFormat
+                        {...field}
+                        format="(##) #####-####" // Formato de telefone
+                        mask="_"
+                        customInput={TextField} // Utiliza TextField como input
+                        label="Telefone"
+                        error={!!errors.telefone}
+                        helperText={errors.telefone ? errors.telefone.message : "Obrigatório"}
+                        fullWidth
+                      />
+                    )}
+                  />
+                
 
                 <TextField
                   id="outlined-helperText"
@@ -391,22 +389,22 @@ const Cliente = () => {
                 </Select>
                 )}/>
 
-                <InputMask
-                  mask="9999-9999"
-                  {...register("cep")}
-                
-                >
-                {() => (
-                <TextField
-                  id="outlined-helperText"
-                  label="cep"
-                  defaultValue=""
-                  helperText={errors.cep?.message || "Obrigatório"}
-                  error={!!errors.cep}
-                  
-                />
-                )}
-                </InputMask>
+                <Controller
+                    name="cep"
+                    control={control}
+                    render={({ field }) => (
+                      <PatternFormat
+                        {...field}
+                        format="####-####" // Formato de telefone
+                        mask="_"
+                        customInput={TextField} // Utiliza TextField como input
+                        label="CEP"
+                        error={!!errors.cep}
+                        helperText={errors.cep ? errors.cep.message : "Obrigatório"}
+                        fullWidth
+                      />
+                    )}
+                  />
                 
                 <TextField
                   id="outlined-helperText"
@@ -519,7 +517,7 @@ const Cliente = () => {
                 error={!!errors.cpfCnpj}
                 {...register("cpfCnpj")}
               />
-              <InputMask
+              {/* <InputMask
                   mask="(99) 99999-9999"
                   {...register("telefone",  { required: "O telefone é obrigatório" })}
                 >
@@ -533,7 +531,7 @@ const Cliente = () => {
                   
                 />
                 )}
-                </InputMask> 
+                </InputMask>  */}
 
               <TextField
                 id="outlined-helperText"
@@ -563,7 +561,7 @@ const Cliente = () => {
                 </Select>
                 )}/>
 
-                <InputMask
+                {/* <InputMask
                   mask="9999-9999"
                   {...register("cep")}>
                   {() => (
@@ -573,7 +571,7 @@ const Cliente = () => {
                     defaultValue=""
                     helperText={errors.cep?.message || "Obrigatório"}
                     error={!!errors.cep}/>)}
-                </InputMask>
+                </InputMask> */}
 
               <TextField
                 id="outlined-helperText"

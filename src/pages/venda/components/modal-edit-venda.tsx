@@ -149,8 +149,6 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                     )}
                   />
 
-
-
                   <TextField
                     type="date"
                     id="outlined-helperText"
