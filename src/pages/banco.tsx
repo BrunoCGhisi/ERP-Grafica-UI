@@ -105,6 +105,7 @@ const Banco = () => {
       flex: 0,
       minWidth: 700,
       maxWidth: 800,
+      headerClassName: "gridHeader--header",
     },
     {
       field: "valorTotal",
@@ -114,6 +115,7 @@ const Banco = () => {
 
       minWidth: 200,
       maxWidth: 250,
+      headerClassName: "gridHeader--header",
 
       renderCell: (params) => {
         const formattedValue = new Intl.NumberFormat("pt-BR", {
@@ -141,9 +143,11 @@ const Banco = () => {
       field: "acoes",
       headerName: "Ações",
       width: 150,
+
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           <IconButton
@@ -169,8 +173,7 @@ const Banco = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Typography>Estamos dentro do banco </Typography>
-          <Typography>(Não iremos cometer nenhum assalto...)</Typography>
+          
           <Box>
             <Stack direction="row" spacing={2}>
               <Button
