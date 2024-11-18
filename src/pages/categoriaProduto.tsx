@@ -8,6 +8,8 @@ import {
   TextField,
   Stack,
   IconButton,
+  Grid,
+  Divider,
 } from "@mui/material";
 
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -39,8 +41,11 @@ import {
 } from "../shared/services";
 
 const CategoriaProduto = () => {
-  const [productCategorys, setProductCategorys] = useState<proCategorySchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<ProductCategoryDataRow | null>(null);
+  const [productCategorys, setProductCategorys] = useState<
+    proCategorySchemaType[]
+  >([]);
+  const [selectedData, setSelectedData] =
+    useState<ProductCategoryDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
   const {
@@ -104,9 +109,14 @@ const CategoriaProduto = () => {
   // GRID ------------------------------------------------
 
   const columns: GridColDef<ProductCategoryDataRow>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "categoria", headerName: "Categoria", editable: false, flex: 0 },
-
+    {
+      field: "categoria",
+      headerName: "Categorias Registradas",
+      editable: false,
+      flex: 0,
+      width: 900,
+      headerClassName: "gridHeader--header",
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -114,6 +124,7 @@ const CategoriaProduto = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           <IconButton
@@ -136,92 +147,144 @@ const CategoriaProduto = () => {
 
   return (
     <Box>
-      <MiniDrawer> 
-      <Box sx={SpaceStyle}>
-        <Typography>Categoria Produto </Typography>
-    
-        <Box>
-          <Stack direction="row" spacing={2}>
-            <Button
-              onClick={addOn}
-              variant="outlined"
-              startIcon={<AddCircleOutlineIcon />}
+      <MiniDrawer>
+        <Box sx={SpaceStyle}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Categorias de Produtos</Typography>
+            </Grid>
+
+            <Grid item>
+              <Button
+                onClick={addOn}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Cadastrar
+              </Button>
+            </Grid>
+          </Grid>
+          <Box>
+            <Modal
+              open={adopen}
+              onClose={addOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              Adicionar
-            </Button>
-          </Stack>
+              <Box sx={ModalStyle}>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Cadastro Categoria de Produto
+                    </Typography>
+                  </Grid>
+            
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleAdd)}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Categoria Produto"
+                            helperText={
+                              errors.categoria?.message || "Obrigatório"
+                            }
+                            error={!!errors.categoria}
+                            {...register("categoria")}
+                            fullWidth 
+                          />
+                        </Grid>
 
-          <Modal
-            open={adopen}
-            onClose={addOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo banco
-              </Typography>
-              <form onSubmit={handleSubmit(handleAdd)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="categoriaProduto"
-                  helperText={errors.categoria?.message || "Obrigatório"}
-                  error={!!errors.categoria}
-                  {...register("categoria")}
-                />
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Cadastrar
-                </Button>
-              </form>
-            </Box>
-          </Modal>
-          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-          <Modal
-            open={open}
-            onClose={toggleModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <ModalRoot title="Editando Categoria dos Produtos" >
-              <form onSubmit={handleSubmit(handleUpdate)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="categoria"
-                  helperText={errors.categoria?.message || "Obrigatório"}
-                  error={!!errors.categoria}
-                  {...register("categoria")}
-                />
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Cadastrar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Modal>
+            {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+            <Modal
+              open={open}
+              onClose={toggleModal}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <ModalRoot title="Atualizar Categoria dos Produtos">
+              <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Atualizar
+                    </Typography>
+                  </Grid>
+            
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleUpdate)}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Categoria Produto"
+                            helperText={
+                              errors.categoria?.message || "Obrigatório"
+                            }
+                            error={!!errors.categoria}
+                            {...register("categoria")}
+                            fullWidth 
+                          />
+                        </Grid>
 
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Alterar
-                </Button>
-              </form>
-            </ModalRoot>
-          </Modal>
-        </Box>
-        <Box sx={GridStyle}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 6,
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Cadastrar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
+              </ModalRoot>
+            </Modal>
+          </Box>
+          <Box sx={GridStyle}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[6]}
-          />
+              }}
+              pageSizeOptions={[6]}
+            />
+          </Box>
         </Box>
-      </Box>
       </MiniDrawer>
     </Box>
   );

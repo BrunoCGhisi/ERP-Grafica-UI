@@ -101,7 +101,7 @@ const Banco = () => {
   const columns: GridColDef<BancoDataRow>[] = [
     {
       field: "nome",
-      headerName: "Banco",
+      headerName: "Nome",
       editable: false,
       flex: 0,
       minWidth: 700,
@@ -144,7 +144,6 @@ const Banco = () => {
       field: "acoes",
       headerName: "Ações",
       width: 150,
-
       align: "center",
       type: "actions",
       flex: 0,
@@ -190,7 +189,7 @@ const Banco = () => {
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
-                Adicionar
+                Cadastrar
               </Button>
             </Grid>
           </Grid>
@@ -210,7 +209,7 @@ const Banco = () => {
                       component="h2"
                       gutterBottom
                     >
-                      Cadastrando Banco
+                      Cadastro Banco
                     </Typography>
                   </Grid>
 
@@ -275,7 +274,7 @@ const Banco = () => {
               <ModalRoot title="Editando Banco">
                 <Grid container spacing={8} direction="column">
                   <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleAdd)}>
+                    <form onSubmit={handleSubmit(handleUpdate)}>
                       <Grid container spacing={2} direction="column">
                         <Grid item xs={8}>
                           <TextField
