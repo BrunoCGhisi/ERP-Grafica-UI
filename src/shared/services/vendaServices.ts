@@ -1,5 +1,5 @@
 import axios from "axios";
-import { vendaSchemaType } from "./types";
+import { financeiroSchemaType, vendaSchemaType } from "./types";
 
 const BASE_URL = "http://localhost:3000/venda";
 
@@ -16,9 +16,23 @@ export const postSale = async (data: vendaSchemaType) => {
 
 export const putSale = async (data: vendaSchemaType) => {
   console.log("DA FUNC",data)
+
   const response = await axios.put(`${BASE_URL}?id=${data.id}`, data);
   return response;
 };
+
+export const putSaleAux = async (data: vendaSchemaType) => {
+  console.log("DA FUNC",data)
+  const response = await axios.put(`${BASE_URL}?id=${data.id}`, data);
+  return response;
+};
+
+export const putSaleFin = async (data: financeiroSchemaType) => {
+  console.log("DA FUNC",data)
+  const response = await axios.put(`${BASE_URL}?id=${data.id}`, data);
+  return response;
+};
+
 
 export const deleteSale = async (id: number) => {
   const response = await axios.delete(`${BASE_URL}?id=${id}`);

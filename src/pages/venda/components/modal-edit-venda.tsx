@@ -14,8 +14,8 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
-import { putSale } from "../../../shared/services";
-import { VendaDataRow, vendaSchema, vendaSchemaType,vendaProdutoSchemaType } from "../../../shared/services/types";
+import { putSale, putSaleAux, putSaleFin } from "../../../shared/services";
+import { VendaDataRow, vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -44,16 +44,19 @@ interface ModalEditVenda {
     }[]
     userId: number | null
     idToEdit: any
-    vendas: vendaSchemaType[]
+    vendas: vendaSchemaType[],
+    financeiro: financeiroSchemaType[]
 }
 
-export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos}: ModalEditVenda){
+export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
   
     //const today = new Date()
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
+    const idVendas = filterVendas.map((venda) => venda.id);
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente);
     const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
-    const venda_produto = vendasProdutos.filter((vp) => vp.idVenda === filterVendas[0]?.id);
+    const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
+    const FilterFinanceiro = financeiro.find((fin) => idVendas.includes(fin.idVenda));
     
     console.log("VENDAS PRODUTOS:", venda_produto)
     
@@ -89,21 +92,32 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
     
 
 
-    async function handleUpdate(data: vendaSchemaType){
-        const newData = {...data, id: idToEdit}
-        
-        const response = await putSale(newData);
+        async function handleUpdate(data: vendaSchemaType){
+          try {
+            const newData = {...data, id: idToEdit}
+            const response = await putSale(newData);
             if (response.data) {
-            setAlertMessage(response.data);
-            setShowAlert(true);
-            setTimeout(() => {
+              setAlertMessage(response.data);
+              setShowAlert(true);
+              setTimeout(() => {
                 setShowAlert(false);
-            }, 5000);
-            reset()
+              }, 5000);
             }
+    
+            const finData = {...data, id: FilterFinanceiro?.id}
+            putSaleFin(finData);
+    
+          for (const vp of venda_produto){
+            const newData = {...data, id: vp.id}
+            putSaleAux(newData);
+          }
+    
+            reset();
             toggleModal();
+          } catch (error) {
+            console.error("Erro ao atualizar venda ou produtos:", error)
+          }
         }
-
     
     return (
         <Modal
@@ -216,17 +230,17 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
 
                   <InputLabel>Forma de Pagamento</InputLabel>
                   <Controller
-                    name="idForma_pgto"
+                    name={`financeiro.0.idForma_pgto`} 
                     control={control}
                     defaultValue={1}
                     render={({ field }) => (
                       <Select
-                      style={{width: 300}}
                         {...field}
-                        value={formaPagamento}
+                        value={field.value}
                         onChange={(e) => {
-                          setFormaPagamento(e.target.value);
-                          field.onChange(e);
+                          const value = e.target.value;
+                          setFormaPagamento(value);
+                          field.onChange(value);
                         }}
                       >
                         <MenuItem value={1}>Dinheiro</MenuItem>
@@ -293,7 +307,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                     </Box>
                   ))}
 
-                  <Typography>Financeiro</Typography>
+                <Typography>Financeiro</Typography>
                   <TextField
                     label="Parcelas"
                     type="number"
@@ -301,7 +315,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                     InputProps={{
                       readOnly: formaPagamento === 0 || formaPagamento === 1,
                     }}
-                    {...register("parcelas")}
+                    {...register("financeiro.0.parcelas")}
                   />
 
                   <Button

@@ -1,11 +1,18 @@
 import { z } from "zod";
 
 const vendaProdutoSchema = z.object({
+  id: z.number().optional(),
   idVenda: z.number().optional(),
   idProduto: z.number().optional(),
   quantidade: z.coerce.number().optional(),
 });
 
+const financeiroSchema = z.object({
+  id: z.number().optional(),
+  idVenda: z.number().optional(),
+  parcelas: z.coerce.number().optional(),
+  idForma_pgto: z.coerce.number().optional(),
+});
 export const vendaSchema = z.object({
   //venda
   id: z.number().optional(),
@@ -20,8 +27,7 @@ export const vendaSchema = z.object({
   //Venda Produto
   vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
-  parcelas: z.coerce.number().optional(),
-  idForma_pgto: z.coerce.number().optional(),
+  financeiro: z.array(financeiroSchema).default([]),
 });
 
 export interface VendaDataRow {
@@ -33,10 +39,8 @@ export interface VendaDataRow {
   situacao: number;
   desconto: number;
   vendas_produtos: {idProduto: number; quantidade: number}[];
-  //Financeiro
-  parcelas: number;
-  idForma_pgto: number;
+  financeiro: {parcelas: number; idForma_pgto: number}[];
 }
-
+export type financeiroSchemaType = z.infer<typeof financeiroSchema>;
 export type vendaProdutoSchemaType = z.infer<typeof vendaProdutoSchema>;
 export type vendaSchemaType = z.infer<typeof vendaSchema>;

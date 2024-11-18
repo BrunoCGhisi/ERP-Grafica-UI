@@ -37,6 +37,7 @@ import {
   produtoSchemaType,
   bancoSchemaType,
   vendaProdutoSchemaType,
+  financeiroSchemaType,
 } from "../../shared/services/types";
 import { getSales, postSale, putSale, deleteSale } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
@@ -68,13 +69,13 @@ const Venda = () => {
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [vp, setVp] = useState<vendaProdutoSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
+  const [financeiro, setFinanceiro] =  useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
 
-  let vendas: vendaSchemaType[] = [];
 
   const {
     register,
@@ -87,6 +88,7 @@ const Venda = () => {
     resolver: zodResolver(vendaSchema),
     defaultValues: {
       vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
+      financeiro: [{ parcelas: 1, idForma_pgto: 1 }], 
     },
   });
 
@@ -156,7 +158,6 @@ const Venda = () => {
 
   const loadSales = async () => {
     const salesData = await getSales();
-    vendas = salesData;
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
@@ -174,18 +175,18 @@ const Venda = () => {
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: vendaSchemaType) => {
-    const response = await putSale(data);
-    if (response.data) {
-      setAlertMessage(response.data);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
-    }
-    loadSales();
-    toggleModal();
-  };
+  // const handleUpdate = async (data: vendaSchemaType) => {
+  //   const response = await putSale(data);
+  //   if (response.data) {
+  //     setAlertMessage(response.data);
+  //     setShowAlert(true);
+  //     setTimeout(() => {
+  //       setShowAlert(false);
+  //     }, 5000);
+  //   }
+  //   loadSales();
+  //   toggleModal();
+  // };
 
   const handleDelete = async (id: number) => {
     await deleteSale(id);
@@ -197,10 +198,10 @@ const Venda = () => {
   }, [open]);
 
   // População da modal  --------------------------------
-  const handleEdit = (updateData: VendaDataRow) => {
-    setSelectedData(updateData);
-    toggleModal();
-  };
+    // const handleEdit = (updateData: VendaDataRow) => {
+    //   setSelectedData(updateData);
+    //   toggleModal();
+    // };
 
   useEffect(() => {
     if (selectedData) {
@@ -211,8 +212,10 @@ const Venda = () => {
       setValue("isVendaOS", selectedData.isVendaOS);
       setValue("situacao", selectedData.situacao);
       setValue("desconto", selectedData.desconto);
-      setValue("parcelas", selectedData.parcelas)
-      setValue("idForma_pgto", selectedData.idForma_pgto)
+      if (selectedData.financeiro && selectedData.financeiro.length > 0) {
+        setValue("financeiro.0.parcelas", selectedData.financeiro[0].parcelas);
+        setValue("financeiro.0.idForma_pgto", selectedData.financeiro[0].idForma_pgto);
+      }
       if (selectedData.vendas_produtos && selectedData.vendas_produtos.length > 0) {
         selectedData.vendas_produtos.forEach(produto => {
           append({ idProduto: produto.idProduto, quantidade: produto.quantidade });
@@ -405,16 +408,17 @@ const Venda = () => {
 
                   <InputLabel>Forma de Pagamento</InputLabel>
                   <Controller
-                    name="idForma_pgto"
+                    name={`financeiro.0.idForma_pgto`} 
                     control={control}
                     defaultValue={1}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        value={formaPagamento}
+                        value={field.value}
                         onChange={(e) => {
-                          setFormaPagamento(e.target.value);
-                          field.onChange(e);
+                          const value = e.target.value;
+                          setFormaPagamento(value);
+                          field.onChange(value);
                         }}
                       >
                         <MenuItem value={1}>Dinheiro</MenuItem>
@@ -478,7 +482,7 @@ const Venda = () => {
                     </Box>
                   ))}
 
-                  <Typography>Financeiro</Typography>
+                <Typography>Financeiro</Typography>
                   <TextField
                     label="Parcelas"
                     type="number"
@@ -486,7 +490,7 @@ const Venda = () => {
                     InputProps={{
                       readOnly: formaPagamento === 0 || formaPagamento === 1,
                     }}
-                    {...register("parcelas")}
+                    {...register("financeiro.0.parcelas")}
                   />
 
                   <Button
@@ -524,7 +528,7 @@ const Venda = () => {
                   idToEdit={idToEdit}
                   vendas={sales}
                   vendasProdutos={vp}
-                  //vendasProdutos={vp}
+                  financeiro={financeiro}
                 />
               )
             }
