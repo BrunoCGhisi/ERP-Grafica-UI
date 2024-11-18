@@ -9,6 +9,7 @@ import {
   TextField,
   Stack,
   IconButton,
+  Grid,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
@@ -100,7 +101,7 @@ const Banco = () => {
   const columns: GridColDef<BancoDataRow>[] = [
     {
       field: "nome",
-      headerName: "Banco",
+      headerName: "Nome",
       editable: false,
       flex: 0,
       minWidth: 700,
@@ -143,7 +144,6 @@ const Banco = () => {
       field: "acoes",
       headerName: "Ações",
       width: 150,
-
       align: "center",
       type: "actions",
       flex: 0,
@@ -173,18 +173,27 @@ const Banco = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          
-          <Box>
-            <Stack direction="row" spacing={2}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Bancos</Typography>
+            </Grid>
+
+            <Grid item>
               <Button
                 onClick={addOn}
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
-                Adicionar
+                Cadastrar
               </Button>
-            </Stack>
-
+            </Grid>
+          </Grid>
+          <Box>
             <Modal
               open={adopen}
               onClose={addOf}
@@ -192,38 +201,65 @@ const Banco = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={ModalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Cadastrando Banco
-                </Typography>
-                <form onSubmit={handleSubmit(handleAdd)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Banco"
-                    helperText={errors.nome?.message || "Obrigatório"}
-                    error={!!errors.nome}
-                    {...register("nome")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Saldo"
-                    helperText={errors.valorTotal?.message || "Obrigatório"}
-                    error={!!errors.valorTotal}
-                    {...register("valorTotal", { valueAsNumber: true })}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    }}
-                  />
+                <Grid container spacing={2} direction="column">
+                  <Grid item xs={18}>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                      gutterBottom
+                    >
+                      Cadastro Banco
+                    </Typography>
+                  </Grid>
 
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Cadastrar
-                  </Button>
-                </form>
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleAdd)}>
+                      <Grid container spacing={2} direction="column">
+                        <Grid item  xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Banco"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            {...register("nome")}
+                          />
+                        </Grid>
+
+                        <Grid item xs={16} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Saldo"
+                            helperText={
+                              errors.valorTotal?.message || "Obrigatório"
+                            }
+                            error={!!errors.valorTotal}
+                            {...register("valorTotal", { valueAsNumber: true })}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  R$
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Cadastrar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
               </Box>
             </Modal>
 
@@ -236,34 +272,52 @@ const Banco = () => {
               aria-describedby="modal-modal-description"
             >
               <ModalRoot title="Editando Banco">
-                <form onSubmit={handleSubmit(handleUpdate)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Banco"
-                    helperText={errors.nome?.message || "Obrigatório"}
-                    error={!!errors.nome}
-                    {...register("nome")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Saldo"
-                    helperText={errors.valorTotal?.message || "Obrigatório"}
-                    error={!!errors.valorTotal}
-                    {...register("valorTotal", { valueAsNumber: true })}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    }}
-                  />
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Atualizar
-                  </Button>
-                </form>
+                <Grid container spacing={8} direction="column">
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleUpdate)}>
+                      <Grid container spacing={2} direction="column">
+                        <Grid item xs={8}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Banco"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            {...register("nome")}
+                          />
+                        </Grid>
+
+                        <Grid item xs={8}>
+                          <TextField
+                            sx={{ maxWidth: "210px" }} // Aqui eu   to delimitando manualmente. Pq a Maria Joana acha errado fullwidth
+                            id="outlined-helperText"
+                            label="Saldo"
+                            helperText={
+                              errors.valorTotal?.message || "Obrigatório"
+                            }
+                            error={!!errors.valorTotal}
+                            {...register("valorTotal", { valueAsNumber: true })}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  R$
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={8} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Editar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
               </ModalRoot>
             </Modal>
           </Box>
