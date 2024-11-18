@@ -1,9 +1,9 @@
 const SpaceStyle ={
     display: "flex",
     flexDirection: "column",
-    marginLeft: 10,
-    marginTop: 10,
-    gap: 5,
+    marginLeft: 6,
+    marginTop: 10,  
+    gap: 1
 }
 
 export default SpaceStyle;
