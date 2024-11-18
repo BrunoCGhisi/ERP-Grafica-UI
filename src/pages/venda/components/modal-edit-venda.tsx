@@ -27,6 +27,7 @@ import { z } from "zod";
 interface ModalEditVenda {
     open: boolean
     toggleModal: () => void
+    loadSales: () => void
     clientes: {
         nome: string;
         id?: number | undefined;
@@ -48,17 +49,16 @@ interface ModalEditVenda {
     financeiro: financeiroSchemaType[]
 }
 
-export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
+export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
   
     //const today = new Date()
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
     const idVendas = filterVendas.map((venda) => venda.id);
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente);
     const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
+    
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
     const FilterFinanceiro = financeiro.find((fin) => idVendas.includes(fin.idVenda));
-    
-    console.log("VENDAS PRODUTOS:", venda_produto)
     
 
     const {
@@ -73,7 +73,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
           idCliente: cliente[0].id,
           desconto: filterVendas[0].desconto,
           dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
-          idBanco: bancos[0].id,
+          financeiro: financeiro.map((fin) => ({idBanco: fin.idBanco, idForma_pgto: fin.idForma_pgto, parcelas: fin.parcelas}) ),
           idVendedor: vendedor?.idVendedor ,
           vendas_produtos: venda_produto.map((vp) => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
         },
@@ -111,14 +111,17 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
             const newData = {...data, id: vp.id}
             putSaleAux(newData);
           }
-    
+          
+            loadSales();
             reset();
             toggleModal();
           } catch (error) {
             console.error("Erro ao atualizar venda ou produtos:", error)
           }
         }
-    
+
+        
+
     return (
         <Modal
               open={open}
@@ -213,11 +216,11 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
 
                   <Select
                   style={{width: 300}}
-                    {...register("idBanco")}
+                    {...register("financeiro.0.idBanco")}
                     labelId="select-label"
                     id="demo-simple-select"
                     label="Banco"
-                    error={!!errors.idBanco}
+                    error={!!errors?.financeiro?.[0]?.idBanco}
                     defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
                   >
                     {bancos &&
@@ -232,7 +235,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                   <Controller
                     name={`financeiro.0.idForma_pgto`} 
                     control={control}
-                    defaultValue={1}
+                    defaultValue={1  as number}
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -311,7 +314,7 @@ export function ModalEditVenda({open, toggleModal, clientes, setAlertMessage, se
                   <TextField
                     label="Parcelas"
                     type="number"
-                    defaultValue={1}
+                    defaultValue={1 as number}
                     InputProps={{
                       readOnly: formaPagamento === 0 || formaPagamento === 1,
                     }}

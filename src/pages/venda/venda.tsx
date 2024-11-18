@@ -140,23 +140,17 @@ const Venda = () => {
   useEffect(() => {
     if (formaPagamento === 0 || formaPagamento === 1) {
       // Define o valor do campo de parcelas para 1 e torna readOnly
-      setValue("parcelas", 1);
+      setValue("financeiro.0.parcelas", 1);
     }
   }, [formaPagamento, setValue]);
 
-// Trazendo vendas produtos --------------------------------------------------
-  useEffect(() => {
-    const getVendasProdutos = async () => {
-      const response = await axios.get("http://localhost:3000/venda");
-      setVp(response.data.vendasProdutos);
-      console.log(response.data.vendasProdutos)
-    };
-    getVendasProdutos();
-  }, []);
 
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadSales = async () => {
+    const response = await axios.get("http://localhost:3000/venda");
+    setVp(response.data.vendasProdutos);
+    console.log(response.data.vendasProdutos)
     const salesData = await getSales();
     setSales(salesData);
   };
@@ -172,21 +166,9 @@ const Venda = () => {
       }, 5000);
     }
     loadSales();
+    
     setAdOpen(false);
   };
-
-  // const handleUpdate = async (data: vendaSchemaType) => {
-  //   const response = await putSale(data);
-  //   if (response.data) {
-  //     setAlertMessage(response.data);
-  //     setShowAlert(true);
-  //     setTimeout(() => {
-  //       setShowAlert(false);
-  //     }, 5000);
-  //   }
-  //   loadSales();
-  //   toggleModal();
-  // };
 
   const handleDelete = async (id: number) => {
     await deleteSale(id);
@@ -197,11 +179,15 @@ const Venda = () => {
     loadSales();
   }, [open]);
 
-  // População da modal  --------------------------------
-    // const handleEdit = (updateData: VendaDataRow) => {
-    //   setSelectedData(updateData);
-    //   toggleModal();
-    // };
+// Trazendo vendas produtos --------------------------------------------------
+// useEffect(() => {
+//   const getVendasProdutos = async () => {
+//     const response = await axios.get("http://localhost:3000/venda");
+//     setVp(response.data.vendasProdutos);
+//     console.log(response.data.vendasProdutos)
+//   };
+//   getVendasProdutos();
+// }, []);
 
   useEffect(() => {
     if (selectedData) {
@@ -391,11 +377,11 @@ const Venda = () => {
                   <InputLabel id="demo-simple-select-label">Banco</InputLabel>
 
                   <Select
-                    {...register("idBanco")}
+                    {...register("financeiro.0.idBanco")}
                     labelId="select-label"
                     id="demo-simple-select"
                     label="Banco"
-                    error={!!errors.idBanco}
+                    error={!!errors?.financeiro?.[0]?.idBanco}
                     defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
                   >
                     {bancos &&
@@ -529,6 +515,7 @@ const Venda = () => {
                   vendas={sales}
                   vendasProdutos={vp}
                   financeiro={financeiro}
+                  loadSales = {loadSales}
                 />
               )
             }
