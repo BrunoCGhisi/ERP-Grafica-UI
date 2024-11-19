@@ -69,7 +69,7 @@ const Venda = () => {
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [vp, setVp] = useState<vendaProdutoSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
-  const [financeiro, setFinanceiro] =  useState<financeiroSchemaType[]>([]);
+  const [financeiros, setFinanceiros] =  useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
@@ -82,13 +82,13 @@ const Venda = () => {
     handleSubmit,
     reset,
     setValue,
-    control,
+    control, watch,
     formState: { errors },
   } = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema),
     defaultValues: {
       vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
-      financeiro: [{ parcelas: 1, idForma_pgto: 1 }], 
+      financeiro: [{ parcelas: 1, idFormaPgto: 1 }], 
     },
   });
 
@@ -137,27 +137,21 @@ const Venda = () => {
     getProducts();
   }, []);
 
-  useEffect(() => {
-    if (formaPagamento === 0 || formaPagamento === 1) {
-      // Define o valor do campo de parcelas para 1 e torna readOnly
-      setValue("financeiro.0.parcelas", 1);
-    }
-  }, [formaPagamento, setValue]);
-
-
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadSales = async () => {
     const response = await axios.get("http://localhost:3000/venda");
     setVp(response.data.vendasProdutos);
-    console.log(response.data.vendasProdutos)
+    setFinanceiros(response.data.financeiro);
+    console.log("response", response.data.financeiro)
+  
     const salesData = await getSales();
     setSales(salesData);
   };
   const handleAdd = async (data: vendaSchemaType) => {
-    console.log(data);
+    
     const response = await postSale(data);
-    console.log(data);
+    
     if (response.data.info) {
       setAlertMessage(response.data.info);
       setShowAlert(true);
@@ -166,6 +160,7 @@ const Venda = () => {
       }, 5000);
     }
     loadSales();
+    reset();
     
     setAdOpen(false);
   };
@@ -179,15 +174,6 @@ const Venda = () => {
     loadSales();
   }, [open]);
 
-// Trazendo vendas produtos --------------------------------------------------
-// useEffect(() => {
-//   const getVendasProdutos = async () => {
-//     const response = await axios.get("http://localhost:3000/venda");
-//     setVp(response.data.vendasProdutos);
-//     console.log(response.data.vendasProdutos)
-//   };
-//   getVendasProdutos();
-// }, []);
 
   useEffect(() => {
     if (selectedData) {
@@ -200,7 +186,7 @@ const Venda = () => {
       setValue("desconto", selectedData.desconto);
       if (selectedData.financeiro && selectedData.financeiro.length > 0) {
         setValue("financeiro.0.parcelas", selectedData.financeiro[0].parcelas);
-        setValue("financeiro.0.idForma_pgto", selectedData.financeiro[0].idForma_pgto);
+        setValue("financeiro.0.idFormaPgto", selectedData.financeiro[0].idFormaPgto);
       }
       if (selectedData.vendas_produtos && selectedData.vendas_produtos.length > 0) {
         selectedData.vendas_produtos.forEach(produto => {
@@ -268,6 +254,14 @@ const Venda = () => {
   useEffect(() => {
     console.log(showAlert);
   }, [showAlert]);
+
+  const waiter = watch("financeiro.0.idFormaPgto");  
+  useEffect(() => {
+    if (waiter === 0 || waiter === 1) {
+      setValue("financeiro.0.parcelas", 1); // Atualiza o valor de parcelas
+    }
+   
+  }, [waiter, setValue]);  
 
   return (
     <Box>
@@ -349,11 +343,11 @@ const Venda = () => {
                   <Controller
                     control={control}
                     name="isVendaOS"
-                    defaultValue={true}
+                    defaultValue={1}
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Compra</MenuItem>
-                        <MenuItem value={false}>OS</MenuItem>
+                        <MenuItem value={0}>Compra</MenuItem>
+                        <MenuItem value={1}>OS</MenuItem>
                       </Select>
                     )}
                   />
@@ -376,36 +370,35 @@ const Venda = () => {
 
                   <InputLabel id="demo-simple-select-label">Banco</InputLabel>
 
-                  <Select
-                    {...register("financeiro.0.idBanco")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="Banco"
-                    error={!!errors?.financeiro?.[0]?.idBanco}
-                    defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
-                  >
-                    {bancos &&
-                      bancos.map((banco) => (
-                        <MenuItem key={banco.id} value={banco.id}>
-                          {banco.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <InputLabel>Forma de Pagamento</InputLabel>
                   <Controller
-                    name={`financeiro.0.idForma_pgto`} 
+                    name={`financeiro.0.idBanco`}
                     control={control}
-                    defaultValue={1}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        value={field.value}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormaPagamento(value);
-                          field.onChange(value);
-                        }}
+                        value={field.value || ""} // Valor padrão do idBanco
+                        onChange={(e) => field.onChange(e.target.value)}
+                        style={{ width: 300 }}
+                      >
+                        {bancos?.map((banco) => (
+                          <MenuItem key={banco.id} value={banco.id}>
+                            {banco.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}/>
+
+
+                  <InputLabel>Forma de Pagamento</InputLabel>
+                  <Controller
+                    name={`financeiro.0.idFormaPgto`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={field.value || ""} // Valor padrão do idForma_pgto
+                        onChange={(e) => field.onChange(e.target.value)}
+                        style={{ width: 300 }}
                       >
                         <MenuItem value={1}>Dinheiro</MenuItem>
                         <MenuItem value={2}>Débito</MenuItem>
@@ -417,6 +410,7 @@ const Venda = () => {
                       </Select>
                     )}
                   />
+
 
                   <Typography variant="h6">Produtos da Venda</Typography>
                   {fields.map((item, index) => (
@@ -514,7 +508,7 @@ const Venda = () => {
                   idToEdit={idToEdit}
                   vendas={sales}
                   vendasProdutos={vp}
-                  financeiro={financeiro}
+                  financeiro={financeiros}
                   loadSales = {loadSales}
                 />
               )

@@ -11,7 +11,7 @@ const financeiroSchema = z.object({
   id: z.number().optional(),
   idVenda: z.number().optional(),
   parcelas: z.coerce.number().optional(),
-  idForma_pgto: z.coerce.number().optional(),
+  idFormaPgto: z.coerce.number().optional(),
   idBanco: z.coerce.number().optional(),
 
 });
@@ -22,7 +22,7 @@ export const vendaSchema = z.object({
   idCliente: z.number().optional(),
   idVendedor: z.coerce.number().optional(),
   dataAtual: z.string().optional(),
-  isVendaOS: z.boolean().optional(),
+  isVendaOS: z.number().optional(),
   situacao: z.number().optional(),
   desconto: z.number().optional(),
   //Venda Produto
@@ -40,7 +40,7 @@ export interface VendaDataRow {
   situacao: number;
   desconto: number;
   vendas_produtos: {idProduto: number; quantidade: number}[];
-  financeiro: {parcelas: number; idForma_pgto: number; idBanco: number}[];
+  financeiro: {parcelas: number; idFormaPgto: number; idBanco: number}[];
 }
 export type financeiroSchemaType = z.infer<typeof financeiroSchema>;
 export type vendaProdutoSchemaType = z.infer<typeof vendaProdutoSchema>;

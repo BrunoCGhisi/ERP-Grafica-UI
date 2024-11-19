@@ -54,31 +54,37 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     //const today = new Date()
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
     const idVendas = filterVendas.map((venda) => venda.id);
+  
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente);
     const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
     
+    
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
-    const FilterFinanceiro = financeiro.find((fin) => idVendas.includes(fin.idVenda));
+    const financeiros = financeiro.filter((fin) => idVendas.includes(fin.idVenda));
+
+    console.log("financeiro", filterVendas); 
     
 
     const {
         register,
         handleSubmit,
         reset,
-        control,
+        control, watch, setValue,
         formState: { errors },
         } = useForm<vendaSchemaType>({
         resolver: zodResolver(vendaSchema),
         defaultValues: {
           idCliente: cliente[0].id,
           desconto: filterVendas[0].desconto,
+          situacao: filterVendas[0].situacao,
+          isVendaOS: filterVendas[0].isVendaOS,
           dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
-          financeiro: financeiro.map((fin) => ({idBanco: fin.idBanco, idForma_pgto: fin.idForma_pgto, parcelas: fin.parcelas}) ),
-          idVendedor: vendedor?.idVendedor ,
+          financeiro: financeiros.map((fin) => ({idBanco: fin.idBanco, idFormaPgto: fin.idFormaPgto, parcelas: fin.parcelas})),
+          idVendedor: vendedor?.idVendedor,
           vendas_produtos: venda_produto.map((vp) => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
         },
         });
-
+        
         const handleAddProduct = () => { // pq usamos isso?
           append({ idProduto: 0, quantidade: 1 }); 
         };
@@ -92,35 +98,33 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     
 
 
-        async function handleUpdate(data: vendaSchemaType){
-          try {
-            const newData = {...data, id: idToEdit}
-            const response = await putSale(newData);
-            if (response.data) {
-              setAlertMessage(response.data);
-              setShowAlert(true);
-              setTimeout(() => {
-                setShowAlert(false);
-              }, 5000);
-            }
-    
-            const finData = {...data, id: FilterFinanceiro?.id}
-            putSaleFin(finData);
-    
-          for (const vp of venda_produto){
-            const newData = {...data, id: vp.id}
-            putSaleAux(newData);
-          }
-          
-            loadSales();
-            reset();
-            toggleModal();
-          } catch (error) {
-            console.error("Erro ao atualizar venda ou produtos:", error)
-          }
-        }
+  async function handleUpdate(data: vendaSchemaType){
+    try {
+      const newData = {...data, id: idToEdit}
+      
+      const response = await putSale(newData);
+      if (response.data) {
+        setAlertMessage(response.data);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 5000);
+      }
+      loadSales();
+      reset();
+      toggleModal();
+    } catch (error) {
+      console.error("Erro ao atualizar venda ou produtos:", error)
+    }
+  }
 
-        
+  const waiter = watch("financeiro.0.idFormaPgto");  
+  useEffect(() => {
+    if (waiter === 0 || waiter === 1) {
+      setValue("financeiro.0.parcelas", 1); // Atualiza o valor de parcelas
+    }
+   
+  }, [waiter, setValue]);     
 
     return (
         <Modal
@@ -187,11 +191,10 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                   <Controller
                     control={control}
                     name="isVendaOS"
-                    defaultValue={true}
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Compra</MenuItem>
-                        <MenuItem value={false}>OS</MenuItem>
+                        <MenuItem value={0}>Compra</MenuItem>
+                        <MenuItem value={1}>OS</MenuItem>
                       </Select>
                     )}
                   />
@@ -199,7 +202,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                   <Controller
                     control={control}
                     name="situacao"
-                    defaultValue={0}
+                    
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
                         <MenuItem value={0}>Em espera</MenuItem>
@@ -214,37 +217,34 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
 
                   <InputLabel id="demo-simple-select-label">Banco</InputLabel>
 
-                  <Select
-                  style={{width: 300}}
-                    {...register("financeiro.0.idBanco")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="Banco"
-                    error={!!errors?.financeiro?.[0]?.idBanco}
-                    defaultValue={bancos.length > 0 ? bancos[0] : "Sem bancos"}
-                  >
-                    {bancos &&
-                      bancos.map((banco) => (
-                        <MenuItem key={banco.id} value={banco.id}>
-                          {banco.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <InputLabel>Forma de Pagamento</InputLabel>
                   <Controller
-                    name={`financeiro.0.idForma_pgto`} 
+                    name={`financeiro.0.idBanco`}
                     control={control}
-                    defaultValue={1  as number}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        value={field.value}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormaPagamento(value);
-                          field.onChange(value);
-                        }}
+                        value={field.value || ""} // Valor padrão do idBanco
+                        onChange={(e) => field.onChange(e.target.value)}
+                        style={{ width: 300 }}
+                      >
+                        {bancos?.map((banco) => (
+                          <MenuItem key={banco.id} value={banco.id}>
+                            {banco.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}/>
+
+                  <InputLabel>Forma de Pagamento</InputLabel>
+                  <Controller
+                    name={`financeiro.0.idFormaPgto`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={field.value || ""} // Valor padrão do idForma_pgto
+                        onChange={(e) => field.onChange(e.target.value)}
+                        style={{ width: 300 }}
                       >
                         <MenuItem value={1}>Dinheiro</MenuItem>
                         <MenuItem value={2}>Débito</MenuItem>
@@ -314,9 +314,9 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                   <TextField
                     label="Parcelas"
                     type="number"
-                    defaultValue={1 as number}
+                    //defaultValue={1 as number}
                     InputProps={{
-                      readOnly: formaPagamento === 0 || formaPagamento === 1,
+                      readOnly: waiter === 0 || waiter === 1,
                     }}
                     {...register("financeiro.0.parcelas")}
                   />
