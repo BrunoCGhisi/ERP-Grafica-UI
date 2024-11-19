@@ -111,7 +111,7 @@ const CategoriaProduto = () => {
   const columns: GridColDef<ProductCategoryDataRow>[] = [
     {
       field: "categoria",
-      headerName: "Categorias Registradas",
+      headerName: "Nome da Categoria de Produto",
       editable: false,
       flex: 0,
       width: 900,
@@ -193,6 +193,7 @@ const CategoriaProduto = () => {
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={8}>
                           <TextField
+                            fullWidth 
                             id="outlined-helperText"
                             label="Categoria Produto"
                             helperText={
@@ -200,7 +201,7 @@ const CategoriaProduto = () => {
                             }
                             error={!!errors.categoria}
                             {...register("categoria")}
-                            fullWidth 
+                            
                           />
                         </Grid>
 
@@ -226,7 +227,7 @@ const CategoriaProduto = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <ModalRoot title="Atualizar Categoria dos Produtos">
+              <ModalRoot>
               <Grid container spacing={2}>
                   <Grid item>
                     <Typography
