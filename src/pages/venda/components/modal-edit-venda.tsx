@@ -1,13 +1,4 @@
-import {
-    Box,
-    InputLabel,
-    Select,
-    MenuItem,
-    Modal,
-    Button, TextField,
-    Typography,
-    IconButton
-} from "@mui/material";
+import { Box, InputLabel, Select, MenuItem, Modal, Button, TextField, Typography, IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -22,7 +13,7 @@ import { useEffect } from "react";
 import {
   produtoSchemaType,
 } from "../../../shared/services/types";
-import { Title } from "@mui/icons-material";
+
 
 
 interface ModalEditVenda {
@@ -66,25 +57,19 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     console.log("financeiro", financeiro); 
     
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        control, watch, setValue,
-        formState: { errors },
-        } = useForm<vendaSchemaType>({
-        resolver: zodResolver(vendaSchema),
-        defaultValues: {
-          idCliente: cliente[0].id,
-          desconto: filterVendas[0].desconto,
-          situacao: filterVendas[0].situacao,
-          isVendaOS: filterVendas[0].isVendaOS,
-          dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
-          financeiro: financeiros.map((fin) => ({idBanco: fin.idBanco, idFormaPgto: fin.idFormaPgto, parcelas: fin.parcelas})),
-          idVendedor: vendedor?.idVendedor,
-          vendas_produtos: venda_produto.map((vp) => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
-        },
-        });
+    const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm<vendaSchemaType>({
+      resolver: zodResolver(vendaSchema),
+      defaultValues: {
+        idCliente: cliente[0].id,
+        desconto: filterVendas[0].desconto,
+        situacao: filterVendas[0].situacao,
+        isVendaOS: filterVendas[0].isVendaOS,
+        dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
+        financeiro: financeiros.map(fin => ({ idBanco: fin.idBanco, idFormaPgto: fin.idFormaPgto, parcelas: fin.parcelas })),
+        idVendedor: vendedor?.idVendedor,
+        vendas_produtos: venda_produto.map(vp => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
+      },
+    });
         
         const handleAddProduct = () => { // pq usamos isso?
           append({ idProduto: 0, quantidade: 1 }); 
@@ -102,7 +87,6 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
   async function handleUpdate(data: vendaSchemaType){
     try {
       const newData = {...data, id: idToEdit}
-      
       const response = await putSale(newData);
       if (response.data) {
         setAlertMessage(response.data);
@@ -121,7 +105,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
 
   const waiter = watch("financeiro.0.idFormaPgto");  
   useEffect(() => {
-    if (waiter === 0 || waiter === 1) {
+    if ( waiter === 1 || waiter === 4 || waiter === 2) {
       setValue("financeiro.0.parcelas", 1); // Atualiza o valor de parcelas
     }
    
@@ -319,7 +303,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                     type="number"
                     //defaultValue={1 as number}
                     InputProps={{
-                      readOnly: waiter === 0 || waiter === 1,
+                      readOnly: waiter === 2 || waiter === 1 || waiter === 4,
                     }}
                     {...register("financeiro.0.parcelas")}
                   />

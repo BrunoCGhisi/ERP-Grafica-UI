@@ -1,9 +1,11 @@
 import { z } from "zod";
-
-const compraProdutoSchema = z.object({
+import {financeiroSchema} from "../types/SaleVO";
+const compraInsumoSchema = z.object({
   idInsumo: z.number().optional(),
+  idCompra: z.number().optional(),
   preco: z.coerce.number().optional(),
-  tamanho: z.coerce.number().optional(),
+  largura: z.coerce.number().optional(),
+  comprimento: z.coerce.number().optional(),
 });
 
 export const compraSchema = z.object({
@@ -13,13 +15,11 @@ export const compraSchema = z.object({
   dataCompra: z.string().optional(),
   numNota: z.coerce.number().optional(),
   desconto: z.coerce.number().optional(),
-  isOpen: z.boolean().optional(),
-  // compra produto
-  compras_insumos: z.array(compraProdutoSchema).default([]),
+
+  // compra Insumo
+  compras_insumos: z.array(compraInsumoSchema).default([]),
   //Financeiro
-  idbanco: z.coerce.number().optional(),
-  parcelas: z.coerce.number().optional().optional(),
-  idForma_pgto: z.coerce.number().optional().optional(),
+  financeiros: z.array(financeiroSchema).default([]),
 });
 
 export interface CompraDataRow {
@@ -29,11 +29,11 @@ export interface CompraDataRow {
   dataCompra: string;
   numNota: number;
   desconto: number;
-  isOpen: boolean;
+
   compras_insumos: { idInsumo: number; preco: number; tamanho: number }[];
   //Financeiro
-  parcelas: number;
-  idForma_pgto: number;
+  financeiros: {parcelas: number; idFormaPgto: number; idBanco: number}[];
 }
 
+export type compraInsumoSchemaType = z.infer<typeof compraInsumoSchema>;
 export type compraSchemaType = z.infer<typeof compraSchema>;
