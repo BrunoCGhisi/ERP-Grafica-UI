@@ -337,8 +337,8 @@ const Venda = () => {
                     defaultValue={1}
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={0}>Compra</MenuItem>
-                        <MenuItem value={1}>OS</MenuItem>
+                        <MenuItem value={0}>Venda</MenuItem>
+                        <MenuItem value={1}>Orçamento</MenuItem>
                       </Select>
                     )}
                   />

@@ -8,7 +8,7 @@ export { default as Banco } from "./banco";
 export { default as Produto } from "./produto";
 export { default as CategoriaProduto } from "./categoriaProduto";
 // export { default as FormaPgto } from "./formaPgto";
-export { default as Compra } from "./compra";
+export { default as Compra } from "./compras/compra";
 export { default as Venda } from "./venda/venda";
 export { default as Testes } from "./teste";
 export { default as Template } from "./template";

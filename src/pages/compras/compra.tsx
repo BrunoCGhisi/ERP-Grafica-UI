@@ -15,19 +15,19 @@ import {
   Grid,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { getToken } from "../shared/services/payload";
+import { getToken } from "../../shared/services/payload";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
-import { MiniDrawer } from "../shared/components";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import { MiniDrawer } from "../../shared/components";
 import dayjs from "dayjs";
 
 import {
@@ -36,15 +36,19 @@ import {
   CompraDataRow,
   bancoSchemaType,
   insumoSchemaType,
-} from "../shared/services/types";
+  compraInsumoSchemaType,
+  financeiroSchema,
+  financeiroSchemaType,
+} from "../../shared/services/types";
 
 import {
   getPurchases,
   postPurchases,
   putPurchases,
   deletePurchases,
-} from "../shared/services/compraServices";
-import { width } from "@mui/system";
+} from "../../shared/services/compraServices";
+import { ModalEditCompra } from "./components/modal-edit-compra";
+
 
 const fornecedorSchema = z.object({
   id: z.number(),
@@ -54,14 +58,28 @@ type fornecedorSchemaType = z.infer<typeof fornecedorSchema>;
 
 const Compra = () => {
 
+  const [userId, setUserId] = useState<number | null>(null); // Estado para armazenar o userId
+  useEffect(() => {
+    const fetchToken = async () => {
+      const tokenData = await getToken();
+      if (tokenData) {
+        setUserId(tokenData.userId);
+      }
+    };
+    fetchToken();
+  }, []);
+
   const today = new Date();
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [ci, setCi] = useState<compraInsumoSchemaType[]>([]);
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
   const [idToEdit, setIdToEdit] = useState<any>(null)
-  const [formaPagamento, setFormaPagamento] = useState(0);
+  const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
   const { open, toggleModal } = useOpenModal();
 
   const {
@@ -74,7 +92,7 @@ const Compra = () => {
   } = useForm<compraSchemaType>({
     resolver: zodResolver(compraSchema),
     defaultValues: {
-      compras_insumos: [{ idInsumo: 0, tamanho: 0, preco: 0 }], // Inicializa com um produto
+      compras_insumos: [{ idInsumo: 0, largura: 0, comprimento: 0, preco: 0 }], // Inicializa com um produto
     },
   });
 
@@ -84,7 +102,7 @@ const Compra = () => {
   });
 
   const handleAddInsumo = () => {
-    append({ idInsumo: 0, tamanho: 0, preco: 0 }); // Adiciona um novo produto com quantidade inicial
+    append({ idInsumo: 0, largura: 0, comprimento: 0, preco: 0 }); // Adiciona um novo produto com quantidade inicial
   };
 
   const handleRemoveProduct = (index: number) => {
@@ -125,23 +143,32 @@ const Compra = () => {
     getInsumos();
   }, []);
 
-  useEffect(() => {
-    if (formaPagamento === 0 || formaPagamento === 1) {
-      // Define o valor do campo de parcelas para 1 e torna readOnly
-      setValue("parcelas", 1);
-    }
-  }, [formaPagamento, setValue]);
 
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadPurchases = async () => {
+    const response = await axios.get("http://localhost:3000/compra");
+    const responseFin = await axios.get("http://localhost:3000/financeiro");
+    setCi(response.data.comprasInsumos);
+    setFinanceiros(responseFin.data);
+
     const purchasesData = await getPurchases();
     setPurchases(purchasesData);
   };
 
   const handleAdd = async (data: compraSchemaType) => {
-    await postPurchases(data);
+    const response = await postPurchases(data);
+    
+    if (response.data.info) {
+      setAlertMessage(response.data.info);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
+
     loadPurchases();
+    reset();
     setAdOpen(false);
   };
 
@@ -289,14 +316,14 @@ const Compra = () => {
                               <Controller
                                 control={control}
                                 name="isCompraOS"
-                                defaultValue={true}
+                                defaultValue={0}
                                 render={({ field }) => (
                                   <Select
                                     onChange={field.onChange}
                                     value={field.value}
                                   >
-                                    <MenuItem value={true}>Compra</MenuItem>
-                                    <MenuItem value={false}>OS</MenuItem>
+                                    <MenuItem value={0}>Compra</MenuItem>
+                                    <MenuItem value={1}>Orçamento</MenuItem>
                                   </Select>
                                 )}
                               />
@@ -523,7 +550,26 @@ const Compra = () => {
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-            
+            {
+              open &&  (
+                <ModalEditCompra
+                  bancos={bancos}                 
+                  open={open}
+                  setAlertMessage={setAlertMessage}
+                  setShowAlert={setShowAlert}
+                  toggleModal={toggleModal}
+                  userId={userId}
+                  idToEdit={idToEdit}
+                  compras={purchases}
+                  comprasInsumos={ci}
+                  loadPurchases = {loadPurchases}
+                  financeiro={financeiros}
+                  insumos={insumos}
+                  fornecedores={fornecedores}
+                />
+              )
+            }
+
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
@@ -541,6 +587,7 @@ const Compra = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };

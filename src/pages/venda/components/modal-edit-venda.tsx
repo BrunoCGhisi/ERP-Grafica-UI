@@ -180,8 +180,8 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                     name="isVendaOS"
                     render={({ field }) => (
                       <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={0}>Compra</MenuItem>
-                        <MenuItem value={1}>OS</MenuItem>
+                        <MenuItem value={0}>Venda</MenuItem>
+                        <MenuItem value={1}>Orçamento</MenuItem>
                       </Select>
                     )}
                   />

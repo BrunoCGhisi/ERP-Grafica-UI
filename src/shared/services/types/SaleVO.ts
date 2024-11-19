@@ -10,6 +10,7 @@ const vendaProdutoSchema = z.object({
 export const financeiroSchema = z.object({
   id: z.number().optional(),
   idVenda: z.number().optional(),
+  idCompra: z.number().optional(),
   parcelas: z.coerce.number(),
   idFormaPgto: z.coerce.number(),
   idBanco: z.coerce.number(),
