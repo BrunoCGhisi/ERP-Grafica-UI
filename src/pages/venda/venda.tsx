@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Box,
@@ -74,7 +74,7 @@ const Venda = () => {
   const [financeiros, setFinanceiros] =  useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
+ // const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
@@ -185,28 +185,6 @@ const Venda = () => {
     loadSales();
   }, [open]);
 
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("idCliente", selectedData.idCliente);
-      setValue("idVendedor", selectedData.idVendedor);
-      setValue("dataAtual", dayjs(selectedData.dataAtual).format("YYYY-MM-DD")); // Formato ISO
-      setValue("isVendaOS", selectedData.isVendaOS);
-      setValue("situacao", selectedData.situacao);
-      setValue("desconto", selectedData.desconto);
-      if (selectedData.financeiro && selectedData.financeiro.length > 0) {
-        setValue("financeiro.0.parcelas", selectedData.financeiro[0].parcelas);
-        setValue("financeiro.0.idFormaPgto", selectedData.financeiro[0].idFormaPgto);
-      }
-      if (selectedData.vendas_produtos && selectedData.vendas_produtos.length > 0) {
-        selectedData.vendas_produtos.forEach(produto => {
-          append({ idProduto: produto.idProduto, quantidade: produto.quantidade });
-        });
-      }
-    }
-  }, [selectedData, setValue, append]);
-
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
@@ -270,7 +248,7 @@ const Venda = () => {
 
   const waiter = watch("financeiro.0.idFormaPgto");  
   useEffect(() => {
-    if (waiter === 0 || waiter === 1) {
+    if (waiter === 0 || waiter === 1 || waiter === 4) {
       setValue("financeiro.0.parcelas", 1); // Atualiza o valor de parcelas
     }
    
@@ -481,7 +459,7 @@ const Venda = () => {
                     type="number"
                     defaultValue={1}
                     InputProps={{
-                      readOnly: formaPagamento === 0 || formaPagamento === 1,
+                      readOnly: waiter === 2 || waiter === 1 || waiter === 4,
                     }}
                     {...register("financeiro.0.parcelas")}
                   />

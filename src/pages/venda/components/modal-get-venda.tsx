@@ -1,29 +1,17 @@
 import {
     Box,
-    InputLabel,
-    Select,
-    MenuItem,
-    Modal,
-    Button, TextField,
+    Modal, TextField,
     Typography,
-    IconButton
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import DoneIcon from "@mui/icons-material/Done";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
-import dayjs from "dayjs";
 import "../../venda.css";
-import { putSale, putSaleAux, putSaleFin } from "../../../shared/services";
-import { VendaDataRow, vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
-import { GridDeleteIcon, GridRowParams } from "@mui/x-data-grid";
+import { vendaSchema, vendaSchemaType, vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
+import { GridRowParams } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
 import {
-  produtoSchemaType,
+    produtoSchemaType,
 } from "../../../shared/services/types";
-import { z } from "zod";
-import { typography } from "@mui/system";
 
 interface ModalGetVenda {
     open: boolean

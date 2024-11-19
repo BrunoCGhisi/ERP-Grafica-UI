@@ -3,28 +3,27 @@ import { z } from "zod";
 const vendaProdutoSchema = z.object({
   id: z.number().optional(),
   idVenda: z.number().optional(),
-  idProduto: z.number().optional(),
-  quantidade: z.coerce.number().optional(),
+  idProduto: z.number(),
+  quantidade: z.coerce.number(),
 });
 
-const financeiroSchema = z.object({
+export const financeiroSchema = z.object({
   id: z.number().optional(),
   idVenda: z.number().optional(),
-  parcelas: z.coerce.number().optional(),
-  idFormaPgto: z.coerce.number().optional(),
-  idBanco: z.coerce.number().optional(),
-
+  parcelas: z.coerce.number(),
+  idFormaPgto: z.coerce.number(),
+  idBanco: z.coerce.number(),
 });
+
 export const vendaSchema = z.object({
   //venda
   id: z.number().optional(),
-  nomeCliente: z.string().optional(),
-  idCliente: z.number().optional(),
-  idVendedor: z.coerce.number().optional(),
-  dataAtual: z.string().optional(),
-  isVendaOS: z.number().optional(),
-  situacao: z.number().optional(),
-  desconto: z.number().optional(),
+  idCliente: z.number(),
+  idVendedor: z.coerce.number(),
+  dataAtual: z.string(),
+  isVendaOS: z.number(),
+  situacao: z.number(),
+  desconto: z.number(),
   //Venda Produto
   vendas_produtos: z.array(vendaProdutoSchema).default([]),
   //Financeiro
