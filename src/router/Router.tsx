@@ -17,11 +17,13 @@ import {
   NoPage,
   Testes,
   Insumo,
+  Financeiro,
   PieMostProduct
 } from "../pages";
 
 import { ProtectedRoute } from "../shared/components";
 import { AdmRoute } from "../shared/components";
+
 
 const Router = () => {
   const { toggleTheme } = useAppThemeContext();
@@ -53,6 +55,14 @@ const Router = () => {
           element={
             <ProtectedRoute>
               <Usuario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/financeiro"
+          element={
+            <ProtectedRoute>
+              <Financeiro />
             </ProtectedRoute>
           }
         />
