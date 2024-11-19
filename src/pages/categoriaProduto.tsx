@@ -201,7 +201,7 @@ const CategoriaProduto = () => {
                             }
                             error={!!errors.categoria}
                             {...register("categoria")}
-                            
+      
                           />
                         </Grid>
 

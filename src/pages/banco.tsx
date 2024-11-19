@@ -215,8 +215,8 @@ const Banco = () => {
 
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleAdd)}>
-                      <Grid container spacing={2} >
-                        <Grid item  xs={12} md={8}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
@@ -272,7 +272,7 @@ const Banco = () => {
               aria-describedby="modal-modal-description"
             >
               <ModalRoot>
-              <Grid container spacing={2} direction="column">
+                <Grid container spacing={2} direction="column">
                   <Grid item>
                     <Typography
                       id="modal-modal-title"
@@ -286,8 +286,8 @@ const Banco = () => {
 
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2} >
-                        <Grid item  xs={12} md={8}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"

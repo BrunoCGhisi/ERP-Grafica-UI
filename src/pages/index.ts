@@ -13,4 +13,5 @@ export { default as Venda } from "./venda/venda";
 export { default as Testes } from "./teste";
 export { default as Template } from "./template";
 export { default as Insumo } from "./insumo";
-export { default as PieMostProduct} from './pieTeste'   
+export { default as Financeiro } from "./financeiro";
+export { default as PieMostProduct} from './pieTeste';

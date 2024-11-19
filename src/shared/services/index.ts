@@ -5,3 +5,4 @@ export * from "./categoriaProdutoServices";
 export * from "./insumoServices";
 export * from "./usuarioServices";
 export * from "./vendaServices";
+export * from './financeiroServices'
