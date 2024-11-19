@@ -36,7 +36,7 @@ export interface VendaDataRow {
   idCliente: number;
   idVendedor: number;
   dataAtual: string;
-  isVendaOS: boolean;
+  isVendaOS: number;
   situacao: number;
   desconto: number;
   vendas_produtos: {idProduto: number; quantidade: number}[];

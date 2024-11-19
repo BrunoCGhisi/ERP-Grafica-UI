@@ -13,7 +13,7 @@ import {
   IconButton,
   Alert,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -25,7 +25,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
-import { ModalRoot } from "../../shared/components/ModalRoot";
+
 import { MiniDrawer } from "../../shared/components";
 import dayjs from "dayjs";
 import "../venda.css";
@@ -39,8 +39,9 @@ import {
   vendaProdutoSchemaType,
   financeiroSchemaType,
 } from "../../shared/services/types";
-import { getSales, postSale, putSale, deleteSale } from "../../shared/services";
+import { getSales, postSale, deleteSale } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
+import { ModalGetVenda } from "./components/modal-get-venda";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -63,6 +64,7 @@ const Venda = () => {
 
   const today = new Date();
 
+  const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [idToEdit, setIdToEdit] = useState<any>(null)
@@ -74,6 +76,7 @@ const Venda = () => {
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
+  const toggleGetModal = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
 
 
@@ -103,6 +106,14 @@ const Venda = () => {
 
   const handleRemoveProduct = (index: number) => {
     remove(index);
+  };
+
+
+
+  const handleRowClick = (params: GridRowParams) => {
+   setSelectedRow(params)
+   toggleGetModal.toggleModal()
+   console.log(financeiros)
   };
 
   // Trazendo clientes--------------------------------------------------
@@ -141,9 +152,9 @@ const Venda = () => {
 
   const loadSales = async () => {
     const response = await axios.get("http://localhost:3000/venda");
+    const responseFin = await axios.get("http://localhost:3000/financeiro");
     setVp(response.data.vendasProdutos);
-    setFinanceiros(response.data.financeiro);
-    console.log("response", response.data.financeiro)
+    setFinanceiros(responseFin.data);
   
     const salesData = await getSales();
     setSales(salesData);
@@ -200,6 +211,8 @@ const Venda = () => {
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
+
+
   // GRID ------------------------------------------------
 
   const columns: GridColDef<VendaDataRow>[] = [
@@ -239,7 +252,7 @@ const Venda = () => {
     },
   ];
   const rows = sales.map((venda) => ({
-    id: venda.id, // Use the index as a fallback if venda.id is null or undefined
+    id: venda.id, 
     idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
@@ -496,12 +509,10 @@ const Venda = () => {
               open &&  (
                 <ModalEditVenda 
                   clientes={clientes}
-                  bancos={bancos}
-                  formaPagamento={formaPagamento}
+                  bancos={bancos}                 
                   open={open}
                   produtos={produtos}
                   setAlertMessage={setAlertMessage}
-                  setFormaPagamento={setFormaPagamento}
                   setShowAlert={setShowAlert}
                   toggleModal={toggleModal}
                   userId={userId}
@@ -513,14 +524,25 @@ const Venda = () => {
                 />
               )
             }
+            { toggleGetModal.open && (
+              <ModalGetVenda
+                vendasProdutos={vp}
+                produtos={produtos}
+                financeiro={financeiros}
+                vendas={sales}
+                clientes={clientes}
+                rowData={selectedRow}
+                open={toggleGetModal.open}
+                toggleModal={toggleGetModal.toggleModal}
+              />
+
+            )}
+
             
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
-              onRowClick={() => {
-                toggleModal()
-                //rows.filter((row) => row.id)
-              }}
+              onRowClick={handleRowClick}
               rows={rows}
               columns={columns}
               initialState={{

@@ -14,15 +14,16 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
-import { putSale, putSaleAux, putSaleFin } from "../../../shared/services";
-import { VendaDataRow, vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
+import { putSale} from "../../../shared/services";
+import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   produtoSchemaType,
 } from "../../../shared/services/types";
-import { z } from "zod";
+import { Title } from "@mui/icons-material";
+
 
 interface ModalEditVenda {
     open: boolean
@@ -36,8 +37,8 @@ interface ModalEditVenda {
     setShowAlert: (open: boolean) => void
     produtos: produtoSchemaType[]
     vendasProdutos: vendaProdutoSchemaType[]
-    setFormaPagamento: (value: React.SetStateAction<number>) => void
-    formaPagamento: number
+   
+    
     bancos : {
         nome: string;
         valorTotal: number; 
@@ -49,12 +50,12 @@ interface ModalEditVenda {
     financeiro: financeiroSchemaType[]
 }
 
-export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, setFormaPagamento, idToEdit, formaPagamento, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
+export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, idToEdit, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
   
     //const today = new Date()
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
     const idVendas = filterVendas.map((venda) => venda.id);
-  
+ 
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0]?.idCliente);
     const vendedor = vendas.find((venda) => venda.idVendedor === filterVendas[0]?.idVendedor);
     
@@ -62,7 +63,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
     const financeiros = financeiro.filter((fin) => idVendas.includes(fin.idVenda));
 
-    console.log("financeiro", filterVendas); 
+    console.log("financeiro", financeiro); 
     
 
     const {
@@ -132,8 +133,10 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
               onClose={toggleModal}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
-            >
-              <ModalRoot title="Editar venda">
+            > 
+              
+              <ModalRoot>
+                <h2 id="modal-title">Editar Vendas</h2>
                 <form onSubmit={handleSubmit(handleUpdate)} style={{width: '100%'}}>
                 <TextField
                     id="outlined-helperText"
