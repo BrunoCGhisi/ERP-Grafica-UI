@@ -101,7 +101,7 @@ const Banco = () => {
   const columns: GridColDef<BancoDataRow>[] = [
     {
       field: "nome",
-      headerName: "Nome",
+      headerName: "Nome da Instituição Bancária",
       editable: false,
       flex: 0,
       minWidth: 700,
@@ -202,7 +202,7 @@ const Banco = () => {
             >
               <Box sx={ModalStyle}>
                 <Grid container spacing={2} direction="column">
-                  <Grid item xs={18}>
+                  <Grid item>
                     <Typography
                       id="modal-modal-title"
                       variant="h6"
@@ -215,19 +215,19 @@ const Banco = () => {
 
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleAdd)}>
-                      <Grid container spacing={2} direction="column">
+                      <Grid container spacing={2} >
                         <Grid item  xs={12} md={8}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
-                            label="Banco"
+                            label="Nome da Instituição Bancária"
                             helperText={errors.nome?.message || "Obrigatório"}
                             error={!!errors.nome}
                             {...register("nome")}
                           />
                         </Grid>
 
-                        <Grid item xs={16} md={8}>
+                        <Grid item xs={12} md={8}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
@@ -271,24 +271,36 @@ const Banco = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <ModalRoot title="Editando Banco">
-                <Grid container spacing={8} direction="column">
+              <ModalRoot>
+              <Grid container spacing={2} direction="column">
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                      gutterBottom
+                    >
+                      Editar Banco
+                    </Typography>
+                  </Grid>
+
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2} direction="column">
-                        <Grid item xs={8}>
+                      <Grid container spacing={2} >
+                        <Grid item  xs={12} md={8}>
                           <TextField
+                            fullWidth
                             id="outlined-helperText"
-                            label="Banco"
+                            label="Nome da Instituição Bancária"
                             helperText={errors.nome?.message || "Obrigatório"}
                             error={!!errors.nome}
                             {...register("nome")}
                           />
                         </Grid>
 
-                        <Grid item xs={8}>
+                        <Grid item xs={12} md={8}>
                           <TextField
-                            sx={{ maxWidth: "210px" }} // Aqui eu   to delimitando manualmente. Pq a Maria Joana acha errado fullwidth
+                            fullWidth
                             id="outlined-helperText"
                             label="Saldo"
                             helperText={
@@ -305,13 +317,14 @@ const Banco = () => {
                             }}
                           />
                         </Grid>
-                        <Grid item xs={8} sx={{ textAlign: "right" }}>
+
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
                           <Button
                             type="submit"
                             variant="outlined"
                             startIcon={<DoneIcon />}
                           >
-                            Editar
+                            Cadastrar
                           </Button>
                         </Grid>
                       </Grid>

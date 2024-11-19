@@ -12,6 +12,7 @@ import {
   Typography,
   IconButton,
   Alert,
+  Grid,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
@@ -217,18 +218,55 @@ const Compra = () => {
   // GRID ------------------------------------------------
 
   const columns: GridColDef<CompraDataRow>[] = [
-    { field: "id", headerName: "id", editable: false, flex: 0 },
     {
       field: "idFornecedor",
-      headerName: "IdFornecedor",
+      headerName: "Fornecedor",
       editable: false,
       flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 300,
     },
-    { field: "isCompraOS", headerName: "IsCompraOS", editable: false, flex: 0 },
-    { field: "dataCompra", headerName: "DataCompra", editable: false, flex: 0 },
-    { field: "numNota", headerName: "NumNota", editable: false, flex: 0 },
-    { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
-    { field: "isOpen", headerName: "isOpen", editable: false, flex: 0 },
+    {
+      field: "isCompraOS",
+      headerName: "OS",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+
+      maxWidth: 100,
+    },
+    {
+      field: "dataCompra",
+      headerName: "Data da Compra",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 150,
+    },
+    {
+      field: "numNota",
+      headerName: "N° Nota",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 150,
+    },
+    {
+      field: "desconto",
+      headerName: "Desconto",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 100,
+    },
+    {
+      field: "isOpen",
+      headerName: "À pagar",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 100,
+    },
 
     {
       field: "acoes",
@@ -237,6 +275,7 @@ const Compra = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <>
           <div>
@@ -271,19 +310,27 @@ const Compra = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Typography>Estamos dentro do banco </Typography>
-          <Typography>(Não iremos cometer nenhum assalto...)</Typography>
-          <Box>
-            <Stack direction="row" spacing={2}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Compras</Typography>
+            </Grid>
+
+            <Grid item>
               <Button
                 onClick={addOn}
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
-                Adicionar
+                Cadastrar
               </Button>
-            </Stack>
-
+            </Grid>
+          </Grid>
+          <Box>
             <Modal
               open={adopen}
               onClose={addOf}
@@ -291,186 +338,236 @@ const Compra = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={ModalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Nova compra
-                </Typography>
-                <form onSubmit={handleSubmit(handleAdd)}>
-                  <Select
-                    {...register("idFornecedor")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="Fornecedor"
-                    fullWidth
-                    error={!!errors.idFornecedor}
-                    defaultValue={
-                      fornecedores.length > 0
-                        ? fornecedores[0].nome
-                        : "Sem Fornecedores"
-                    }
-                  >
-                    {fornecedores &&
-                      fornecedores.map((fornecedor) => (
-                        <MenuItem value={fornecedor.id} key={fornecedor.id}>
-                          {" "}
-                          {fornecedor.nome}{" "}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <InputLabel id="demo-simple-select-label">
-                    Compra ou OS
-                  </InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isCompraOS"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Compra</MenuItem>
-                        <MenuItem value={false}>OS</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <TextField
-                    type="date"
-                    label={"Data compra"}
-                    InputLabelProps={{ shrink: true }}
-                    size="medium"
-                    helperText={errors.dataCompra?.message || "Obrigatório"}
-                    error={!!errors.dataCompra}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                    {...register("dataCompra")}
-                  />
-
-                  <TextField
-                    id="outlined-numNota"
-                    label="Número da Nota"
-                    defaultValue={0}
-                    helperText={errors.numNota?.message || "Obrigatório"}
-                    error={!!errors.numNota}
-                    {...register("numNota")}
-                  />
-                  <TextField
-                    id="outlined-desconto"
-                    label="Desconto"
-                    defaultValue={0}
-                    helperText={errors.desconto?.message || "Obrigatório"}
-                    error={!!errors.desconto}
-                    {...register("desconto")}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">IsOpen</InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isOpen"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select
-                        onChange={field.onChange}
-                        labelId="select-label"
-                        id="demo-simple-select"
-                        label="isOpen"
-                        value={field.value}
-                      >
-                        <MenuItem value={true}>Open</MenuItem>
-                        <MenuItem value={false}>Close</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Typography variant="h6">Compra de Insumos</Typography>
-                  {fields.map((item, index) => (
-                    <Box
-                      key={item.id}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
+                <Grid container spacing={2} direction="column">
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
                     >
-                      <Controller
-                        control={control}
-                        name={`compras_insumos.${index}.idInsumo` as const}
-                        defaultValue={0}
-                        render={({ field }) => (
-                          <Select
-                            {...field}
-                            error={!!errors.compras_insumos?.[index]?.idInsumo}
+                      Nova compra
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleAdd)}>
+                      <Grid container spacing={2}>
+                        {/* Coluna 1: Fornecedor até Is Open */}
+                        <Grid item xs={12} md={6}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                              <Select
+                                {...register("idFornecedor")}
+                                labelId="select-label"
+                                id="demo-simple-select"
+                                label="Fornecedor"
+                                fullWidth
+                                error={!!errors.idFornecedor}
+                                defaultValue={
+                                  fornecedores.length > 0
+                                    ? fornecedores[0].nome
+                                    : "Sem Fornecedores"
+                                }
+                              >
+                                {fornecedores.map((fornecedor) => (
+                                  <MenuItem
+                                    value={fornecedor.id}
+                                    key={fornecedor.id}
+                                  >
+                                    {fornecedor.nome}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <InputLabel id="demo-simple-select-label">
+                                Compra ou OS
+                              </InputLabel>
+                              <Controller
+                                control={control}
+                                name="isCompraOS"
+                                defaultValue={true}
+                                render={({ field }) => (
+                                  <Select
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                  >
+                                    <MenuItem value={true}>Compra</MenuItem>
+                                    <MenuItem value={false}>OS</MenuItem>
+                                  </Select>
+                                )}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <TextField
+                                type="date"
+                                label="Data compra"
+                                InputLabelProps={{ shrink: true }}
+                                size="medium"
+                                helperText={
+                                  errors.dataCompra?.message || "Obrigatório"
+                                }
+                                error={!!errors.dataCompra}
+                                defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                                {...register("dataCompra")}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <TextField
+                                id="outlined-numNota"
+                                label="Número da Nota"
+                                defaultValue={0}
+                                helperText={
+                                  errors.numNota?.message || "Obrigatório"
+                                }
+                                error={!!errors.numNota}
+                                {...register("numNota")}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <TextField
+                                id="outlined-desconto"
+                                label="Desconto"
+                                defaultValue={0}
+                                helperText={
+                                  errors.desconto?.message || "Obrigatório"
+                                }
+                                error={!!errors.desconto}
+                                {...register("desconto")}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <InputLabel id="demo-simple-select-label">
+                                IsOpen
+                              </InputLabel>
+                              <Controller
+                                control={control}
+                                name="isOpen"
+                                defaultValue={true}
+                                render={({ field }) => (
+                                  <Select
+                                    onChange={field.onChange}
+                                    labelId="select-label"
+                                    id="demo-simple-select"
+                                    label="isOpen"
+                                    value={field.value}
+                                  >
+                                    <MenuItem value={true}>Open</MenuItem>
+                                    <MenuItem value={false}>Close</MenuItem>
+                                  </Select>
+                                )}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+
+                        {/* Coluna 2: Compra Produtos */}
+                        <Grid item xs={12} md={6}>
+                          <Typography variant="h6">
+                            Compra de Insumos
+                          </Typography>
+                          {fields.map((item, index) => (
+                            <Box
+                              key={item.id}
+                              display="flex"
+                              alignItems="center"
+                              gap={2}
+                              mb={2}
+                            >
+                              <Controller
+                                control={control}
+                                name={
+                                  `compras_insumos.${index}.idInsumo` as const
+                                }
+                                defaultValue={0}
+                                render={({ field }) => (
+                                  <Select
+                                    {...field}
+                                    error={
+                                      !!errors.compras_insumos?.[index]
+                                        ?.idInsumo
+                                    }
+                                  >
+                                    {insumos.map((insumo) => (
+                                      <MenuItem
+                                        key={insumo.id}
+                                        value={insumo.id}
+                                      >
+                                        {insumo.nome}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                )}
+                              />
+
+                              <TextField
+                                {...register(
+                                  `compras_insumos.${index}.tamanho` as const
+                                )}
+                                type="number"
+                                error={
+                                  !!errors.compras_insumos?.[index]?.tamanho
+                                }
+                                helperText={
+                                  errors.compras_insumos?.[index]?.tamanho
+                                    ?.message || "Tamanho"
+                                }
+                                label="Tamanho"
+                                defaultValue={1}
+                                InputProps={{ inputProps: { min: 1 } }}
+                              />
+
+                              <TextField
+                                {...register(
+                                  `compras_insumos.${index}.preco` as const
+                                )}
+                                type="number"
+                                error={!!errors.compras_insumos?.[index]?.preco}
+                                helperText={
+                                  errors.compras_insumos?.[index]?.preco
+                                    ?.message || "preco"
+                                }
+                                label="preco"
+                                defaultValue={1}
+                                InputProps={{ inputProps: { min: 1 } }}
+                              />
+
+                              <IconButton
+                                onClick={() => handleRemoveProduct(index)}
+                                color="error"
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Box>
+                          ))}
+
+                          <Button
+                            variant="outlined"
+                            startIcon={<AddCircleOutlineIcon />}
+                            onClick={handleAddInsumo}
+                            sx={{ mt: 2 }}
                           >
-                            {insumos.map((insumo) => (
-                              <MenuItem key={insumo.id} value={insumo.id}>
-                                {insumo.nome}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        )}
-                      />
+                            Adicionar Produto
+                          </Button>
+                        </Grid>
+                      </Grid>
 
-                      <TextField
-                        {...register(
-                          `compras_insumos.${index}.tamanho` as const
-                        )}
-                        type="number"
-                        error={!!errors.compras_insumos?.[index]?.tamanho}
-                        helperText={
-                          errors.compras_insumos?.[index]?.tamanho?.message ||
-                          "Tamanho"
-                        }
-                        label="Tamanho"
-                        defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
-
-                      <TextField
-                        {...register(`compras_insumos.${index}.preco` as const)}
-                        type="number"
-                        error={!!errors.compras_insumos?.[index]?.preco}
-                        helperText={
-                          errors.compras_insumos?.[index]?.preco?.message ||
-                          "preco"
-                        }
-                        label="preco"
-                        defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
-
-                      <IconButton
-                        onClick={() => handleRemoveProduct(index)}
-                        color="error"
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        startIcon={<DoneIcon />}
+                        sx={{ mt: 2 }}
                       >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
-
-                  <Typography>Financeiro</Typography>
-                  <TextField
-                    label="Parcelas"
-                    type="number"
-                    defaultValue={1}
-                    InputProps={{
-                      readOnly: formaPagamento === 0 || formaPagamento === 1,
-                    }}
-                    {...register("parcelas")}
-                  />
-
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddCircleOutlineIcon />}
-                    onClick={handleAddInsumo}
-                  >
-                    Adicionar Produto
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Cadastrar
-                  </Button>
-                </form>
+                        Cadastrar
+                      </Button>
+                    </form>
+                  </Grid>
+                </Grid>
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
@@ -487,180 +584,186 @@ const Compra = () => {
 
                   <form onSubmit={handleSubmit(handleUpdate)}>
                     <Select
-                    {...register("idFornecedor")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="Fornecedor"
-                    fullWidth
-                    error={!!errors.idFornecedor}
-                    defaultValue={
-                      fornecedores.length > 0
-                        ? fornecedores[0].nome
-                        : "Sem Fornecedores"
-                    }
-                  >
-                    {fornecedores &&
-                      fornecedores.map((fornecedor) => (
-                        <MenuItem value={fornecedor.id} key={fornecedor.id}>
-                          {" "}
-                          {fornecedor.nome}{" "}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <InputLabel id="demo-simple-select-label">
-                    Compra ou OS
-                  </InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isCompraOS"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Compra</MenuItem>
-                        <MenuItem value={false}>OS</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <TextField
-                    type="date"
-                    label={"Data compra"}
-                    InputLabelProps={{ shrink: true }}
-                    size="medium"
-                    helperText={errors.dataCompra?.message || "Obrigatório"}
-                    error={!!errors.dataCompra}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                    {...register("dataCompra")}
-                  />
-
-                  <TextField
-                    id="outlined-numNota"
-                    label="Número da Nota"
-                    defaultValue={0}
-                    helperText={errors.numNota?.message || "Obrigatório"}
-                    error={!!errors.numNota}
-                    {...register("numNota")}
-                  />
-                  <TextField
-                    id="outlined-desconto"
-                    label="Desconto"
-                    defaultValue={0}
-                    helperText={errors.desconto?.message || "Obrigatório"}
-                    error={!!errors.desconto}
-                    {...register("desconto")}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">IsOpen</InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isOpen"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select
-                        onChange={field.onChange}
-                        labelId="select-label"
-                        id="demo-simple-select"
-                        label="isOpen"
-                        value={field.value}
-                      >
-                        <MenuItem value={true}>Open</MenuItem>
-                        <MenuItem value={false}>Close</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Typography variant="h6">Compra de Insumos</Typography>
-                  {fields.map((item, index) => (
-                    <Box
-                      key={item.id}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
+                      {...register("idFornecedor")}
+                      labelId="select-label"
+                      id="demo-simple-select"
+                      label="Fornecedor"
+                      fullWidth
+                      error={!!errors.idFornecedor}
+                      defaultValue={
+                        fornecedores.length > 0
+                          ? fornecedores[0].nome
+                          : "Sem Fornecedores"
+                      }
                     >
-                      <Controller
-                        control={control}
-                        name={`compras_insumos.${index}.idInsumo` as const}
-                        defaultValue={0}
-                        render={({ field }) => (
-                          <Select
-                            {...field}
-                            error={!!errors.compras_insumos?.[index]?.idInsumo}
-                          >
-                            {insumos.map((insumo) => (
-                              <MenuItem key={insumo.id} value={insumo.id}>
-                                {insumo.nome}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        )}
-                      />
+                      {fornecedores &&
+                        fornecedores.map((fornecedor) => (
+                          <MenuItem value={fornecedor.id} key={fornecedor.id}>
+                            {" "}
+                            {fornecedor.nome}{" "}
+                          </MenuItem>
+                        ))}
+                    </Select>
 
-                      <TextField
-                        {...register(
-                          `compras_insumos.${index}.tamanho` as const
-                        )}
-                        type="number"
-                        error={!!errors.compras_insumos?.[index]?.tamanho}
-                        helperText={
-                          errors.compras_insumos?.[index]?.tamanho?.message ||
-                          "Tamanho"
-                        }
-                        label="Tamanho"
-                        defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
+                    <InputLabel id="demo-simple-select-label">
+                      Compra ou OS
+                    </InputLabel>
 
-                      <TextField
-                        {...register(`compras_insumos.${index}.preco` as const)}
-                        type="number"
-                        error={!!errors.compras_insumos?.[index]?.preco}
-                        helperText={
-                          errors.compras_insumos?.[index]?.preco?.message ||
-                          "preco"
-                        }
-                        label="preco"
-                        defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
+                    <Controller
+                      control={control}
+                      name="isCompraOS"
+                      defaultValue={true}
+                      render={({ field }) => (
+                        <Select onChange={field.onChange} value={field.value}>
+                          <MenuItem value={true}>Compra</MenuItem>
+                          <MenuItem value={false}>OS</MenuItem>
+                        </Select>
+                      )}
+                    />
 
-                      <IconButton
-                        onClick={() => handleRemoveProduct(index)}
-                        color="error"
+                    <TextField
+                      type="date"
+                      label={"Data compra"}
+                      InputLabelProps={{ shrink: true }}
+                      size="medium"
+                      helperText={errors.dataCompra?.message || "Obrigatório"}
+                      error={!!errors.dataCompra}
+                      defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                      {...register("dataCompra")}
+                    />
+
+                    <TextField
+                      id="outlined-numNota"
+                      label="Número da Nota"
+                      defaultValue={0}
+                      helperText={errors.numNota?.message || "Obrigatório"}
+                      error={!!errors.numNota}
+                      {...register("numNota")}
+                    />
+                    <TextField
+                      id="outlined-desconto"
+                      label="Desconto"
+                      defaultValue={0}
+                      helperText={errors.desconto?.message || "Obrigatório"}
+                      error={!!errors.desconto}
+                      {...register("desconto")}
+                    />
+
+                    <InputLabel id="demo-simple-select-label">
+                      IsOpen
+                    </InputLabel>
+
+                    <Controller
+                      control={control}
+                      name="isOpen"
+                      defaultValue={true}
+                      render={({ field }) => (
+                        <Select
+                          onChange={field.onChange}
+                          labelId="select-label"
+                          id="demo-simple-select"
+                          label="isOpen"
+                          value={field.value}
+                        >
+                          <MenuItem value={true}>Open</MenuItem>
+                          <MenuItem value={false}>Close</MenuItem>
+                        </Select>
+                      )}
+                    />
+
+                    <Typography variant="h6">Compra de Insumos</Typography>
+                    {fields.map((item, index) => (
+                      <Box
+                        key={item.id}
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
                       >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
+                        <Controller
+                          control={control}
+                          name={`compras_insumos.${index}.idInsumo` as const}
+                          defaultValue={0}
+                          render={({ field }) => (
+                            <Select
+                              {...field}
+                              error={
+                                !!errors.compras_insumos?.[index]?.idInsumo
+                              }
+                            >
+                              {insumos.map((insumo) => (
+                                <MenuItem key={insumo.id} value={insumo.id}>
+                                  {insumo.nome}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          )}
+                        />
 
-                  <Typography>Financeiro</Typography>
-                  <TextField
-                    label="Parcelas"
-                    type="number"
-                    defaultValue={1}
-                    InputProps={{
-                      readOnly: formaPagamento === 0 || formaPagamento === 1,
-                    }}
-                    {...register("parcelas")}
-                  />
+                        <TextField
+                          {...register(
+                            `compras_insumos.${index}.tamanho` as const
+                          )}
+                          type="number"
+                          error={!!errors.compras_insumos?.[index]?.tamanho}
+                          helperText={
+                            errors.compras_insumos?.[index]?.tamanho?.message ||
+                            "Tamanho"
+                          }
+                          label="Tamanho"
+                          defaultValue={1}
+                          InputProps={{ inputProps: { min: 1 } }}
+                        />
 
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddCircleOutlineIcon />}
-                    onClick={handleAddInsumo}
-                  >
-                    Adicionar Produto
-                  </Button>
+                        <TextField
+                          {...register(
+                            `compras_insumos.${index}.preco` as const
+                          )}
+                          type="number"
+                          error={!!errors.compras_insumos?.[index]?.preco}
+                          helperText={
+                            errors.compras_insumos?.[index]?.preco?.message ||
+                            "preco"
+                          }
+                          label="preco"
+                          defaultValue={1}
+                          InputProps={{ inputProps: { min: 1 } }}
+                        />
 
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Atualizar
-                  </Button>
+                        <IconButton
+                          onClick={() => handleRemoveProduct(index)}
+                          color="error"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    ))}
+
+                    <Typography>Financeiro</Typography>
+                    <TextField
+                      label="Parcelas"
+                      type="number"
+                      defaultValue={1}
+                      InputProps={{
+                        readOnly: formaPagamento === 0 || formaPagamento === 1,
+                      }}
+                      {...register("parcelas")}
+                    />
+
+                    <Button
+                      variant="outlined"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={handleAddInsumo}
+                    >
+                      Adicionar Produto
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      variant="outlined"
+                      startIcon={<DoneIcon />}
+                    >
+                      Atualizar
+                    </Button>
                   </form>
                 }
               />

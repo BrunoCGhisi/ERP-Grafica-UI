@@ -95,8 +95,6 @@ const Cliente = () => {
     resolver: zodResolver(clienteSchema),
   });
 
-
-
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal();
   const [selectedData, setSelectedData] = useState<dataRow | null>(null);
@@ -210,41 +208,45 @@ const Cliente = () => {
   }, []);
 
   const columns: GridColDef<dataRow>[] = [
-    { field: "id", headerName: "ID", editable: false, flex: 0 },
-    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
+   
+    { field: "nome", headerName: "Nome", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     {
       field: "nomeFantasia",
       headerName: "Nome Fantasia",
       editable: false,
       flex: 0,
+      headerClassName: "gridHeader--header",
     },
-    { field: "cpfCnpj", headerName: "CPF/CNPJ", editable: false, flex: 0 },
-    { field: "email", headerName: "Email", editable: false, flex: 0 },
-    { field: "telefone", headerName: "Telefone", editable: false, flex: 0 },
+    { field: "cpfCnpj", headerName: "CPF/CNPJ", editable: false, flex: 0 , headerClassName: "gridHeader--header",},
+    { field: "email", headerName: "Email", editable: false, flex: 0, headerClassName: "gridHeader--header",},
+    { field: "telefone", headerName: "Telefone", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     {
       field: "isFornecedor",
       headerName: "Fornecedor",
       editable: false,
       flex: 0,
+      headerClassName: "gridHeader--header",
     },
     {
       field: "dataCadastro",
       headerName: "Data Cadastro",
       editable: false,
       flex: 0,
+      headerClassName: "gridHeader--header",
     },
-    { field: "numIe", headerName: "Número IE", editable: false, flex: 0 },
-    { field: "statusIe", headerName: "Status IE", editable: false, flex: 0 },
-    { field: "endereco", headerName: "Endereço", editable: false, flex: 0 },
-    { field: "cep", headerName: "CEP", editable: false, flex: 0 },
-    { field: "estado", headerName: "Estado", editable: false, flex: 0 },
-    { field: "numero", headerName: "Número", editable: false, flex: 0 },
-    { field: "cidade", headerName: "Cidade", editable: false, flex: 0 },
+    { field: "numIe", headerName: "Número IE", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "statusIe", headerName: "Status IE", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "endereco", headerName: "Endereço", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "cep", headerName: "CEP", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "estado", headerName: "Estado", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "numero", headerName: "Número", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "cidade", headerName: "Cidade", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     {
       field: "complemento",
       headerName: "Complemento",
       editable: false,
       flex: 0,
+      headerClassName: "gridHeader--header",
     },
 
     {
@@ -254,6 +256,7 @@ const Cliente = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           <IconButton
