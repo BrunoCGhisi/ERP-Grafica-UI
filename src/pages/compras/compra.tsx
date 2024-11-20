@@ -14,7 +14,7 @@ import {
   Alert,
   Grid,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -48,6 +48,7 @@ import {
   deletePurchases,
 } from "../../shared/services/compraServices";
 import { ModalEditCompra } from "./components/modal-edit-compra";
+import { ModalGetCompra } from "./components/modal-get-compra";
 
 
 const fornecedorSchema = z.object({
@@ -80,7 +81,9 @@ const Compra = () => {
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
   const [idToEdit, setIdToEdit] = useState<any>(null)
   const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
+  const [selectedRow, setSelectedRow] =  useState<GridRowParams | null>(null);
   const { open, toggleModal } = useOpenModal();
+  const toggleGetModal = useOpenModal();
 
   const {
     register,
@@ -108,6 +111,11 @@ const Compra = () => {
   const handleRemoveProduct = (index: number) => {
     remove(index);
   };
+
+  const handleRowClick = (params: GridRowParams) => {
+    setSelectedRow(params)
+    toggleGetModal.toggleModal()
+   };
 
   // Trazendo fornecedores--------------------------------------------------
   useEffect(() => {
@@ -316,14 +324,14 @@ const Compra = () => {
                               <Controller
                                 control={control}
                                 name="isCompraOS"
-                                defaultValue={0}
+                                defaultValue={false}
                                 render={({ field }) => (
                                   <Select
                                     onChange={field.onChange}
                                     value={field.value}
                                   >
-                                    <MenuItem value={0}>Compra</MenuItem>
-                                    <MenuItem value={1}>Orçamento</MenuItem>
+                                    <MenuItem value={true}>Compra</MenuItem>
+                                    <MenuItem value={false}>Orçamento</MenuItem>
                                   </Select>
                                 )}
                               />
@@ -569,10 +577,24 @@ const Compra = () => {
                 />
               )
             }
+            { toggleGetModal.open && (
+              <ModalGetCompra
+                comprasInsumos={ci}
+                insumos={insumos}
+                financeiro={financeiros}
+                compras={purchases}
+                fornecedores={fornecedores}
+                rowData={selectedRow}
+                open={toggleGetModal.open}
+                toggleModal={toggleGetModal.toggleModal}
+              />
+
+            )}
 
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
+            onRowClick={handleRowClick}
               rows={rows}
               columns={columns}
               initialState={{

@@ -11,11 +11,10 @@ const compraInsumoSchema = z.object({
 export const compraSchema = z.object({
   id: z.number().optional(),
   idFornecedor: z.coerce.number().optional(),
-  isCompraOS: z.number().optional(),
+  isCompraOS: z.boolean().optional(),
   dataCompra: z.string().optional(),
   numNota: z.coerce.number().optional(),
   desconto: z.coerce.number().optional(),
-
   // compra Insumo
   compras_insumos: z.array(compraInsumoSchema).default([]),
   //Financeiro
@@ -25,11 +24,10 @@ export const compraSchema = z.object({
 export interface CompraDataRow {
   id: number;
   idFornecedor: number;
-  isCompraOS: number;
+  isCompraOS: boolean;
   dataCompra: string;
   numNota: number;
   desconto: number;
-
   compras_insumos: { idInsumo: number; preco: number; tamanho: number }[];
   //Financeiro
   financeiros: {parcelas: number; idFormaPgto: number; idBanco: number}[];
