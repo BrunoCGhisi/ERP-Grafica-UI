@@ -17,45 +17,23 @@ interface ModalGetVenda {
     open: boolean
     rowData: GridRowParams<any> | null
     toggleModal: () => void
-    //loadSales: () => void
     clientes: {
         nome: string;
          id?: number | undefined;
      }[]
-    // setAlertMessage: (alertMessage: string) => void
-    // setShowAlert: (open: boolean) => void
     produtos: produtoSchemaType[]
     vendasProdutos: vendaProdutoSchemaType[]
-    // setFormaPagamento: (value: React.SetStateAction<number>) => void
-    // formaPagamento: number
-    // bancos : {
-    //     nome: string;
-    //     valorTotal: number; 
-    //     id?: number | undefined;
-    // }[]
-    // userId: number | null
-    // idToEdit: any
     vendas: vendaSchemaType[],
     financeiro: financeiroSchemaType[]
 }
 
 export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, financeiro, produtos, vendasProdutos}: ModalGetVenda){
-      
     
     const filterVendas = vendas.filter((venda) => venda.id === rowData?.row.id);
     const idVendas = filterVendas.map((venda) => venda.id);
-   
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0].idCliente);
     const financeiros = financeiro.filter((fin) => idVendas.includes(fin.idVenda));
-
-    
-
-
-    
-
-
-    
 
     const { control } = useForm<vendaSchemaType>({
          resolver: zodResolver(vendaSchema),
@@ -68,10 +46,6 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
         control,
         name: "vendas_produtos",
     });
-
-    console.log("fields:", fields);
-    console.log("produtos:", produtos);
-
 
     let formaPgto = "" 
     switch (financeiros[0].idFormaPgto) {
@@ -120,8 +94,7 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
             situacao = "Entregue"
             break;
     }
-    
-    console.log(rowData?.row.dataAtual)
+
 
     return (
         <Modal
@@ -160,13 +133,13 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                     id="outlined-helperText"
                     label="Desconto"
                     
-                    value={(rowData?.row.desconto)}
+                    value={(rowData?.row.desconto) || ""}
                   />
 
                 <TextField
                     id="outlined-helperText"
-                    label="Venda ou Ordem de Serviço"
-                    value={rowData?.row.isVendaOS == 1 ? "Ordem de Serviço" : "Venda"}
+                    label="Venda ou Orçamento"
+                    value={rowData?.row.isVendaOS == 1 ? "Orçamento" : "Venda"}
                 />
 
                 <TextField

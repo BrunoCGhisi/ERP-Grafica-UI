@@ -108,8 +108,6 @@ const Venda = () => {
     remove(index);
   };
 
-
-
   const handleRowClick = (params: GridRowParams) => {
    setSelectedRow(params)
    toggleGetModal.toggleModal()

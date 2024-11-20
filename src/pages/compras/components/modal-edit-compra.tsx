@@ -6,7 +6,7 @@ import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
 import { putPurchases } from "../../../shared/services/compraServices";
-import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType } from "../../../shared/services/types";
+import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType, compraSchema } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -44,15 +44,12 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
     const idCompras = filterCompras.map((compra) => compra.id);
    
     const fornecedor = fornecedores.filter((fornecedor) => fornecedor.id === filterCompras[0]?.idFornecedor);
-    
     const compra_insumo = comprasInsumos.filter((ci) => idCompras.includes(ci.idCompra));
-
     const financeiros = financeiro.filter((fin) => idCompras.includes(fin.idCompra));
-    
-    console.log("financeiros", financeiros)
+
 
     const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm<compraSchemaType>({
-        resolver: zodResolver(vendaSchema),
+        resolver: zodResolver(compraSchema),
         defaultValues: {
           idFornecedor: fornecedor[0].id,
           desconto: filterCompras[0].desconto,
@@ -75,9 +72,6 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
     remove(index);
     };
 
-
-
-
     const waiter = watch("financeiros.0.idFormaPgto");  
     useEffect(() => {
       if (waiter === 0 || waiter === 1 || waiter === 4) {
@@ -87,23 +81,24 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
     }, [waiter, setValue]);  
 
     async function handleUpdate(data: compraSchemaType){
-        try {
-            const newData = {...data, id: idToEdit}
-            const response = await putPurchases(newData);
-            if (response.data) {
-                setAlertMessage(response.data);
-                setShowAlert(true);
-                setTimeout(() => {
-                  setShowAlert(false);
-                }, 5000);
-              }
-              reset();
-              loadPurchases();
-              toggleModal();
-        } catch (error) {
-            console.error("Erro ao atualizar venda ou produtos:", error)
-        }
-      };
+      try {
+          const newData = {...data, id: idToEdit}
+          const response = await putPurchases(newData);
+          if (response.data) {
+              setAlertMessage(response.data);
+              setShowAlert(true);
+              setTimeout(() => {
+                setShowAlert(false);
+              }, 5000);
+            }
+
+            loadPurchases();
+            reset();
+            toggleModal();
+      } catch (error) {
+          console.error("Erro ao atualizar venda ou produtos:", error)
+      }
+    };
 
 
     return(
@@ -116,27 +111,26 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
               <ModalRoot>
 
                   <form onSubmit={handleSubmit(handleUpdate)}>
-                    <Select
-                      {...register("idFornecedor")}
-                      labelId="select-label"
-                      id="demo-simple-select"
-                      label="Fornecedor"
-                      fullWidth
-                      error={!!errors.idFornecedor}
-                      defaultValue={
-                        fornecedores.length > 0
-                          ? fornecedores[0].nome
-                          : "Sem Fornecedores"
-                      }
-                    >
-                      {fornecedores &&
-                        fornecedores.map((fornecedor) => (
-                          <MenuItem value={fornecedor.id} key={fornecedor.id}>
-                            {" "}
-                            {fornecedor.nome}{" "}
-                          </MenuItem>
-                        ))}
-                    </Select>
+                  <Controller
+                    name="idFornecedor"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        style={{ width: 300 }}
+                        labelId="select-label"
+                        id="demo-simple-select"
+                        error={!!errors.idFornecedor}
+                        {...field} 
+                      >
+                        {fornecedores &&
+                          fornecedores.map((fornecedor) => (
+                            <MenuItem key={fornecedor.id} value={fornecedor.id}>
+                              {fornecedor.nome}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
 
                     <InputLabel id="demo-simple-select-label">
                       Compra ou OS
@@ -145,11 +139,11 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
                     <Controller
                       control={control}
                       name="isCompraOS"
-                      defaultValue={0}
+                      //defaultValue={0}
                       render={({ field }) => (
                         <Select onChange={field.onChange} value={field.value}>
-                          <MenuItem value={1}>Compra</MenuItem>
-                          <MenuItem value={0}>OS</MenuItem>
+                          <MenuItem value={true}>Compra</MenuItem>
+                          <MenuItem value={false}>OS</MenuItem>
                         </Select>
                       )}
                     />
@@ -175,11 +169,12 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
                     />
                     <TextField
                       id="outlined-desconto"
+                      type="number"
                       label="Desconto"
                       defaultValue={0}
                       helperText={errors.desconto?.message || "Obrigatório"}
                       error={!!errors.desconto}
-                      {...register("desconto")}
+                      {...register("desconto", { valueAsNumber: true })}
                     />
 
 
