@@ -29,6 +29,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import LayersIcon from "@mui/icons-material/Layers";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SellIcon from "@mui/icons-material/Sell";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import { ReactNode } from "react";
 import { PieChart } from "@mui/icons-material";
@@ -167,6 +168,7 @@ export function MiniDrawer({ children }: DrawerProps) {
             "Produto",
             "Usuario",
             "Venda",
+            "Financeiro",
           ].map((text, index) => (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -196,6 +198,7 @@ export function MiniDrawer({ children }: DrawerProps) {
                   {index === 7 && <LayersIcon />}
                   {index === 8 && <AccountBoxIcon />}
                   {index === 9 && <SellIcon />}
+                  {index === 10 && <AttachMoneyIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

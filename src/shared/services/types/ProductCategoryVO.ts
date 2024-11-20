@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const proCategorySchema = z.object({
   id: z.number().optional(),
-  categoria: z.string(),
+  categoria: z.string().min(1, "Campo obrigatório"),
 });
 
 export interface ProductCategoryDataRow {

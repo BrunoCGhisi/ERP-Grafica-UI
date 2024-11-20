@@ -324,7 +324,7 @@ const Banco = () => {
                             variant="outlined"
                             startIcon={<DoneIcon />}
                           >
-                            Cadastrar
+                            Editar
                           </Button>
                         </Grid>
                       </Grid>

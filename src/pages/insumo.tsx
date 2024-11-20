@@ -10,6 +10,7 @@ import {
   IconButton,
   Select,
   MenuItem,
+  Grid,
 } from "@mui/material";
 
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -42,9 +43,7 @@ import {
 
 const Insumo = () => {
   const [supplies, setSupplies] = useState<insumoSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<InsumoDataRow | null>(
-    null
-  );
+  const [selectedData, setSelectedData] = useState<InsumoDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
 
   const {
@@ -108,11 +107,11 @@ const Insumo = () => {
   }, [open]);
 
   const columns: GridColDef<InsumoDataRow>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
-    { field: "estoque", headerName: "Estoque", editable: false, flex: 0 },
-    { field: "isActive", headerName: "Ativo", editable: false, flex: 0 },
-
+    
+    { field: "nome", headerName: "Nome", editable: false, flex: 0, width: 500, minWidth: 500, headerClassName: "gridHeader--header", },
+    { field: "estoque", headerName: "Estoque", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", },
+    { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -120,6 +119,7 @@ const Insumo = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           <IconButton
@@ -145,135 +145,193 @@ const Insumo = () => {
   return (
     <Box>
       <MiniDrawer>
-      <Box sx={SpaceStyle}>
-        <Typography>Insumos</Typography>
+        <Box sx={SpaceStyle}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Insumos</Typography>
+            </Grid>
 
-        <Box>
-          <Stack direction="row" spacing={2}>
-            <Button
-              onClick={addOn}
-              variant="outlined"
-              startIcon={<AddCircleOutlineIcon />}
+            <Grid item>
+              <Button
+                onClick={addOn}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Cadastrar
+              </Button>
+            </Grid>
+          </Grid>
+          <Box>
+            <Modal
+              open={adopen}
+              onClose={addOf}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              Adicionar
-            </Button>
-          </Stack>
-
-          <Modal
-            open={adopen}
-            onClose={addOf}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={ModalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Novo banco
-              </Typography>
-
-              <form onSubmit={handleSubmit(handleAdd)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="Estoque"
-                  helperText={errors.estoque?.message || "Obrigatório"}
-                  error={!!errors.estoque}
-                  {...register("estoque", { valueAsNumber: true })}
-                />
-
-                <Controller
-                name="isActive"
-                control={control}
-                defaultValue={false}
-                render={({field}) => (
-                    <Select
-                    onChange={field.onChange}
-                    value={field.value}
+              <Box sx={ModalStyle}>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
                     >
-                        <MenuItem value={true}>Ativo</MenuItem>
-                        <MenuItem value={false}>Desativado</MenuItem>
-
-                    </Select>)}/>
-
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Cadastrar
-                </Button>
-              </form>
-            </Box>
-          </Modal>
-          {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-          <Modal
-            open={open}
-            onClose={toggleModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <ModalRoot>
-            <form onSubmit={handleSubmit(handleUpdate)}>
-                <TextField
-                  id="outlined-helperText"
-                  label="Nome"
-                  helperText={errors.nome?.message || "Obrigatório"}
-                  error={!!errors.nome}
-                  {...register("nome")}
-                />
-                <TextField
-                  id="outlined-helperText"
-                  label="Estoque"
-                  helperText={errors.estoque?.message || "Obrigatório"}
-                  error={!!errors.estoque}
-                  {...register("estoque", { valueAsNumber: true })}
-                />
-
-                <Controller
-                name="isActive"
-                control={control}
-                defaultValue={false}
-                render={({field}) => (
-                    <Select
-                    onChange={field.onChange}
-                    value={field.value}
+                      Cadastro Insumo
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleAdd)}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Nome"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            {...register("nome")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Estoque"
+                            type="number"
+                            helperText={
+                              errors.estoque?.message || "Obrigatório"
+                            }
+                            error={!!errors.estoque}
+                            {...register("estoque", { valueAsNumber: true })}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <Controller
+                            name="isActive"
+                            control={control}
+                            defaultValue={false}
+                            render={({ field }) => (
+                              <Select
+                                onChange={field.onChange}
+                                value={field.value}
+                              >
+                                <MenuItem value={true}>Ativo</MenuItem>
+                                <MenuItem value={false}>Desativado</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Cadastrar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Modal>
+            {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
+            <Modal
+              open={open}
+              onClose={toggleModal}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <ModalRoot>
+              <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
                     >
-                        <MenuItem value={true}>Ativo</MenuItem>
-                        <MenuItem value={false}>Desativado</MenuItem>
-
-                    </Select>)}/>
-
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  startIcon={<DoneIcon />}
-                >
-                  Editar
-                </Button>
-              </form>
-            </ModalRoot>
-          </Modal>
-        </Box>
-        <Box sx={GridStyle}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 6,
+                      Editando Insumo
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleUpdate)}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Nome"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            {...register("nome")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Estoque"
+                            type="number"
+                            helperText={
+                              errors.estoque?.message || "Obrigatório"
+                            }
+                            error={!!errors.estoque}
+                            {...register("estoque", { valueAsNumber: true })}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <Controller
+                            name="isActive"
+                            control={control}
+                            defaultValue={false}
+                            render={({ field }) => (
+                              <Select
+                                onChange={field.onChange}
+                                value={field.value}
+                              >
+                                <MenuItem value={true}>Ativo</MenuItem>
+                                <MenuItem value={false}>Desativado</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Editar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
+              </ModalRoot>
+            </Modal>
+          </Box>
+          <Box sx={GridStyle}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[6]}
-          />
+              }}
+              pageSizeOptions={[6]}
+            />
+          </Box>
         </Box>
-      </Box>
       </MiniDrawer>
     </Box>
   );

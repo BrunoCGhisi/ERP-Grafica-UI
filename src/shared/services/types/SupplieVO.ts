@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const insumoSchema = z.object({
     id: z.number().optional(),
-    nome: z.string(),
+    nome: z.string().min(1, "Campo obrigatório"),
     estoque: z.number(),
     isActive: z.boolean(),
   });

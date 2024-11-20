@@ -261,7 +261,7 @@ const CategoriaProduto = () => {
                             variant="outlined"
                             startIcon={<DoneIcon />}
                           >
-                            Cadastrar
+                            Editar
                           </Button>
                         </Grid>
                       </Grid>
