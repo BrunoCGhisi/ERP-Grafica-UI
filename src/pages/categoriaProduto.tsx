@@ -111,7 +111,7 @@ const CategoriaProduto = () => {
   const columns: GridColDef<ProductCategoryDataRow>[] = [
     {
       field: "categoria",
-      headerName: "Nome da Categoria de Produto",
+      headerName: "Categoria",
       editable: false,
       flex: 0,
       width: 900,

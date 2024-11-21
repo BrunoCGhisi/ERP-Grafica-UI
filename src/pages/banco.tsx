@@ -110,6 +110,7 @@ const Banco = () => {
       flex: 0,
       minWidth: 700,
       maxWidth: 800,
+      width: 700,
       headerClassName: "gridHeader--header",
     },
     {
@@ -119,6 +120,7 @@ const Banco = () => {
       flex: 0,
 
       minWidth: 200,
+      width: 200,
       maxWidth: 250,
       headerClassName: "gridHeader--header",
 
