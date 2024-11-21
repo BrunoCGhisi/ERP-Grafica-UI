@@ -11,5 +11,5 @@ export * from "./ProductVO";
 export * from "./SaleVO";
 export * from "./SupplieVO";
 export * from "./FinancesVO";
-
+export * from "./clientsVO";
 export * from "./Pies/";

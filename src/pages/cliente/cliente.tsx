@@ -12,10 +12,11 @@ import {Box,
   TextField,
   Typography,
   InputAdornment,
+  Alert,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
-import { MiniDrawer } from "../shared/components";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { MiniDrawer } from "../../shared/components";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,64 +24,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../shared/components/ModalRoot";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import dayjs from "dayjs";
-
-const clienteSchema = z.object({
-  id: z.number().optional(),
-  nome: z.string().refine((doc) => doc.trim() !== "",{
-    message: "Campo obrigatório"
-  }),
-  nomeFantasia: z.string().optional(),
-  cpfCnpj: z.string().
-  refine((doc) => /^[0-9]+$/.test(doc), {
-    message:'CPF/CNPJ deve conter apenas números.'
-  })
-  .refine((doc) => {
-    return doc.length >= 11;
-  }, 'CPF/CNPJ deve conter no mínimo 11 caracteres.')
-  .refine((doc) => {
-    return doc.length <= 14;
-  }, 'CPF/CNPJ deve conter no máximo 14 caracteres.'),
-
-
-  telefone: z.string().transform((val) => val.replace(/[^0-9]/g, "")).refine((doc) => {
-    return doc.length >= 11;}, 'CPF/CNPJ deve conter no mínimo 11 caracteres.'),
-  email: z.string().email(),
-  isFornecedor: z.boolean(),
-  cep: z.string().optional(),
-  estado: z.string().optional(),
-  cidade: z.string().optional(),
-  numero: z.string().optional(),
-  endereco: z.string().optional(),
-  complemento: z.string().optional(),
-  numIe: z.string().optional(),
-  statusIe: z.boolean(),
-});
-
-
-interface dataRow {
-  id: number,
-  nome: string,
-  nomeFantasia: string,
-  cpfCnpj: string,
-  telefone: string,
-  email: string,
-  isFornecedor: boolean,
-  cep: string,
-  estado: string,
-  cidade: string,
-  numero: string,
-  endereco: string,
-  complemento: string,
-  numIe: string,
-  statusIe: boolean,
-}
-
-type clienteSchemaType = z.infer<typeof clienteSchema>;
+import { clienteSchemaType, clienteSchema, ClienteDataRow } from "../../shared/services/types/clientsVO";
+import { deleteClients, getClients, postClients } from "../../shared/services/clienteService";
+import { SettingsCellTwoTone } from "@mui/icons-material";
+import { ModalEditCliente } from "./components/modal-edit-clientes";
 
 const Cliente = () => {
 
@@ -95,119 +47,59 @@ const Cliente = () => {
     resolver: zodResolver(clienteSchema),
   });
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal();
-  const [selectedData, setSelectedData] = useState<dataRow | null>(null);
+  const toggleGetModal = useOpenModal();
+  const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
+  const [idToEdit, setIdToEdit] = useState<any>(null)
+
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
   const addOn = () => {setAdOpen(true), reset()};
   const addOf = () => setAdOpen(false);
 
+  const handleRowClick = (params: GridRowParams) => {
+    setSelectedRow(params)
+    toggleGetModal.toggleModal()
+   };
 
-  const handleEdit = (updateData: dataRow) => {
-    setSelectedData(updateData);
-    toggleModal()
-  }
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("nome", selectedData.nome);
-      setValue("nomeFantasia", selectedData.nomeFantasia);
-      setValue("cpfCnpj", selectedData.cpfCnpj);
-      setValue("telefone", selectedData.telefone);
-      setValue("email", selectedData.email);
-      setValue("isFornecedor", selectedData.isFornecedor);
-      setValue("cep", selectedData.cep);
-      setValue("estado", selectedData.estado);
-      setValue("cidade", selectedData.cidade);
-      setValue("numero", selectedData.numero);
-      setValue("endereco", selectedData.endereco);
-      setValue("complemento", selectedData.complemento);
-      setValue("numIe", selectedData.numIe);
-      setValue("statusIe", selectedData.statusIe);
-    }
-  }, [selectedData, setValue]);
-
-  useEffect(() => {
-    getCustomers();
-  }, [open]);
+  // useEffect(() => {
+  //   loadClients();
+  // }, [open]);
 // CRUDs--------------------------------------------------  
 
-  async function getCustomers() {
-    try {
-      const response = await axios.get("http://localhost:3000/cliente");
-      setCustomers(response.data.clientes); 
-    } catch (error: any) {
-      new Error(error);
-    }
+const loadClients = async () => {
+  const response = await getClients();
+  setCustomers(response);
+};
+
+const handleAddClients = async (data: clienteSchemaType) => {
+  const response = await postClients(data);
+  if (response) {
+    setAlertMessage(response.data.info);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000);
   }
 
-  async function postCustomers(data: clienteSchemaType) {
-    
-    
-    try {
-      const response = await axios.post("http://localhost:3000/cliente", {
-        nome: data.nome,
-        nomeFantasia: data.nome,
-        cpfCnpj: data.cpfCnpj,
-        telefone: data.telefone,
-        email: data.email,
-        isFornecedor: data.isFornecedor,
-        cep: data.cep,
-        estado: data.estado,
-        cidade: data.cidade,
-        numero: data.numero,
-        endereco: data.endereco,
-        complemento: data.complemento,
-        numIe: data.numIe,
-        statusIe: data.statusIe
-      });
-      getCustomers();
-      if (response.status === 200) alert("Cliente cadastro com sucesso!");
-    } catch (error: any) {
-      new Error(error);
-    } finally {
-      addOf()
-    }
-  }
+  loadClients();
+  reset();
+  setAdOpen(false);
+};
 
-  useEffect(() => {
-    getCustomers();
-  }, []);
+const handleDelete = async (id: number) => {
+  await deleteClients(id);
+  loadClients();
+};
 
-  async function putCustomers(data: clienteSchemaType) {
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/cliente?id=${data.id}`,
-        data
-      );
-      if (response.status === 200) alert("cliente atualizado com sucesso!");
-      getCustomers();
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      toggleModal();
-    }
-  }
+useEffect(() => {
+  loadClients();
+}, []);
 
-  async function delCustomers(id: number) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:3000/cliente?id=${id}`
-      );
-      if (response.status === 200) alert("cliente deletado com sucesso!");
-      getCustomers();
-    } catch (error: any) {
-      console.error(error);
-    }
-  }
-
-  useEffect(() => {
-    getCustomers();
-  }, []);
-
-  const columns: GridColDef<dataRow>[] = [
+  const columns: GridColDef<ClienteDataRow>[] = [
    
     { field: "nome", headerName: "Nome", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     {
@@ -260,11 +152,11 @@ const Cliente = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && delCustomers(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row.id)}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -280,7 +172,7 @@ const Cliente = () => {
     email: cliente.email,
     telefone: cliente.telefone,
     isFornecedor: cliente.isFornecedor == true ?  "Fornecedor" : "Cliente",
-    dataCadastro: dayjs( cliente.dataCadastro).format("DD/MM/YYYY"),
+    dataCadastro: dayjs(cliente.dataCadastro).format("DD/MM/YYYY"),
     numIe: cliente.numIe,
     statusIe: cliente.statusIe == true ?  "Ativo" : "Inativo",
     endereco: cliente.endereco,
@@ -316,7 +208,7 @@ const Cliente = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Novo Cliente
               </Typography>
-              <form onSubmit={handleSubmit(postCustomers)}>
+              <form onSubmit={handleSubmit(handleAddClients)}>
 
                 <TextField
                   {...register("nome")}
@@ -488,173 +380,21 @@ const Cliente = () => {
             </Box>
           </Modal>
 {/* -------------------------------------------------------------------------- */}
-          <Modal
+          { open && (
+            <ModalEditCliente
             open={open}
-            onClose={toggleModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <ModalRoot title="Editando Cliente" children={ 
-            <form onSubmit={handleSubmit(putCustomers)}>
-              <TextField
-                id="outlined-helperText"
-                label="Nome"
-                defaultValue=""
-                helperText={errors.nome?.message || "Obrigatório"}
-                error={!!errors.nome}
-                {...register("nome")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="nomeFantasia"
-                defaultValue=""
-                helperText={errors.nomeFantasia?.message || "Obrigatório"}
-                error={!!errors.nomeFantasia}
-                {...register("nomeFantasia")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cpfCnpj"
-                defaultValue=""
-                helperText={errors.cpfCnpj?.message || "Obrigatório"}
-                error={!!errors.cpfCnpj}
-                {...register("cpfCnpj")}
-              />
-              {/* <InputMask
-                  mask="(99) 99999-9999"
-                  {...register("telefone",  { required: "O telefone é obrigatório" })}
-                >
-                {() => (
-                  <TextField
-                  id="outlined-helperText"
-                  label="telefone"
-                  defaultValue=""
-                  helperText={errors.telefone?.message || "Obrigatório"}
-                  error={!!errors.telefone}
-                  
-                />
-                )}
-                </InputMask>  */}
-
-              <TextField
-                id="outlined-helperText"
-                label="email"
-                defaultValue=""
-                helperText={errors.email?.message || "Obrigatório"}
-                error={!!errors.email}
-                {...register("email")}
-              />
-              
-              <InputLabel id="demo-simple-select-label">Fornecedor ou Cliente</InputLabel>
-              <Controller
-                control={control}
-                name="isFornecedor"
-                defaultValue={true}
-                render={({field}) => (
-                <Select
-                  onChange={field.onChange}
-                  labelId="select-label"
-                  id="demo-simple-select"
-                  label="IsFornecedor"
-                  error={!!errors.isFornecedor}
-                  value={field.value}
-                >
-                  <MenuItem value={false}>Cliente</MenuItem>
-                  <MenuItem value={true}>Fornecedor </MenuItem>
-                </Select>
-                )}/>
-
-                {/* <InputMask
-                  mask="9999-9999"
-                  {...register("cep")}>
-                  {() => (
-                  <TextField
-                    id="outlined-helperText"
-                    label="cep"
-                    defaultValue=""
-                    helperText={errors.cep?.message || "Obrigatório"}
-                    error={!!errors.cep}/>)}
-                </InputMask> */}
-
-              <TextField
-                id="outlined-helperText"
-                label="estado"
-                defaultValue=""
-                helperText={errors.estado?.message || "Obrigatório"}
-                error={!!errors.estado}
-                {...register("estado")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="cidade"
-                defaultValue=""
-                helperText={errors.cidade?.message || "Obrigatório"}
-                error={!!errors.cidade}
-                {...register("cidade")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="numero"
-                defaultValue=""
-                helperText={errors.numero?.message || "Obrigatório"}
-                error={!!errors.numero}
-                {...register("numero")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="endereco"
-                defaultValue=""
-                helperText={errors.endereco?.message || "Obrigatório"}
-                error={!!errors.endereco}
-                {...register("endereco")}
-              />
-              <TextField
-                id="outlined-helperText"
-                label="complemento"
-                defaultValue=""
-                helperText={errors.complemento?.message || "Obrigatório"}
-                error={!!errors.complemento}
-                {...register("complemento")}
-              />
-
-              <TextField
-                id="outlined-helperText"
-                label="numIe"
-                defaultValue=""
-                helperText={errors.numIe?.message || "Obrigatório"}
-                error={!!errors.numIe}
-                {...register("numIe")}
-              />
-              <InputLabel id="demo-simple-select-label">Inscrição Estadual</InputLabel>
-              <Controller
-                control={control}
-                name="statusIe"
-                defaultValue={true}
-                render={({field}) => (
-                <Select
-                  onChange={field.onChange}
-                  labelId="select-label"
-                  id="demo-simple-select"
-                  label="statusIe"
-                  value={field.value} 
-                >
-                  <MenuItem value={true}>Contribuinte</MenuItem>
-                  <MenuItem value={false}>Não Contribuinte</MenuItem>
-                </Select>
-              )}/>
-              <Button
-                type="submit"
-                variant="outlined"
-                startIcon={<DoneIcon />}
-              >
-                Alterar
-              </Button>
-            </form>}/>
-
-          </Modal>
+            toggleModal={toggleModal}
+            idToEdit={idToEdit}
+            clientes={customers}
+            setAlertMessage={setAlertMessage}
+            setShowAlert={setShowAlert}
+            loadClients = {loadClients}
+            />
+          )}
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
+          onRowClick={handleRowClick}
             rows={rows}
             columns={columns}
             initialState={{
@@ -669,6 +409,7 @@ const Cliente = () => {
         </Box>
       </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };
