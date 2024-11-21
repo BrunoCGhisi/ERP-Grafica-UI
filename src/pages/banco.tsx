@@ -11,7 +11,7 @@ import {
   IconButton,
   Grid,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,6 +25,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
+import { NumericFormat } from "react-number-format";
 
 import {
   bancoSchema,
@@ -43,6 +44,7 @@ const Banco = () => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<bancoSchemaType>({
     resolver: zodResolver(bancoSchema),
@@ -97,6 +99,8 @@ const Banco = () => {
   useEffect(() => {
     loadBanks();
   }, [open]);
+
+  
 
   const columns: GridColDef<BancoDataRow>[] = [
     {
@@ -169,6 +173,12 @@ const Banco = () => {
     valorTotal: banco.valorTotal,
   }));
 
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
+
   return (
     <Box>
       <MiniDrawer>
@@ -217,6 +227,7 @@ const Banco = () => {
                     <form onSubmit={handleSubmit(handleAdd)}>
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={8}>
+                          
                           <TextField
                             fullWidth
                             id="outlined-helperText"
@@ -228,22 +239,23 @@ const Banco = () => {
                         </Grid>
 
                         <Grid item xs={12} md={8}>
-                          <TextField
+                          <NumericFormat
+                            customInput={TextField}
+                            prefix="R$"
                             fullWidth
                             id="outlined-helperText"
                             label="Saldo"
+                            thousandSeparator=","
+                            decimalSeparator="."
+                            allowLeadingZeros
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              setValue("valorTotal", floatValue ?? 0);
+                            }}
                             helperText={
                               errors.valorTotal?.message || "Obrigatório"
                             }
                             error={!!errors.valorTotal}
-                            {...register("valorTotal", { valueAsNumber: true })}
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  R$
-                                </InputAdornment>
-                              ),
-                            }}
                           />
                         </Grid>
 
@@ -299,22 +311,24 @@ const Banco = () => {
                         </Grid>
 
                         <Grid item xs={12} md={8}>
-                          <TextField
+                          <NumericFormat
+                            customInput={TextField}
+                            prefix="R$"
                             fullWidth
                             id="outlined-helperText"
                             label="Saldo"
+                            thousandSeparator=","
+                            decimalSeparator="."
+                            allowLeadingZeros
+                            value={watch("valorTotal")} // Obtém o valor atual do formulário
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              setValue("valorTotal", floatValue ?? 0); // Atualiza o valor no formulário
+                            }}
                             helperText={
                               errors.valorTotal?.message || "Obrigatório"
                             }
                             error={!!errors.valorTotal}
-                            {...register("valorTotal", { valueAsNumber: true })}
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  R$
-                                </InputAdornment>
-                              ),
-                            }}
                           />
                         </Grid>
 
@@ -339,6 +353,7 @@ const Banco = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {

@@ -11,9 +11,10 @@ import {
   Stack,
   IconButton,
   MenuItem,
+  Grid,
 } from "@mui/material";
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
 
@@ -86,7 +87,7 @@ const Usuario = () => {
     const usersData = await getUsers();
     setUser(usersData);
   };
-  
+
   const handleAdd = async (data: usuarioSchemaType) => {
     await postUser(data);
     loadUsers();
@@ -96,6 +97,7 @@ const Usuario = () => {
   const handleUpdate = async (data: usuarioSchemaType) => {
     await putUser(data);
     loadUsers();
+    setSelectedData(null);
     toggleModal();
   };
 
@@ -121,11 +123,31 @@ const Usuario = () => {
   }, []);
 
   const columns: GridColDef<UsuarioDataRow>[] = [
-    { field: "id", headerName: "ID", align: "left", flex: 0 },
-    { field: "nome", headerName: "Nome", editable: false, flex: 0 },
-    { field: "email", headerName: "Email", editable: false, flex: 0 },
-    { field: "senha", headerName: "Senha", editable: false, flex: 0 },
-    { field: "isAdm", headerName: "Adm", editable: false, flex: 0 },
+    {
+      field: "nome",
+      headerName: "Nome",
+      editable: false,
+      flex: 0,
+      width: 390,
+      headerClassName: "gridHeader--header",
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      editable: false,
+      flex: 0,
+      width: 400,
+      headerClassName: "gridHeader--header",
+    },
+    {
+      field: "isAdm",
+      headerName: "Administrador",
+      editable: false,
+      flex: 0,
+      width: 110,
+      headerClassName: "gridHeader--header",
+      renderCell: ({ value }) => (value ? "Sim" : "Não"),
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -133,6 +155,7 @@ const Usuario = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           {isAdm ? (
@@ -161,23 +184,37 @@ const Usuario = () => {
     isAdm: usuario.isAdm,
   }));
 
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
+
   return (
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Typography>Usuários</Typography>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Usuários</Typography>
+            </Grid>
 
-          <Box>
-            <Stack direction="row" spacing={2}>
+            <Grid item>
               <Button
                 onClick={addOn}
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
-                Adicionar
+                Cadastrar
               </Button>
-            </Stack>
-
+            </Grid>
+          </Grid>
+          <Box>
             <Modal
               open={adopen}
               onClose={addOf}
@@ -185,54 +222,90 @@ const Usuario = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={ModalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Novo usuário
-                </Typography>
+                <Grid container spacing={2} direction="column">
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Cadastro Usuário
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleAdd)}>
+                      <Grid container spacing={2}>
+                        {/* Primeira coluna - Nome e Email */}
+                        <Grid item xs={12} md={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Nome"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            fullWidth
+                            {...register("nome")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Email"
+                            helperText={errors.email?.message || "Obrigatório"}
+                            error={!!errors.email}
+                            fullWidth
+                            {...register("email")}
+                          />
+                        </Grid>
 
-                <form onSubmit={handleSubmit(handleAdd)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Nome"
-                    helperText={errors.nome?.message || "Obrigatório"}
-                    error={!!errors.nome}
-                    {...register("nome")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Email"
-                    helperText={errors.email?.message || "Obrigatório"}
-                    error={!!errors.email}
-                    {...register("email")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Senha"
-                    helperText={errors.senha?.message || "Obrigatório"}
-                    error={!!errors.senha}
-                    {...register("senha")}
-                  />
-                  <InputLabel id="demo-simple-select-label">
-                    Adm ou Funcionário
-                  </InputLabel>
-                  <Controller
-                    control={control}
-                    name="isAdm"
-                    defaultValue={false}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Administrador</MenuItem>
-                        <MenuItem value={false}>Funcionário</MenuItem>
-                      </Select>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Cadastrar
-                  </Button>
-                </form>
+                        {/* Segunda coluna - Senha e Select de Administrador */}
+                        <Grid item xs={12} md={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Senha"
+                            helperText={errors.senha?.message || "Obrigatório"}
+                            error={!!errors.senha}
+                            fullWidth
+                            {...register("senha")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Controller
+                            control={control}
+                            name="isAdm"
+                            defaultValue={false} // valor booleano padrão
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                fullWidth
+                                displayEmpty
+                                inputProps={{
+                                  "aria-label": "Adm ou Funcionário",
+                                }}
+                              >
+                                <MenuItem value="" disabled>
+                                  Administrador ou
+                                </MenuItem>
+                                <MenuItem value={true}>Administrador</MenuItem>
+                                <MenuItem value={false}>Funcionário</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+
+                        {/* Botão de cadastro */}
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Cadastrar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
@@ -242,40 +315,68 @@ const Usuario = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <ModalRoot title="Editando Nome">
-                <form onSubmit={handleSubmit(handleUpdate)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Nome"
-                    helperText={errors.nome?.message || "Obrigatório"}
-                    error={!!errors.nome}
-                    {...register("nome")}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">
-                    Adm ou Funcionário
-                  </InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isAdm"
-                    defaultValue={false}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={true}>Administrador </MenuItem>
-                        <MenuItem value={false}>Funcionário </MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Atualizar
-                  </Button>
-                </form>
+              <ModalRoot>
+                <Grid container spacing={2} direction="column">
+                  <Grid item>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                      gutterBottom
+                    >
+                      Editar Usuário
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit(handleUpdate)}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Nome"
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            {...register("nome")}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Controller
+                          
+                            control={control}
+                            name="isAdm"
+                            defaultValue={false} // valor booleano padrão
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                fullWidth
+                                displayEmpty
+                                inputProps={{
+                                  "aria-label": "Adm ou Funcionário",
+                                }}
+                              >
+                                <MenuItem value="" disabled>
+                                  Administrador ou
+                                </MenuItem>
+                                <MenuItem value={true}>Administrador</MenuItem>
+                                <MenuItem value={false}>Funcionário</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: "right" }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            startIcon={<DoneIcon />}
+                          >
+                            Atualizar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </form>
+                  </Grid>
+                </Grid>
               </ModalRoot>
             </Modal>
           </Box>
@@ -283,6 +384,7 @@ const Usuario = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {
