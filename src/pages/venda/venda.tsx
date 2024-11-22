@@ -64,7 +64,6 @@ const Venda = () => {
   }, []);
 
   const today = new Date();
-
   const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");

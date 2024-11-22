@@ -57,7 +57,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
             reset();
             toggleModal();
       } catch (error) {
-          console.error("Erro ao atualizar venda ou produtos:", error)
+          console.error("Erro ao atualizar clientes:", error)
       }
     };
 

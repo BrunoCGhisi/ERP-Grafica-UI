@@ -5,7 +5,7 @@ const BASE_URL = "http://localhost:3000/insumo";
 
 export const getSupplies = async () => {
   const response = await axios.get(BASE_URL);
-  return response.data.insumos;
+  return response.data;
 };
 
 export const postSupplie = async (data: insumoSchemaType) => {

@@ -1,57 +1,50 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Box,
   Modal,
   Button,
   Typography,
-  TextField,
-  Stack,
-  IconButton,
-  Select,
-  MenuItem,
-  Grid,
+  TextField, IconButton, Grid,
+  Alert
 } from "@mui/material";
-
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
-import { MiniDrawer } from "../shared/components";
-
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { MiniDrawer } from "../../shared/components";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-
-import { useForm, Controller } from "react-hook-form";
-
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
 
 import {
   insumoSchema,
   InsumoDataRow,
   insumoSchemaType,
-} from "../shared/services/types";
+  produtoSchemaType,
+} from "../../shared/services/types";
 
 import {
+  deleteSupplie,
+  getProducts,
   getSupplies,
   postSupplie,
-  putSupplie,
-  deleteSupplie,
-} from "../shared/services";
+  putSupplie
+} from "../../shared/services";
+import { ModalEditInsumo } from "./components/modal-edit-insumos";
 
 const Insumo = () => {
   const [supplies, setSupplies] = useState<insumoSchemaType[]>([]);
   const [selectedData, setSelectedData] = useState<InsumoDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    control,
-    setValue,
     formState: { errors },
   } = useForm<insumoSchemaType>({
     resolver: zodResolver(insumoSchema),
@@ -70,15 +63,6 @@ const Insumo = () => {
     toggleModal();
   };
 
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("nome", selectedData.nome);
-      setValue("estoque", selectedData.estoque);
-      setValue("isActive", selectedData.isActive);
-    }
-  }, [selectedData, setValue]);
-
   //CRUD -----------------------------------------------------------------------------------------------------
   const loadSupplies = async () => {
     const productCategoriesData = await getSupplies();
@@ -86,19 +70,31 @@ const Insumo = () => {
   };
 
   const handleAdd = async (data: insumoSchemaType) => {
-    await postSupplie(data);
+    const response = await postSupplie(data);
+    console.log(response)
+
+    if (response) {
+      setAlertMessage(`${response.data}`);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
+
     loadSupplies();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: insumoSchemaType) => {
-    await putSupplie(data);
-    loadSupplies();
-    toggleModal();
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteSupplie(id);
+  const handleDelete = async (data: insumoSchemaType) => {
+    const produtos = await getProducts();
+    const filterProdutos = produtos.filter((produto: produtoSchemaType) => produto.idInsumo === data.id)
+    console.log(filterProdutos.length)
+    if (filterProdutos.length === 0){
+      await deleteSupplie(data.id!)}
+    else{
+      const desactivate = {...data, isActive: false}
+      await putSupplie(desactivate);
+    }
     loadSupplies();
   };
 
@@ -110,7 +106,7 @@ const Insumo = () => {
     
     { field: "nome", headerName: "Nome", editable: false, flex: 0, width: 500, minWidth: 500, headerClassName: "gridHeader--header", },
     { field: "estoque", headerName: "Estoque", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", },
-    { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
+    { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Desativado" : "Ativo"),
     },
     { field: "valorM2", headerName: "Valor Metro Quadrado", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", renderCell: (params) => {
       const formattedValue = new Intl.NumberFormat("pt-BR", {
@@ -130,7 +126,7 @@ const Insumo = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row)}
           >
             <DeleteIcon />
           </IconButton>
@@ -195,7 +191,7 @@ const Insumo = () => {
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleAdd)}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} md={100}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
@@ -205,7 +201,7 @@ const Insumo = () => {
                             {...register("nome")}
                           />
                         </Grid>
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} md={100}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
@@ -215,33 +211,18 @@ const Insumo = () => {
                             {...register("valorM2")}
                           />
                         </Grid>
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} md={100}>
                           <TextField
                             fullWidth
                             id="outlined-helperText"
                             label="Estoque"
                             type="number"
+                            
                             helperText={
                               errors.estoque?.message || "Obrigatório"
                             }
                             error={!!errors.estoque}
                             {...register("estoque", { valueAsNumber: true })}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                          <Controller
-                            name="isActive"
-                            control={control}
-                            defaultValue={false}
-                            render={({ field }) => (
-                              <Select
-                                onChange={field.onChange}
-                                value={field.value}
-                              >
-                                <MenuItem value={true}>Ativo</MenuItem>
-                                <MenuItem value={false}>Desativado</MenuItem>
-                              </Select>
-                            )}
                           />
                         </Grid>
                         <Grid item xs={12} sx={{ textAlign: "right" }}>
@@ -260,90 +241,10 @@ const Insumo = () => {
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-            <Modal
-              open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-              <Grid container spacing={2}>
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Editando Insumo
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Nome"
-                            helperText={errors.nome?.message || "Obrigatório"}
-                            error={!!errors.nome}
-                            {...register("nome")}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Preço Metro Quadrado"
-                            helperText={errors.valorM2?.message || "Obrigatório"}
-                            error={!!errors.valorM2}
-                            {...register("valorM2")}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Estoque"
-                            type="number"
-                            helperText={
-                              errors.estoque?.message || "Obrigatório"
-                            }
-                            error={!!errors.estoque}
-                            {...register("estoque", { valueAsNumber: true })}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                          <Controller
-                            name="isActive"
-                            control={control}
-                            defaultValue={false}
-                            render={({ field }) => (
-                              <Select
-                                onChange={field.onChange}
-                                value={field.value}
-                              >
-                                <MenuItem value={true}>Ativo</MenuItem>
-                                <MenuItem value={false}>Desativado</MenuItem>
-                              </Select>
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Editar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
+           {open && (
+            <ModalEditInsumo
+            />
+           )}
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
@@ -361,6 +262,7 @@ const Insumo = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };

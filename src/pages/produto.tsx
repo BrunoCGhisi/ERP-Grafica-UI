@@ -33,7 +33,7 @@ import {
   produtoSchemaType,
   ProdutoDataRow,
 } from "../shared/services/types";
-import Insumo from "./insumo";
+import Insumo from "./insumo/insumo";
 import {
   deleteProducts,
   getProducts,

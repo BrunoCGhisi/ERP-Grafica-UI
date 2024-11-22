@@ -4,7 +4,7 @@ export const insumoSchema = z.object({
     id: z.number().optional(),
     nome: z.string().min(1, "Campo obrigatório"),
     estoque: z.number(),
-    isActive: z.boolean(),
+    isActive: z.boolean().optional(),
     valorM2: z.coerce.number(),
   });
   

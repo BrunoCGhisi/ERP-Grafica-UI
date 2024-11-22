@@ -96,7 +96,7 @@ export function ModalEditCompra({financeiro, bancos, insumos, comprasInsumos,com
             reset();
             toggleModal();
       } catch (error) {
-          console.error("Erro ao atualizar venda ou produtos:", error)
+          console.error("Erro ao atualizar compra ou produtos:", error)
       }
     };
 
