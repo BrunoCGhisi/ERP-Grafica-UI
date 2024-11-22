@@ -362,7 +362,7 @@ const Compra = () => {
                               <TextField
                                 id="outlined-numNota"
                                 label="Número da Nota"
-                                defaultValue={0}
+                                placeholder= "0"
                                 helperText={
                                   errors.numNota?.message || "Obrigatório"
                                 }
@@ -375,7 +375,7 @@ const Compra = () => {
                               <TextField
                                 id="outlined-desconto"
                                 label="Desconto"
-                                defaultValue={0}
+                                placeholder= "0"
                                 helperText={
                                   errors.desconto?.message || "Obrigatório"
                                 }
