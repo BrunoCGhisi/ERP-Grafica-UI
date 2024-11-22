@@ -112,8 +112,13 @@ const Insumo = () => {
     { field: "estoque", headerName: "Estoque", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", },
     { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
     },
-    { field: "valorM2", headerName: "Valor Metro Quadrado", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
-    },
+    { field: "valorM2", headerName: "Valor Metro Quadrado", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", renderCell: (params) => {
+      const formattedValue = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(params.value);
+      return <span>{formattedValue}</span>;
+    },},
     {
       field: "acoes",
       headerName: "Ações",

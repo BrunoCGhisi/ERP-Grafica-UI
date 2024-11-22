@@ -14,7 +14,7 @@ export const financeiroSchema = z.object({
   parcelas: z.coerce.number(),
   idFormaPgto: z.coerce.number(),
   idBanco: z.coerce.number(),
-  total: z.coerce.number().optional()
+  valor: z.coerce.number().optional()
 });
 
 export const vendaSchema = z.object({
@@ -41,7 +41,7 @@ export interface VendaDataRow {
   situacao: number;
   desconto: number;
   vendas_produtos: {idProduto: number; quantidade: number}[];
-  financeiro: {parcelas: number; idFormaPgto: number; idBanco: number}[];
+  financeiro: {parcelas: number; idFormaPgto: number; idBanco: number, valor: number}[];
 }
 export type financeiroSchemaType = z.infer<typeof financeiroSchema>;
 export type vendaProdutoSchemaType = z.infer<typeof vendaProdutoSchema>;

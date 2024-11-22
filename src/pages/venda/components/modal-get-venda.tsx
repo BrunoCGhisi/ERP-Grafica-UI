@@ -193,6 +193,13 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                         value={item.quantidade}
                         inputProps={{ readOnly: true }}
                     />
+
+                    <TextField
+                        id="outlined-helperText"
+                        label="Valor"
+                        value={financeiros[0].valor}
+                        inputProps={{ readOnly: true }}
+                    />
                     </Box> ))}
 
               </ModalRoot>

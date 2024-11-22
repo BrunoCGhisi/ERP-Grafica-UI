@@ -83,20 +83,6 @@ const Produto = () => {
   };
   const addOf = () => setAdOpen(false);
 
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("nome", selectedData.nome);
-      setValue("tipo", selectedData.tipo);
-      setValue("keyWord", selectedData.keyWord);
-      setValue("idCategoria", selectedData.idCategoria);
-      setValue("idInsumo", selectedData.idInsumo);
-      setValue("preco", selectedData.preco);
-      setValue("largura", selectedData.largura);
-      setValue("comprimento", selectedData.comprimento);
-    }
-  }, [selectedData, setValue]);
-
   // Trazendo isnumos e categoria  --------------------------------
   useEffect(() => {
     const getInsumos = async () => {

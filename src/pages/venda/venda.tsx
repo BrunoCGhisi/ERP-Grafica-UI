@@ -79,7 +79,7 @@ const Venda = () => {
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
-  const [valorTotal, setValorTotal] = useState(0);
+  const [totalQuantidade, setTotalQuantidade] = useState(0);
 
 
   const {
@@ -93,7 +93,7 @@ const Venda = () => {
     resolver: zodResolver(vendaSchema),
     defaultValues: {
       vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
-      financeiro: [{ parcelas: 1, idFormaPgto: 1 }], 
+      financeiro: [{ parcelas: 1, idFormaPgto: 1}], 
     },
   });
 
@@ -120,8 +120,9 @@ const Venda = () => {
             const insumoVal = insumos.reduce(
               (accInsumo: number, insumo: insumoSchemaType) => {
                 const area = produto.comprimento && produto.largura
-                  ? (produto.comprimento * produto.largura) + 23
+                  ? ((produto.comprimento / 100) * (produto.largura / 100)) + 23
                   : 0;
+
                 const valorM2 = insumo.valorM2 || 0;
                 return accInsumo + (valorM2 * area);
               },
@@ -129,7 +130,7 @@ const Venda = () => {
             );
             return acc + insumoVal * (Number(item?.quantidade) || 0);
           }, 0);
-          setValorTotal(sum || 0);
+          setTotalQuantidade(Number(sum?.toFixed(2)) || 0);
         });
         return () => subscription.unsubscribe();
       } catch (error) {
@@ -139,10 +140,6 @@ const Venda = () => {
   
     PriceSugestion();
   }, [watch, getSupplies]);
-
-  const handleChangeValor = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValorTotal(Number(event.target.value)); // Atualiza o valor conforme a alteração do usuário
-  };
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -499,12 +496,11 @@ const Venda = () => {
                   ))}
 
                     <Box mt={2}>
+                    <Typography variant="h6">Valor</Typography>
                       <TextField
-                        label="Valor"
-                        value={valorTotal}
-                        InputProps={{
-                          readOnly: true,
-                        }}
+                        placeholder={`Valor bruto: ${totalQuantidade}`}
+                        
+                        {...register('financeiro.0.valor')}
                         variant="outlined"
                         fullWidth
                       />

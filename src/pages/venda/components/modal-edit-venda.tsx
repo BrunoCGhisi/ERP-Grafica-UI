@@ -5,11 +5,11 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
-import { putSale} from "../../../shared/services";
-import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
+import { getSupplies, putSale} from "../../../shared/services";
+import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   produtoSchemaType,
 } from "../../../shared/services/types";
@@ -28,8 +28,6 @@ interface ModalEditVenda {
     setShowAlert: (open: boolean) => void
     produtos: produtoSchemaType[]
     vendasProdutos: vendaProdutoSchemaType[]
-   
-    
     bancos : {
         nome: string;
         valorTotal: number; 
@@ -54,8 +52,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
     const financeiros = financeiro.filter((fin) => idVendas.includes(fin.idVenda));
 
-    console.log("financeiro", financeiro); 
-    
+    const [totalQuantidade, setTotalQuantidade] = useState(0);
 
     const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm<vendaSchemaType>({
       resolver: zodResolver(vendaSchema),
@@ -65,12 +62,50 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
         situacao: filterVendas[0].situacao,
         isVendaOS: filterVendas[0].isVendaOS,
         dataAtual: dayjs(filterVendas[0].dataAtual).format("YYYY-MM-DD"),
-        financeiro: financeiros.map(fin => ({ idBanco: fin.idBanco, idFormaPgto: fin.idFormaPgto, parcelas: fin.parcelas })),
+        financeiro: financeiros.map(fin => ({ idBanco: fin.idBanco, idFormaPgto: fin.idFormaPgto, parcelas: fin.parcelas, valor: fin.valor })),
         idVendedor: vendedor?.idVendedor,
         vendas_produtos: venda_produto.map(vp => ({ idProduto: vp?.idProduto, quantidade: vp?.quantidade }))
       },
     });
-        
+
+  useEffect(() => {
+    const PriceSugestion = async () => {
+      try {
+        const response = await getSupplies();
+        const subscription = watch((values) => {
+          const sum = values.vendas_produtos?.reduce((acc, item) => {
+            const produto = produtos.find(
+              (produto: produtoSchemaType) => produto.id === item?.idProduto
+            ); if (!produto) return acc;
+  
+            const insumos = response.filter(
+              (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
+            );
+            console.log(produto.comprimento)
+            const insumoVal = insumos.reduce(
+              (accInsumo: number, insumo: insumoSchemaType) => {
+                const area = produto.comprimento && produto.largura
+                  ? ((produto.comprimento / 100) * (produto.largura / 100)) + 23
+                  : 0;
+
+                const valorM2 = insumo.valorM2 || 0;
+                return accInsumo + (valorM2 * area);
+              },
+              0
+            );
+            return acc + insumoVal * (Number(item?.quantidade) || 0);
+          }, 0);
+          setTotalQuantidade(sum || 0);
+        });
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error("Erro ao buscar insumos ou calcular valores:", error);
+      }
+    };
+  
+    PriceSugestion();
+  }, [watch, getSupplies]);
+            
         const handleAddProduct = () => { // pq usamos isso?
           append({ idProduto: 0, quantidade: 1 }); 
         };
@@ -308,6 +343,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                     {...register("financeiro.0.parcelas")}
                   />
 
+
                   <Button
                     variant="outlined"
                     startIcon={<AddCircleOutlineIcon />}
@@ -315,6 +351,16 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                   >
                     Adicionar Produto
                   </Button>
+
+                  <Box mt={2}>
+                    <Typography variant="h6">Valor</Typography>
+                      <TextField
+                        placeholder={`Valor Bruto: ${totalQuantidade}`}
+                        {...register('financeiro.0.valor')}
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Box>  
 
                   <Button
                     type="submit"
