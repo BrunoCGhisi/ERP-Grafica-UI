@@ -33,6 +33,7 @@ import { clienteSchemaType, clienteSchema, ClienteDataRow } from "../../shared/s
 import { deleteClients, getClients, postClients } from "../../shared/services/clienteService";
 import { SettingsCellTwoTone } from "@mui/icons-material";
 import { ModalEditCliente } from "./components/modal-edit-clientes";
+import { ModalGetCliente } from "./components/modal-get-clientes";
 
 const Cliente = () => {
 
@@ -78,7 +79,7 @@ const loadClients = async () => {
 const handleAddClients = async (data: clienteSchemaType) => {
   const response = await postClients(data);
   if (response) {
-    setAlertMessage(response.data.info);
+    setAlertMessage(response.data);
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -114,7 +115,7 @@ useEffect(() => {
     { field: "telefone", headerName: "Telefone", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     {
       field: "isFornecedor",
-      headerName: "Fornecedor",
+      headerName: "Perfil de Cadastro",
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
@@ -126,7 +127,7 @@ useEffect(() => {
       flex: 0,
       headerClassName: "gridHeader--header",
     },
-    { field: "numIe", headerName: "Número IE", editable: false, flex: 0, headerClassName: "gridHeader--header", },
+    { field: "numIe", headerName: "Numéro da Inscrição Estadual", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     { field: "statusIe", headerName: "Status IE", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     { field: "endereco", headerName: "Endereço", editable: false, flex: 0, headerClassName: "gridHeader--header", },
     { field: "cep", headerName: "CEP", editable: false, flex: 0, headerClassName: "gridHeader--header", },
@@ -222,7 +223,7 @@ useEffect(() => {
 
                 <TextField
                   id="outlined-helperText"
-                  label="nomeFantasia"
+                  label="Nome Fantasia"
                   defaultValue=""
                   helperText={errors.nomeFantasia?.message || "Obrigatório"}
                   error={!!errors.nomeFantasia}
@@ -231,7 +232,7 @@ useEffect(() => {
 
                 <TextField
                   id="outlined-helperText"
-                  label="cpfCnpj"
+                  label="CPF/CNPJ"
                   defaultValue=""
                   helperText={errors.cpfCnpj?.message || "Obrigatório"}
                   error={!!errors.cpfCnpj}
@@ -258,7 +259,7 @@ useEffect(() => {
 
                 <TextField
                   id="outlined-helperText"
-                  label="email"
+                  label="E-Mail"
                   defaultValue=""
                   helperText={errors.email?.message || "Obrigatório"}
                   error={!!errors.email}
@@ -275,7 +276,7 @@ useEffect(() => {
                   onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
-                  label="IsFornecedor"
+                  label="Perfil de Cadastro"
                   error={!!errors.isFornecedor}
                   value={field.value}
                 >
@@ -303,7 +304,7 @@ useEffect(() => {
                 
                 <TextField
                   id="outlined-helperText"
-                  label="estado"
+                  label="Estado"
                   defaultValue=""
                   helperText={errors.estado?.message || "Obrigatório"}
                   error={!!errors.estado}
@@ -311,7 +312,7 @@ useEffect(() => {
                 />
                 <TextField
                   id="outlined-helperText"
-                  label="cidade"
+                  label="Cidade"
                   defaultValue=""
                   helperText={errors.cidade?.message || "Obrigatório"}
                   error={!!errors.cidade}
@@ -319,7 +320,7 @@ useEffect(() => {
                 />
                 <TextField
                   id="outlined-helperText"
-                  label="numero"
+                  label="Número"
                   defaultValue=""
                   helperText={errors.numero?.message || "Obrigatório"}
                   error={!!errors.numero}
@@ -327,7 +328,7 @@ useEffect(() => {
                 />
                 <TextField
                   id="outlined-helperText"
-                  label="endereco"
+                  label="Endereço"
                   defaultValue=""
                   helperText={errors.endereco?.message || "Obrigatório"}
                   error={!!errors.endereco}
@@ -335,7 +336,7 @@ useEffect(() => {
                 />
                 <TextField
                   id="outlined-helperText"
-                  label="complemento"
+                  label="Complemento"
                   defaultValue=""
                   helperText={errors.complemento?.message || "Obrigatório"}
                   error={!!errors.complemento}
@@ -344,7 +345,7 @@ useEffect(() => {
 
                 <TextField
                   id="outlined-helperText"
-                  label="numIe"
+                  label="Numéro da Inscrição Estadual"
                   defaultValue=""
                   helperText={errors.numIe?.message || "Obrigatório"}
                   error={!!errors.numIe}
@@ -361,7 +362,7 @@ useEffect(() => {
                   onChange={field.onChange}
                   labelId="select-label"
                   id="demo-simple-select"
-                  label="statusIe"
+                  label="Status da Inscrição Estadual"
                   value={field.value} 
                 >
                   <MenuItem value={true}>Não contribuinte</MenuItem>
@@ -391,6 +392,15 @@ useEffect(() => {
             loadClients = {loadClients}
             />
           )}
+          { toggleGetModal.open && (
+              <ModalGetCliente
+                clientes={customers}
+                rowData={selectedRow}
+                open={toggleGetModal.open}
+                toggleModal={toggleGetModal.toggleModal}
+              />
+
+            )}
         </Box>
         <Box sx={GridStyle}>
           <DataGrid

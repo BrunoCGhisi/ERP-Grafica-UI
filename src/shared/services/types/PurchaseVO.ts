@@ -13,7 +13,7 @@ export const compraSchema = z.object({
   idFornecedor: z.coerce.number().optional(),
   isCompraOS: z.boolean().optional(),
   dataCompra: z.string().optional(),
-  numNota: z.coerce.number().optional(),
+  numNota: z.coerce.number().min(9, "Notas fiscais válidas contém 9 dígitos."),
   desconto: z.coerce.number().optional(),
   // compra Insumo
   compras_insumos: z.array(compraInsumoSchema).default([]),

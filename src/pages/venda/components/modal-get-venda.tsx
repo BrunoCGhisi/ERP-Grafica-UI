@@ -126,13 +126,14 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                     id="outlined-helperText"
                     label={"Data compra"}
                     InputLabelProps={{ shrink: true }}
+                    inputProps={{ readOnly: true }}
                     value={(filterVendas[0].dataAtual)}
                     
                   />
                   <TextField
                     id="outlined-helperText"
                     label="Desconto"
-                    
+                    inputProps={{ readOnly: true }}
                     value={(rowData?.row.desconto) || ""}
                   />
 
@@ -140,30 +141,35 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                     id="outlined-helperText"
                     label="Venda ou Orçamento"
                     value={rowData?.row.isVendaOS == 1 ? "Orçamento" : "Venda"}
+                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                     id="outlined-helperText"
                     label="Situação"
                     value={situacao}
+                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                     id="outlined-helperText"
                     label="Banco"
                     value={financeiros[0].idBanco}
+                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                     id="outlined-helperText"
                     label="Forma de Pagamento"
                     value={formaPgto}
+                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                     id="outlined-helperText"
                     label="Parcelas"
                     value={financeiros[0].parcelas}
+                    inputProps={{ readOnly: true }}
                 />
 
              
@@ -178,12 +184,14 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                     <TextField
                         id="outlined-helperText"
                         label="Produtos"
+                        inputProps={{ readOnly: true }}
                         value={produtos.find((produto) => produto.id === item.idProduto)?.nome || ""}
                     />
                     <TextField
                         id="outlined-helperText"
                         label="Quantidade"
                         value={item.quantidade}
+                        inputProps={{ readOnly: true }}
                     />
                     </Box> ))}
 

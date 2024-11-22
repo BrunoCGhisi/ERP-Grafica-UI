@@ -72,96 +72,99 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
         <ModalRoot> 
         <form onSubmit={handleSubmit(handleUpdate)}>
           <TextField
+            {...register("nome")}
             id="outlined-helperText"
             label="Nome"
             defaultValue=""
             helperText={errors.nome?.message || "Obrigatório"}
             error={!!errors.nome}
-            {...register("nome")}
+            
           />
+
           <TextField
             id="outlined-helperText"
-            label="nomeFantasia"
+            label="Nome Fantasia"
             defaultValue=""
             helperText={errors.nomeFantasia?.message || "Obrigatório"}
             error={!!errors.nomeFantasia}
             {...register("nomeFantasia")}
           />
+
           <TextField
             id="outlined-helperText"
-            label="cpfCnpj"
+            label="CPF/CNPJ"
             defaultValue=""
             helperText={errors.cpfCnpj?.message || "Obrigatório"}
             error={!!errors.cpfCnpj}
             {...register("cpfCnpj")}
           />
-          <Controller
-            name="telefone"
-            control={control}
-            render={({ field }) => (
-              <PatternFormat
-                {...field}
-                format="(##) #####-####" // Formato de telefone
-                mask="_"
-                customInput={TextField} // Utiliza TextField como input
-                label="Telefone"
-                error={!!errors.telefone}
-                helperText={errors.telefone ? errors.telefone.message : "Obrigatório"}
-                fullWidth
-              />
-            )}
-          />
-                
+            
+            <Controller
+              name="telefone"
+              control={control}
+              render={({ field }) => (
+                <PatternFormat
+                  {...field}
+                  format="(##) #####-####" // Formato de telefone
+                  mask="_"
+                  customInput={TextField} // Utiliza TextField como input
+                  label="Telefone"
+                  error={!!errors.telefone}
+                  helperText={errors.telefone ? errors.telefone.message : "Obrigatório"}
+                  fullWidth
+                />
+              )}
+            />
+          
 
           <TextField
             id="outlined-helperText"
-            label="email"
+            label="E-Mail"
             defaultValue=""
             helperText={errors.email?.message || "Obrigatório"}
             error={!!errors.email}
             {...register("email")}
           />
-          
-          <InputLabel id="demo-simple-select-label">Fornecedor ou Cliente</InputLabel>
+          <InputLabel id="demo-simple-select-label">StatusIe</InputLabel>
+
           <Controller
-            control={control}
-            name="isFornecedor"
-            defaultValue={true}
-            render={({field}) => (
-            <Select
-              onChange={field.onChange}
-              labelId="select-label"
-              id="demo-simple-select"
-              label="IsFornecedor"
-              error={!!errors.isFornecedor}
-              value={field.value}
-            >
-              <MenuItem value={false}>Cliente</MenuItem>
-              <MenuItem value={true}>Fornecedor </MenuItem>
-            </Select>
-            )}/>
+          control={control}
+          name="isFornecedor"
+          defaultValue={true}
+          render={({field}) => (
+          <Select
+            onChange={field.onChange}
+            labelId="select-label"
+            id="demo-simple-select"
+            label="Perfil de Cadastro"
+            error={!!errors.isFornecedor}
+            value={field.value}
+          >
+            <MenuItem value={false}>Cliente</MenuItem>
+            <MenuItem value={true}>Fornecedor </MenuItem>
+          </Select>
+          )}/>
 
-              <Controller
-                name="cep"
-                control={control}
-                render={({ field }) => (
-                  <PatternFormat
-                    {...field}
-                    format="####-####" // Formato de telefone
-                    mask="_"
-                    customInput={TextField} // Utiliza TextField como input
-                    label="CEP"
-                    error={!!errors.cep}
-                    helperText={errors.cep ? errors.cep.message : "Obrigatório"}
-                    fullWidth
-                  />
-                )}
-              />
-                
-
+          <Controller
+              name="cep"
+              control={control}
+              render={({ field }) => (
+                <PatternFormat
+                  {...field}
+                  format="####-####" // Formato de telefone
+                  mask="_"
+                  customInput={TextField} // Utiliza TextField como input
+                  label="CEP"
+                  error={!!errors.cep}
+                  helperText={errors.cep ? errors.cep.message : "Obrigatório"}
+                  fullWidth
+                />
+              )}
+            />
+          
           <TextField
             id="outlined-helperText"
-            label="estado"
+            label="Estado"
             defaultValue=""
             helperText={errors.estado?.message || "Obrigatório"}
             error={!!errors.estado}
@@ -169,7 +172,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
           />
           <TextField
             id="outlined-helperText"
-            label="cidade"
+            label="Cidade"
             defaultValue=""
             helperText={errors.cidade?.message || "Obrigatório"}
             error={!!errors.cidade}
@@ -177,7 +180,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
           />
           <TextField
             id="outlined-helperText"
-            label="numero"
+            label="Número"
             defaultValue=""
             helperText={errors.numero?.message || "Obrigatório"}
             error={!!errors.numero}
@@ -185,7 +188,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
           />
           <TextField
             id="outlined-helperText"
-            label="endereco"
+            label="Endereço"
             defaultValue=""
             helperText={errors.endereco?.message || "Obrigatório"}
             error={!!errors.endereco}
@@ -193,7 +196,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
           />
           <TextField
             id="outlined-helperText"
-            label="complemento"
+            label="Complemento"
             defaultValue=""
             helperText={errors.complemento?.message || "Obrigatório"}
             error={!!errors.complemento}
@@ -202,29 +205,30 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
 
           <TextField
             id="outlined-helperText"
-            label="numIe"
+            label="Numéro da Inscrição Estadual"
             defaultValue=""
             helperText={errors.numIe?.message || "Obrigatório"}
             error={!!errors.numIe}
             {...register("numIe")}
           />
           <InputLabel id="demo-simple-select-label">Inscrição Estadual</InputLabel>
+
           <Controller
-            control={control}
-            name="statusIe"
-            defaultValue={true}
-            render={({field}) => (
-            <Select
-              onChange={field.onChange}
-              labelId="select-label"
-              id="demo-simple-select"
-              label="statusIe"
-              value={field.value} 
-            >
-              <MenuItem value={true}>Contribuinte</MenuItem>
-              <MenuItem value={false}>Não Contribuinte</MenuItem>
-            </Select>
-          )}/>
+          control={control}
+          name="statusIe"
+          defaultValue={true}
+          render={({field}) => (
+          <Select
+            onChange={field.onChange}
+            labelId="select-label"
+            id="demo-simple-select"
+            label="Status da Inscrição Estadual"
+            value={field.value} 
+          >
+            <MenuItem value={true}>Não contribuinte</MenuItem>
+            <MenuItem value={false}>Contribuinte</MenuItem>
+          </Select>
+        )}/>
           <Button
             type="submit"
             variant="outlined"

@@ -92,23 +92,27 @@ export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compra
                    id="outlined-helperText"
                    label={"Data compra"}
                    InputLabelProps={{ shrink: true }}
+                   inputProps={{ readOnly: true }}
                    value={dayjs(filterCompras[0].dataCompra).format("YYYY-MM-DD")}
                    
                  />
                  <TextField
                    id="outlined-helperText"
                    label="Desconto"
-                   value={(rowData?.row.desconto) || ""}
+                   value={(rowData?.row.desconto) || "Sem desconto"}
+                   inputProps={{ readOnly: true }}
                  />
 
                <TextField
                    id="outlined-helperText"
                    label="Compra ou Orçamento"
+                   inputProps={{ readOnly: true }}
                    value={rowData?.row.isVendaOS == true ? "Compra" : "Orçamento"}
                />
                <TextField
                    id="outlined-helperText"
                    label="Número da nota"
+                   inputProps={{ readOnly: true }}
                    value={rowData?.row.numNota}
                />
 
@@ -116,18 +120,21 @@ export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compra
                    id="outlined-helperText"
                    label="Banco"
                    value={financeiros[0].idBanco}
+                   inputProps={{ readOnly: true }}
                />
 
                <TextField
                    id="outlined-helperText"
                    label="Forma de Pagamento"
                    value={formaPgto}
+                   inputProps={{ readOnly: true }}
                />
 
                <TextField
                    id="outlined-helperText"
                    label="Parcelas"
                    value={financeiros[0].parcelas}
+                   inputProps={{ readOnly: true }}
                />
 
             
@@ -143,23 +150,27 @@ export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compra
                        id="outlined-helperText"
                        label="Insumos"
                        value={insumos.find((insumo) => insumo.id === item.idInsumo)?.nome || ""}
+                       inputProps={{ readOnly: true }}
                    />
                    <TextField
                        id="outlined-helperText"
                        label="Quantidade"
                        value={item.largura}
+                       inputProps={{ readOnly: true }}
                    />
 
                     <TextField
                        id="outlined-helperText"
                        label="Quantidade"
                        value={item.comprimento}
+                       inputProps={{ readOnly: true }}
                    />
 
                     <TextField
                        id="outlined-helperText"
                        label="Quantidade"
                        value={item.preco}
+                       inputProps={{ readOnly: true }}
                    />
                    </Box> ))}
 
