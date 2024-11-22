@@ -38,6 +38,7 @@ import {
   bancoSchemaType,
   vendaProdutoSchemaType,
   financeiroSchemaType,
+  insumoSchemaType,
 } from "../../shared/services/types";
 import { getSales, postSale, deleteSale, getSupplies } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
@@ -103,26 +104,25 @@ const Venda = () => {
   });
 
   useEffect(() => {
-
-    const response = getSupplies();
-    const somandoTotal = watch((values) => {
-      const sum = values.vendas_produtos?.reduce(
-        (acc, item) => acc + (Number(
-          
-          const insumoVal = response.filter((insumo =>)),
-          vendas.filter((venda) => venda.id === idToEdit);
-          item?.quantidade
-
-
-
-        ) || 0),
-        0
-      );
-      setTotalQuantidade(sum || 0);
-    });
-
-    return () => somandoTotal.unsubscribe(); // da reset no que o watch escutou
-  }, [watch]);
+    const PriceSugestion = async () => {
+      try {
+        const response = await getSupplies();
+        const subscription = watch((values) => {
+          const sum = values.vendas_produtos?.reduce((acc, item) => {
+            const insumos = response.find((insumo: insumoSchemaType) => insumo.id === item?.idProduto);
+            const insumoVal = insumos?.valor || 0; // Garantir que o valor é 0 se não encontrar o insumo
+            return acc + insumoVal * (Number(item?.quantidade) || 0);
+          }, 0);
+          setTotalQuantidade(sum || 0);
+        });
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error("Erro ao buscar insumos ou calcular valores:", error);
+      }
+    };
+  
+    PriceSugestion();
+  }, [watch, getSupplies]);
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
