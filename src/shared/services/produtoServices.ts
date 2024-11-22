@@ -5,8 +5,14 @@ const BASE_URL = "http://localhost:3000/produto";
 
 export const getProducts = async () => {
   const response = await axios.get(BASE_URL);
-  return response.data.produtos;
+  return response.data.produtosAtivos;
 };
+
+export const getProductsDeactivate = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.produtosDesativos;
+};
+
 
 export const postProducts = async (data: produtoSchemaType) => {
   const { id, ...mydata } = data;

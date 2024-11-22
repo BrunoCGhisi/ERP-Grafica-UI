@@ -10,6 +10,7 @@ export const produtoSchema = z.object({
   preco: z.coerce.number().min(1, "Campo obrigatório"),
   largura: z.coerce.number().min(1, "Campo obrigatório"),
   comprimento: z.coerce.number().min(1, "Campo obrigatório"),
+  isActive: z.boolean(),
 });
 
 export interface ProdutoDataRow {
@@ -22,5 +23,6 @@ export interface ProdutoDataRow {
   preco: number;
   largura: number;
   comprimento: number;
+  isActive: boolean;
 }
 export type produtoSchemaType = z.infer<typeof produtoSchema>;

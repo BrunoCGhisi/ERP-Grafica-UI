@@ -35,15 +35,8 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
   
 
     const handleActivate = async (data: insumoSchemaType) => {
-        // const produtos = await getProducts();
-        // const filterProdutos = produtos.filter((produto: produtoSchemaType) => produto.idInsumo === data.id)
-        // console.log(filterProdutos.length)
-        // if (filterProdutos.length === 0){
-        //   await deleteSupplie(data.id!)}
-        // else{
         const desactivate = {...data, isActive: true}
         await putSupplie(desactivate);
-        //}
         loadSupplies();
         toggleModal()
       };

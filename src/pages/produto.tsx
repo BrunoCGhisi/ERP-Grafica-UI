@@ -32,11 +32,16 @@ import {
   produtoSchema,
   produtoSchemaType,
   ProdutoDataRow,
+  vendaSchemaType,
+  vendaProdutoSchemaType,
 } from "../shared/services/types";
 import Insumo from "./insumo/insumo";
 import {
   deleteProducts,
   getProducts,
+  getSales,
+  getSalesProd,
+  getSupplies,
   postProducts,
   putProducts,
 } from "../shared/services";
@@ -85,8 +90,11 @@ const Produto = () => {
 
   // Trazendo isnumos e categoria  --------------------------------
   useEffect(() => {
+
+    const response = getSupplies();
+    setInsumos(response);
     const getInsumos = async () => {
-      const response = await axios.get("http://localhost:3000/insumo/itens");
+      const response = await axios.get("http://localhost:3000/insumo");
       setInsumos(response.data);
     };
     getInsumos();
@@ -120,8 +128,16 @@ const Produto = () => {
     toggleModal();
   };
 
-  const handleDelete = async (id: number) => {
-    await deleteProducts(id);
+  const handleDelete = async (data: produtoSchemaType) => {
+    const vendas = await getSalesProd();
+    const filterVendas = vendas.filter((venda: vendaProdutoSchemaType) => venda.idProduto === data.id)
+    if (filterVendas.length === 0){
+      await deleteProducts(data.id!);
+    }
+    else{
+      const deactivate = {...data, isActive: false}
+      await putProducts(deactivate);
+    }
     loadProducts();
   };
 
@@ -235,7 +251,7 @@ const Produto = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row)}
           >
             <DeleteIcon />
           </IconButton>
@@ -257,6 +273,7 @@ const Produto = () => {
     preco: produto.preco,
     largura: produto.largura,
     comprimento: produto.comprimento,
+    isActive: produto.isActive == true ? 'Ativo' : 'Inativo'
   }));
   useEffect(() => {
     reset();
