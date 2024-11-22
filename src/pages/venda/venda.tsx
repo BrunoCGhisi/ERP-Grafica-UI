@@ -79,7 +79,7 @@ const Venda = () => {
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
-  const [totalQuantidade, setTotalQuantidade] = useState(0);
+  const [valorTotal, setValorTotal] = useState(0);
 
 
   const {
@@ -109,11 +109,27 @@ const Venda = () => {
         const response = await getSupplies();
         const subscription = watch((values) => {
           const sum = values.vendas_produtos?.reduce((acc, item) => {
-            const insumos = response.find((insumo: insumoSchemaType) => insumo.id === item?.idProduto);
-            const insumoVal = insumos?.valor || 0; // Garantir que o valor é 0 se não encontrar o insumo
+            const produto = produtos.find(
+              (produto: produtoSchemaType) => produto.id === item?.idProduto
+            ); if (!produto) return acc;
+  
+            const insumos = response.filter(
+              (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
+            );
+            console.log(produto.comprimento)
+            const insumoVal = insumos.reduce(
+              (accInsumo: number, insumo: insumoSchemaType) => {
+                const area = produto.comprimento && produto.largura
+                  ? (produto.comprimento * produto.largura) + 23
+                  : 0;
+                const valorM2 = insumo.valorM2 || 0;
+                return accInsumo + (valorM2 * area);
+              },
+              0
+            );
             return acc + insumoVal * (Number(item?.quantidade) || 0);
           }, 0);
-          setTotalQuantidade(sum || 0);
+          setValorTotal(sum || 0);
         });
         return () => subscription.unsubscribe();
       } catch (error) {
@@ -123,6 +139,10 @@ const Venda = () => {
   
     PriceSugestion();
   }, [watch, getSupplies]);
+
+  const handleChangeValor = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValorTotal(Number(event.target.value)); // Atualiza o valor conforme a alteração do usuário
+  };
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -480,8 +500,8 @@ const Venda = () => {
 
                     <Box mt={2}>
                       <TextField
-                        label="Total Quantidade"
-                        value={totalQuantidade}
+                        label="Valor"
+                        value={valorTotal}
                         InputProps={{
                           readOnly: true,
                         }}

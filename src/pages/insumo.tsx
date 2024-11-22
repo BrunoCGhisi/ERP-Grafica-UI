@@ -23,7 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
 import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../shared/hooks/useOpenModal";
 import { ModalRoot } from "../shared/components/ModalRoot";
@@ -112,6 +112,8 @@ const Insumo = () => {
     { field: "estoque", headerName: "Estoque", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", },
     { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
     },
+    { field: "valorM2", headerName: "Valor Metro Quadrado", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Ativo" : "Desativado"),
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -140,6 +142,7 @@ const Insumo = () => {
     nome: supplie.nome,
     estoque: supplie.estoque,
     isActive: supplie.isActive,
+    valorM2: supplie.valorM2,
   }));
 
   return (
@@ -195,6 +198,16 @@ const Insumo = () => {
                             helperText={errors.nome?.message || "Obrigatório"}
                             error={!!errors.nome}
                             {...register("nome")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Preço Metro Quadrado"
+                            helperText={errors.valorM2?.message || "Obrigatório"}
+                            error={!!errors.valorM2}
+                            {...register("valorM2")}
                           />
                         </Grid>
                         <Grid item xs={12} md={8}>
@@ -270,6 +283,16 @@ const Insumo = () => {
                             helperText={errors.nome?.message || "Obrigatório"}
                             error={!!errors.nome}
                             {...register("nome")}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Preço Metro Quadrado"
+                            helperText={errors.valorM2?.message || "Obrigatório"}
+                            error={!!errors.valorM2}
+                            {...register("valorM2")}
                           />
                         </Grid>
                         <Grid item xs={12} md={8}>

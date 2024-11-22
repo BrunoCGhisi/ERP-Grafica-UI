@@ -14,6 +14,7 @@ export const financeiroSchema = z.object({
   parcelas: z.coerce.number(),
   idFormaPgto: z.coerce.number(),
   idBanco: z.coerce.number(),
+  total: z.coerce.number().optional()
 });
 
 export const vendaSchema = z.object({

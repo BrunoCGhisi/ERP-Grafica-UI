@@ -5,6 +5,7 @@ export const insumoSchema = z.object({
     nome: z.string().min(1, "Campo obrigatório"),
     estoque: z.number(),
     isActive: z.boolean(),
+    valorM2: z.coerce.number(),
   });
   
 export interface InsumoDataRow {
@@ -12,6 +13,7 @@ export interface InsumoDataRow {
     nome: string;
     estoque: number;
     isActive: boolean;
+    valorM2: number;
   }
 
 export type insumoSchemaType = z.infer<typeof insumoSchema>;
