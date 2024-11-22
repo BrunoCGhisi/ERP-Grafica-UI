@@ -2,27 +2,27 @@ import { Box, Grid, Select, MenuItem, Modal, Button, TextField, Typography } fro
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import "../../venda.css";
-//import { putSupplie } from "../../../shared/services";
+import { putSupplie } from "../../../shared/services";
 import { insumoSchemaType, insumoSchema } from "../../../shared/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModalStyle } from "../../../shared/styles";
+import { NumericFormat } from "react-number-format";
 
 interface ModalEditInsumo {
     open: boolean
     toggleModal: () => void
     loadSupplies: () => void
-    putSupplie: () => void
     setAlertMessage: (alertMessage: string) => void
     setShowAlert: (open: boolean) => void
     idToEdit: any
     insumos: insumoSchemaType[],
 }
 
-export function ModalEditInsumo({open, putSupplie, loadSupplies, toggleModal, setAlertMessage, setShowAlert, idToEdit, insumos, }: ModalEditInsumo){
+export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessage, setShowAlert, idToEdit, insumos, }: ModalEditInsumo){
 
     const filterInsumos= insumos.filter((insumo) => insumo.id === idToEdit);
 
-    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<insumoSchemaType>({
+    const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm<insumoSchemaType>({
       resolver: zodResolver(insumoSchema),
       defaultValues: {
         nome: filterInsumos[0].nome,
@@ -83,13 +83,23 @@ export function ModalEditInsumo({open, putSupplie, loadSupplies, toggleModal, se
                           />
                         </Grid>
                         <Grid item xs={12} md={100}>
-                          <TextField
+                        <NumericFormat
+                            customInput={TextField}
+                            prefix="R$"
                             fullWidth
                             id="outlined-helperText"
-                            label="Preço Metro Quadrado"
-                            helperText={errors.valorM2?.message || "Obrigatório"}
+                            label="Valor Metro Quadrado"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            allowLeadingZeros
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              setValue("valorM2", floatValue ?? 0);
+                            }}
+                            helperText={
+                              errors.valorM2?.message || "Obrigatório"
+                            }
                             error={!!errors.valorM2}
-                            {...register("valorM2")}
                           />
                         </Grid>
                         <Grid item xs={12} md={100}>

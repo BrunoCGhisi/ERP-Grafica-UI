@@ -402,8 +402,8 @@ const Produto = () => {
                             fullWidth
                             id="outlined-helperText"
                             label="Preço"
-                            thousandSeparator=","
-                            decimalSeparator="."
+                            thousandSeparator="."
+                            decimalSeparator=","
                             allowLeadingZeros
                             onValueChange={(values) => {
                               const { floatValue } = values;
@@ -419,8 +419,8 @@ const Produto = () => {
                             fullWidth
                             id="outlined-helperText"
                             label="Largura"
-                            thousandSeparator=","
-                            decimalSeparator="."
+                            thousandSeparator="."
+                            decimalSeparator=","
                             allowLeadingZeros
                             onValueChange={(values) => {
                               const { floatValue } = values;
@@ -438,8 +438,8 @@ const Produto = () => {
                             fullWidth
                             id="outlined-helperText"
                             label="Comprimento"
-                            thousandSeparator=","
-                            decimalSeparator="."
+                            thousandSeparator="."
+                            decimalSeparator=","
                             allowLeadingZeros
                             onValueChange={(values) => {
                               const { floatValue } = values;
@@ -578,8 +578,8 @@ const Produto = () => {
                             fullWidth
                             id="outlined-helperText"
                             label="Preço"
-                            thousandSeparator=","
-                            decimalSeparator="."
+                            thousandSeparator="."
+                            decimalSeparator=","
                             allowLeadingZeros
                             onValueChange={(values) => {
                               const { floatValue } = values;

@@ -247,8 +247,8 @@ const Banco = () => {
                             fullWidth
                             id="outlined-helperText"
                             label="Saldo"
-                            thousandSeparator=","
-                            decimalSeparator="."
+                            thousandSeparator="."
+                            decimalSeparator=","
                             allowLeadingZeros
                             onValueChange={(values) => {
                               const { floatValue } = values;

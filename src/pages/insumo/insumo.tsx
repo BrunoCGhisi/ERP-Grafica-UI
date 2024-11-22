@@ -14,7 +14,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
 
@@ -33,18 +33,23 @@ import {
   putSupplie
 } from "../../shared/services";
 import { ModalEditInsumo } from "./components/modal-edit-insumos";
+import { NumericFormat } from "react-number-format";
+import { ModalDeactivateInsumo } from "./components/modal-deactivate-insumos";
 
 const Insumo = () => {
   const [supplies, setSupplies] = useState<insumoSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<InsumoDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
+  const toggleModalDeactivate = useOpenModal();
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [idToEdit, setIdToEdit] = useState<any>(null)
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
+    setValue,
     formState: { errors },
   } = useForm<insumoSchemaType>({
     resolver: zodResolver(insumoSchema),
@@ -56,12 +61,6 @@ const Insumo = () => {
     setAdOpen(true), reset();
   };
   const addOf = () => setAdOpen(false);
-
-  // População da modal  -----------------------------------------------------------------------------------------------------
-  const handleEdit = (updateData: InsumoDataRow) => {
-    setSelectedData(updateData);
-    toggleModal();
-  };
 
   //CRUD -----------------------------------------------------------------------------------------------------
   const loadSupplies = async () => {
@@ -92,8 +91,8 @@ const Insumo = () => {
     if (filterProdutos.length === 0){
       await deleteSupplie(data.id!)}
     else{
-      const desactivate = {...data, isActive: false}
-      await putSupplie(desactivate);
+      const deactivate = {...data, isActive: false}
+      await putSupplie(deactivate);
     }
     loadSupplies();
   };
@@ -130,7 +129,7 @@ const Insumo = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -169,6 +168,15 @@ const Insumo = () => {
                 Cadastrar
               </Button>
             </Grid>
+            <Grid item>
+              <Button
+                onClick={() => toggleModalDeactivate.toggleModal}
+                variant="outlined"
+                startIcon={<AddCircleOutlineIcon />}
+              >
+                Arquivados
+              </Button>
+            </Grid>
           </Grid>
           <Box>
             <Modal
@@ -201,16 +209,28 @@ const Insumo = () => {
                             {...register("nome")}
                           />
                         </Grid>
-                        <Grid item xs={12} md={100}>
-                          <TextField
+
+                        <Grid item xs={12} md={8}>
+                        <NumericFormat
+                            customInput={TextField}
+                            prefix="R$"
                             fullWidth
                             id="outlined-helperText"
-                            label="Preço Metro Quadrado"
-                            helperText={errors.valorM2?.message || "Obrigatório"}
+                            label="Valor Metro Quadrado"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            allowLeadingZeros
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              setValue("valorM2", floatValue ?? 0);
+                            }}
+                            helperText={
+                              errors.valorM2?.message || "Obrigatório"
+                            }
                             error={!!errors.valorM2}
-                            {...register("valorM2")}
                           />
                         </Grid>
+
                         <Grid item xs={12} md={100}>
                           <TextField
                             fullWidth
@@ -225,6 +245,7 @@ const Insumo = () => {
                             {...register("estoque", { valueAsNumber: true })}
                           />
                         </Grid>
+                        
                         <Grid item xs={12} sx={{ textAlign: "right" }}>
                           <Button
                             type="submit"
@@ -243,6 +264,20 @@ const Insumo = () => {
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
            {open && (
             <ModalEditInsumo
+            open={open}
+            toggleModal={toggleModal}
+            loadSupplies={loadSupplies}
+            setAlertMessage={setAlertMessage}
+            setShowAlert={setShowAlert}
+            insumos={supplies}
+            idToEdit={idToEdit}
+            />
+           )}
+           { toggleModalDeactivate.open && (
+            <ModalDeactivateInsumo
+            open={toggleModalDeactivate.open}
+            toggleModal={toggleModalDeactivate.toggleModal}
+            loadSupplies={loadSupplies}
             />
            )}
           </Box>
