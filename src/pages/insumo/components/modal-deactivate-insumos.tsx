@@ -4,7 +4,7 @@ import {
   Modal, IconButton
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { GridStyle } from "../../../shared/styles";
+import { GridStyle, ModalStyle } from "../../../shared/styles";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 import {
@@ -45,6 +45,7 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
         await putSupplie(desactivate);
         //}
         loadSupplies();
+        toggleModal()
       };
 
       
@@ -96,6 +97,7 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
+            <Box sx={ModalStyle}>
               <Box sx={GridStyle}>
                 <DataGrid
                   rows={rows}
@@ -110,6 +112,7 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
                   pageSizeOptions={[6]}
                 />
               </Box>
+            </Box>
         </Modal>
       </Box>
     )

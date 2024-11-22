@@ -170,7 +170,7 @@ const Insumo = () => {
             </Grid>
             <Grid item>
               <Button
-                onClick={() => toggleModalDeactivate.toggleModal}
+                onClick={() => toggleModalDeactivate.toggleModal()}
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
