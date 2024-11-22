@@ -39,7 +39,7 @@ import {
   vendaProdutoSchemaType,
   financeiroSchemaType,
 } from "../../shared/services/types";
-import { getSales, postSale, deleteSale } from "../../shared/services";
+import { getSales, postSale, deleteSale, getSupplies } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
 
@@ -78,6 +78,7 @@ const Venda = () => {
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [formaPagamento, setFormaPagamento] = useState(0);
+  const [totalQuantidade, setTotalQuantidade] = useState(0);
 
 
   const {
@@ -95,10 +96,33 @@ const Venda = () => {
     },
   });
 
+
   const { fields, append, remove } = useFieldArray({
-    control,
+    control, 
     name: "vendas_produtos",
   });
+
+  useEffect(() => {
+
+    const response = getSupplies();
+    const somandoTotal = watch((values) => {
+      const sum = values.vendas_produtos?.reduce(
+        (acc, item) => acc + (Number(
+          
+          const insumoVal = response.filter((insumo =>)),
+          vendas.filter((venda) => venda.id === idToEdit);
+          item?.quantidade
+
+
+
+        ) || 0),
+        0
+      );
+      setTotalQuantidade(sum || 0);
+    });
+
+    return () => somandoTotal.unsubscribe(); // da reset no que o watch escutou
+  }, [watch]);
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -251,6 +275,8 @@ const Venda = () => {
     }
    
   }, [waiter, setValue]);  
+
+
 
   return (
     <Box>
@@ -441,6 +467,7 @@ const Venda = () => {
                         defaultValue={1}
                         InputProps={{ inputProps: { min: 1 } }}
                       />
+                                          
 
                       <IconButton
                         onClick={() => handleRemoveProduct(index)}
@@ -450,6 +477,18 @@ const Venda = () => {
                       </IconButton>
                     </Box>
                   ))}
+
+                    <Box mt={2}>
+                      <TextField
+                        label="Total Quantidade"
+                        value={totalQuantidade}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Box>  
 
                 <Typography>Financeiro</Typography>
                   <TextField
