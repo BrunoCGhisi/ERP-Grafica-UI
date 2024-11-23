@@ -288,10 +288,6 @@ const Venda = () => {
           <IconButton onClick={() => handleRowClick(row)}>
             <OpenInNewIcon />
           </IconButton>
-          <IconButton onClick={() => handleRowClick(row)}>
-              <OpenInNewIcon />
-          </IconButton>
-
         </div>
       ),
     },
