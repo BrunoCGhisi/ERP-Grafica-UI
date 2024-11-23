@@ -45,7 +45,7 @@ import {
   financeiroSchema,
   financeiroSchemaType,
 } from "../../shared/services/types";
-
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   getPurchases,
   postPurchases,
@@ -84,7 +84,7 @@ const Compra = () => {
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
   const [idToEdit, setIdToEdit] = useState<any>(null);
   const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
-  const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
+  const [selectedRow, setSelectedRow] = useState<CompraDataRow>();
   const { open, toggleModal } = useOpenModal();
   const toggleGetModal = useOpenModal();
 
@@ -116,10 +116,12 @@ const Compra = () => {
     remove(index);
   };
 
-  const handleRowClick = (params: GridRowParams) => {
-    setSelectedRow(params);
-    toggleGetModal.toggleModal();
-  };
+  const handleRowClick = (params: CompraDataRow) => {
+    console.log(params)
+    setSelectedRow(params)
+    toggleGetModal.toggleModal()
+   };
+
 
   // Trazendo fornecedores--------------------------------------------------
   useEffect(() => {
@@ -263,6 +265,9 @@ const Compra = () => {
             >
               <EditIcon />
             </IconButton>
+            <IconButton onClick={() => handleRowClick(row)}>
+              <OpenInNewIcon />
+          </IconButton>
           </div>
         </>
       ),
@@ -658,6 +663,7 @@ const Compra = () => {
                 fornecedores={fornecedores}
                 rowData={selectedRow}
                 open={toggleGetModal.open}
+                bancos={bancos}
                 toggleModal={toggleGetModal.toggleModal}
               />
             )}

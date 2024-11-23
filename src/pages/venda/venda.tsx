@@ -150,7 +150,6 @@ const Venda = () => {
   const handleRowClick = (params: VendaDataRow) => {
    setSelectedRow(params)
    toggleGetModal.toggleModal()
-   console.log(financeiros)
   };
 
   // Trazendo clientes--------------------------------------------------
@@ -289,6 +288,9 @@ const Venda = () => {
           <IconButton onClick={() => handleRowClick(row)}>
             <OpenInNewIcon />
           </IconButton>
+          <IconButton onClick={() => handleRowClick(row)}>
+              <OpenInNewIcon />
+          </IconButton>
 
         </div>
       ),
@@ -318,8 +320,6 @@ const Venda = () => {
     }
    
   }, [waiter, setValue]);  
-
-
 
   return (
     <Box>

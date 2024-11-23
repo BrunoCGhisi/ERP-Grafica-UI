@@ -6,14 +6,14 @@ import {
 import { useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
-import { financeiroSchemaType, compraSchemaType, compraInsumoSchemaType, compraSchema, insumoSchemaType } from "../../../shared/services/types";
+import { financeiroSchemaType, compraSchemaType, compraInsumoSchemaType, compraSchema, insumoSchemaType, bancoSchemaType, CompraDataRow } from "../../../shared/services/types";
 import { GridRowParams } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 
 interface ModalGetCompra {
     open: boolean
-    rowData: GridRowParams<any> | null
+    rowData: CompraDataRow
     toggleModal: () => void
     fornecedores : {
         nome: string; 
@@ -23,15 +23,17 @@ interface ModalGetCompra {
     comprasInsumos: compraInsumoSchemaType[]
     financeiro: financeiroSchemaType[]
     insumos: insumoSchemaType[]
+    bancos: bancoSchemaType[]
 }
-export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compras, financeiro, comprasInsumos, insumos}: ModalGetCompra){
+export function ModalGetCompra({bancos, fornecedores, rowData, open, toggleModal, compras, financeiro, comprasInsumos, insumos}: ModalGetCompra){
 
-    const filterCompras = compras.filter((compra) => compra.id === rowData?.row.id);
+    const filterCompras = compras.filter((compra) => compra.id === rowData?.id);
     const idCompras = filterCompras.map((compra) => compra.id);
     const fornecedor = fornecedores.filter((fornecedor) => fornecedor.id === filterCompras[0].idFornecedor);
     
     const compra_insumo = comprasInsumos.filter((ci) => idCompras.includes(ci.idCompra));
     const financeiros = financeiro.filter((fin) => idCompras.includes(fin.idCompra));
+    const filterBancos = bancos.filter((banco) => banco.id === financeiros[0].idBanco)
 
     const { control } = useForm<compraSchemaType>({
         resolver: zodResolver(compraSchema),
@@ -99,7 +101,7 @@ export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compra
                  <TextField
                    id="outlined-helperText"
                    label="Desconto"
-                   value={(rowData?.row.desconto) || "Sem desconto"}
+                   value={(rowData?.desconto) || "Sem desconto"}
                    inputProps={{ readOnly: true }}
                  />
 
@@ -107,19 +109,19 @@ export function ModalGetCompra({fornecedores, rowData, open, toggleModal, compra
                    id="outlined-helperText"
                    label="Compra ou Orçamento"
                    inputProps={{ readOnly: true }}
-                   value={rowData?.row.isVendaOS == true ? "Compra" : "Orçamento"}
+                   value={rowData?.isVendaOS == true ? "Compra" : "Orçamento"}
                />
                <TextField
                    id="outlined-helperText"
                    label="Número da nota"
                    inputProps={{ readOnly: true }}
-                   value={rowData?.row.numNota}
+                   value={rowData?.numNota}
                />
 
                <TextField
                    id="outlined-helperText"
                    label="Banco"
-                   value={financeiros[0].idBanco}
+                   value={filterBancos[0].nome}
                    inputProps={{ readOnly: true }}
                />
 
