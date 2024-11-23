@@ -266,7 +266,7 @@ const Compra = () => {
             <Grid item>
               <Typography variant="h6">Compras</Typography>
             </Grid>
-
+    
             <Grid item>
               <Button
                 onClick={addOn}
