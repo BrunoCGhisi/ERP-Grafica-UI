@@ -7,20 +7,18 @@ export const produtoSchema = z.object({
   keyWord: z.string().min(1, "Campo obrigatório"),
   idCategoria: z.number().min(1, "Campo obrigatório"),
   idInsumo: z.number().min(1, "Campo obrigatório"),
-  preco: z.coerce.number().min(1, "Campo obrigatório"),
   largura: z.coerce.number().min(1, "Campo obrigatório"),
   comprimento: z.coerce.number().min(1, "Campo obrigatório"),
   isActive: z.boolean(),
 });
 
 export interface ProdutoDataRow {
-  id: number;
+  id: number ;
   nome: string;
   tipo: boolean;
   keyWord: string;
   idCategoria: number;
   idInsumo: number;
-  preco: number;
   largura: number;
   comprimento: number;
   isActive: boolean;

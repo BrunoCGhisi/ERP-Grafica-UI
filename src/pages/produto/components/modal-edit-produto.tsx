@@ -1,21 +1,15 @@
-import { Box, InputLabel, Grid, Select, MenuItem, Modal, Button, TextField, Typography, IconButton } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { InputLabel, Grid, Select, MenuItem, Modal, Button, TextField, Typography } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
-import dayjs from "dayjs";
 import "../../venda.css";
-import { getSupplies, putProducts, putSale} from "../../../shared/services";
-import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType, produtoSchema, proCategorySchemaType } from "../../../shared/services/types";
-import { GridDeleteIcon } from "@mui/x-data-grid";
+import { putProducts } from "../../../shared/services";
+import { insumoSchemaType, produtoSchema, proCategorySchemaType } from "../../../shared/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
 import {
-  produtoSchemaType,
+    produtoSchemaType,
 } from "../../../shared/services/types";
 import { NumericFormat } from "react-number-format";
-
-
 
 interface ModalEditProduto {
     open: boolean
@@ -30,19 +24,22 @@ interface ModalEditProduto {
 
 }
 
-export function ModalEditProduto({open, loadProducts, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, idToEdit, userId, bancos, produtos, vendasProdutos, financeiro}: ModalEditProduto){
+export function ModalEditProduto({open, loadProducts, toggleModal, categoriasProdutos, setAlertMessage, setShowAlert, produtos, idToEdit, insumos}: ModalEditProduto){
   
     //const today = new Date()
     const filterProdutos = produtos.filter((produto) => produto.id === idToEdit);
 
-    const { register, handleSubmit, reset, control, setValue, formState: { errors } } = useForm<produtoSchemaType>({
+    const insumo = insumos.filter((insumo) => insumo.id === filterProdutos[0]?.idInsumo);
+    const categoria = categoriasProdutos.filter((categoria) => categoria.id === filterProdutos[0]?.idCategoria);
+
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<produtoSchemaType>({
       resolver: zodResolver(produtoSchema),
       defaultValues: {
         nome: filterProdutos[0].nome,
         tipo: filterProdutos[0].tipo,
         keyWord: filterProdutos[0].keyWord,
-        idCategoria: filterProdutos[0].idCategoria,
-        idInsumo:filterProdutos[0].idInsumo,
+        idCategoria: categoria[0].id,
+        idInsumo:insumo[0].id,
         largura:filterProdutos[0].largura,
         comprimento:filterProdutos[0].comprimento,
         isActive:filterProdutos[0].isActive,
@@ -98,45 +95,50 @@ export function ModalEditProduto({open, loadProducts, toggleModal, clientes, set
                       {...register("nome")}
                     />
 
-                    <InputLabel id="insumo-label">Insumos</InputLabel>
-                    <Select
-                      {...register("idInsumo")}
-                      labelId="insumo-label"
-                      id="insumo-select"
-                      fullWidth
-                      defaultValue={
-                        insumos.length > 0 ? insumos[0].nome : ""
-                      }
-                      error={!!errors.idInsumo}
-                    >
-                      {insumos.map((insumo) => (
-                        <MenuItem key={insumo.id} value={insumo.id}>
-                          {insumo.nome}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    <InputLabel id="insumo-label">Insumos</InputLabel><Controller
+                    name="idInsumo"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        style={{ width: 300 }}
+                        labelId="select-label"
+                        id="demo-simple-select"
+                        error={!!errors.idInsumo}
+                        {...field} 
+                      >
+                        {insumos &&
+                          insumos.map((insumo) => (
+                            <MenuItem key={insumo.id} value={insumo.id}>
+                              {insumo.nome}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
 
                     <InputLabel id="categoria-label">
                       Categorias
                     </InputLabel>
-                    <Select
-                      {...register("idCategoria")}
-                      labelId="categoria-label"
-                      id="categoria-select"
-                      fullWidth
-                      defaultValue={
-                        categorias.length > 0
-                          ? categorias[0].categoria
-                          : ""
-                      }
-                      error={!!errors.idCategoria}
-                    >
-                      {categorias.map((categoria) => (
-                        <MenuItem key={categoria.id} value={categoria.id}>
-                          {categoria.categoria}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    <Controller
+                    name="idCategoria"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        style={{ width: 300 }}
+                        labelId="select-label"
+                        id="demo-simple-select"
+                        error={!!errors.idCategoria}
+                        {...field} 
+                      >
+                        {categoriasProdutos &&
+                          categoriasProdutos.map((categoria) => (
+                            <MenuItem key={categoria.id} value={categoria.id}>
+                              {categoria.categoria}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
 
                     <InputLabel id="tipo-label">Tipo</InputLabel>
                     <Controller
@@ -168,24 +170,6 @@ export function ModalEditProduto({open, loadProducts, toggleModal, clientes, set
                       error={!!errors.keyWord}
                       fullWidth
                       {...register("keyWord")}
-                    />
-
-                    <NumericFormat
-                      customInput={TextField}
-                      sx={{ marginTop: 2.8 }}
-                      prefix="R$"
-                      fullWidth
-                      id="outlined-helperText"
-                      label="Preço"
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      allowLeadingZeros
-                      onValueChange={(values) => {
-                        const { floatValue } = values;
-                        setValue("preco", floatValue ?? 0);
-                      }}
-                      helperText={errors.preco?.message || "Obrigatório"}
-                      error={!!errors.preco}
                     />
 
                     <TextField
@@ -225,6 +209,7 @@ export function ModalEditProduto({open, loadProducts, toggleModal, clientes, set
             </Grid>
           </Grid>
         </ModalRoot>
+        
       </Modal>
     )
 }

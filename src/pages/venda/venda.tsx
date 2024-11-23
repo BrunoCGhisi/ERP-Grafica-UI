@@ -74,10 +74,8 @@ const Venda = () => {
   const [financeiros, setFinanceiros] =  useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
- // const [selectedData, setSelectedData] = useState<VendaDataRow | null>(null);
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
-  const [formaPagamento, setFormaPagamento] = useState(0);
   const [totalQuantidade, setTotalQuantidade] = useState(0);
 
 

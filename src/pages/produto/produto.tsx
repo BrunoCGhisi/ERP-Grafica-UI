@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
   Grid,
+  Alert,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
@@ -34,6 +35,10 @@ import {
   ProdutoDataRow,
   vendaSchemaType,
   vendaProdutoSchemaType,
+  proCategorySchemaType,
+  insumoSchemaType,
+  insumoSchema,
+  proCategorySchema,
 } from "../../shared/services/types";
 import Insumo from "../insumo/insumo";
 import {
@@ -46,18 +51,9 @@ import {
   putProducts,
 } from "../../shared/services";
 import { NumericFormat } from "react-number-format";
-
-const insumoSchema = z.object({
-  id: z.number(),
-  nome: z.string(),
-});
-type insumoSchemaType = z.infer<typeof insumoSchema>;
-
-const categoriaSchema = z.object({
-  id: z.number(),
-  categoria: z.string(),
-});
-type categoriaSchemaType = z.infer<typeof categoriaSchema>;
+import { ModalEditProduto } from "./components/modal-edit-produto";
+import { ModalDeactivateProduto } from "./components/modal-deactivate-produtos";
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 const Produto = () => {
   const {
@@ -72,14 +68,12 @@ const Produto = () => {
   });
   const [products, setProducts] = useState<produtoSchemaType[]>([]);
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
-  const [categorias, setCategorias] = useState<categoriaSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<ProdutoDataRow | null>(null);
+  const [categorias, setCategorias] = useState<proCategorySchemaType[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [idToEdit, setIdToEdit] = useState<any>(null);
   const { toggleModal, open } = useOpenModal();
-
-  const handleEdit = (updateDate: ProdutoDataRow) => {
-    setSelectedData(updateDate);
-    toggleModal();
-  };
+  const toggleModalDeactivate = useOpenModal();
 
   // Modal ADD
   const [adopen, setAdOpen] = useState<boolean>(false);
@@ -113,16 +107,16 @@ const Produto = () => {
   };
 
   const handleAdd = async (data: produtoSchemaType) => {
-    console.log("Data enviada:", data);
-    await postProducts(data);
+    const response = await postProducts(data);
+    if (response) {
+      setAlertMessage(`${response}`);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
     loadProducts();
     setAdOpen(false);
-  };
-
-  const handleUpdate = async (data: produtoSchemaType) => {
-    await putProducts(data);
-    loadProducts();
-    toggleModal();
   };
 
   const handleDelete = async (data: produtoSchemaType) => {
@@ -132,6 +126,9 @@ const Produto = () => {
       await deleteProducts(data.id!);
     }
     else{
+
+
+
       const deactivate = {...data, isActive: false}
       await putProducts(deactivate);
     }
@@ -153,98 +150,14 @@ const Produto = () => {
   };
 
   const columns: GridColDef<ProdutoDataRow>[] = [
-    {
-      field: "nome",
-      headerName: "Nome",
-      editable: false,
-      flex: 0,
-      minWidth: 150,
-      width: 150,
-      headerClassName: "gridHeader--header",
-    },
-    {
-      field: "keyWord",
-      headerName: "Palavra Chave",
-      editable: false,
-      flex: 0,
-      minWidth: 150,
-      width: 150,
-      headerClassName: "gridHeader--header",
-    },
-    {
-      field: "tipo",
-      headerName: "Tipo",
-      editable: false,
-      flex: 0,
-      minWidth: 70,
-      width: 100,
-      headerClassName: "gridHeader--header",
-      valueGetter: ({ value }) => (value ? "Serviço" : "Produto"),
-    },
-    {
-      field: "idCategoria",
-      headerName: "Categoria",
-      editable: false,
-      flex: 0,
-      minWidth: 100,
-      width: 100,
-      headerClassName: "gridHeader--header",
-    },
-    {
-      field: "idInsumo",
-      headerName: "Insumo",
-      editable: false,
-      flex: 0,
-      minWidth: 130,
-      width: 110,
-      headerClassName: "gridHeader--header",
-    },
-    {
-      field: "preco",
-      headerName: "Preço",
-      editable: false,
-      flex: 0,
-      minWidth: 90,
-      width: 90,
-      headerClassName: "gridHeader--header",
-      renderCell: (params) => {
-        const formattedValue = new Intl.NumberFormat("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }).format(params.value);
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      field: "largura",
-      headerName: "Largura",
-      editable: false,
-      flex: 0,
-      minWidth: 70,
-      width: 70,
-      headerClassName: "gridHeader--header",
-      renderCell: (params) => <span>{params.value} cm</span>,
-    },
-    {
-      field: "comprimento",
-      headerName: "Comprimento",
-      editable: false,
-      flex: 0,
-      minWidth: 110,
-      width: 110,
-      headerClassName: "gridHeader--header",
-      renderCell: (params) => <span>{params.value} cm</span>,
-    },
-
-    {
-      field: "acoes",
-      headerName: "Ações",
-      width: 150,
-      minWidth: 150,
-      align: "center",
-      type: "actions",
-      flex: 0,
-      headerClassName: "gridHeader--header",
+    {field: "nome", headerName: "Nome", editable: false, flex: 0, minWidth: 150, width: 150, headerClassName: "gridHeader--header",},
+    {field: "keyWord", headerName: "Palavra Chave", editable: false, flex: 0, minWidth: 150, width: 150, headerClassName: "gridHeader--header",},
+    {field: "tipo", headerName: "Tipo", editable: false, flex: 0, minWidth: 70, width: 100, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Serviço" : "Produto"),},
+    {field: "idCategoria", headerName: "Categoria", editable: false, flex: 0, minWidth: 100, width: 100, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getCategoriaNome(params.value)}</span>,},
+    {field: "idInsumo", headerName: "Insumo", editable: false, flex: 0, minWidth: 130, width: 110, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getInsumoNome(params.value)}</span>,},
+    {field: "largura", headerName: "Largura", editable: false, flex: 0, minWidth: 70, width: 70, headerClassName: "gridHeader--header", renderCell: (params) => <span>{params.value} cm</span>,},
+    {field: "comprimento", headerName: "Comprimento", editable: false, flex: 0, minWidth: 110, width: 110, headerClassName: "gridHeader--header", renderCell: (params) => <span>{params.value} cm</span>,},
+    {field: "acoes", headerName: "Ações", width: 150, minWidth: 150, align: "center", type: "actions", flex: 0, headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
           <IconButton
@@ -252,7 +165,7 @@ const Produto = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -265,16 +178,15 @@ const Produto = () => {
     nome: produto.nome,
     tipo: produto.tipo,
     keyWord: produto.keyWord,
-    idCategoria: getCategoriaNome(produto.idCategoria),
-    idInsumo: getInsumoNome(produto.idInsumo),
-    preco: produto.preco,
+    idCategoria: produto.idCategoria,
+    idInsumo: produto.idInsumo,
     largura: produto.largura,
     comprimento: produto.comprimento,
     isActive: produto.isActive == true ? 'Ativo' : 'Inativo'
   }));
   useEffect(() => {
     reset();
-  }, [insumoSchema, categoriaSchema, reset]);
+  }, [insumoSchema, proCategorySchema, reset]);
 
   const localeText: Partial<GridLocaleText> = {
     toolbarDensity: "Densidade",
@@ -297,6 +209,14 @@ const Produto = () => {
             </Grid>
 
             <Grid item>
+              <Button
+                onClick={() => toggleModalDeactivate.toggleModal()}
+                variant="outlined"
+                startIcon={<ArchiveIcon />}
+              >
+                Arquivados
+              </Button>
+
               <Button
                 onClick={addOn}
                 variant="outlined"
@@ -411,24 +331,6 @@ const Produto = () => {
 
                           <NumericFormat
                             customInput={TextField}
-                            sx={{ marginTop: 2.8 }}
-                            prefix="R$"
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Preço"
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            allowLeadingZeros
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("preco", floatValue ?? 0);
-                            }}
-                            helperText={errors.preco?.message || "Obrigatório"}
-                            error={!!errors.preco}
-                          />
-
-                          <NumericFormat
-                            customInput={TextField}
                             suffix="cm"
                             fullWidth
                             id="outlined-helperText"
@@ -482,7 +384,29 @@ const Produto = () => {
               </Box>
             </Modal>
             {/* ------------------------------------------------------------------------------------------------------- */}
-
+            {open && (
+              <ModalEditProduto
+                open={open}
+                idToEdit={idToEdit}
+                loadProducts={loadProducts}
+                insumos={insumos}
+                produtos={products}
+                categoriasProdutos={categorias}
+                setAlertMessage={setAlertMessage}
+                setShowAlert={setShowAlert}
+                toggleModal={toggleModal}
+                
+              />
+            )}
+            { toggleModalDeactivate.open && (
+              <ModalDeactivateProduto
+                open={toggleModalDeactivate.open}
+                toggleModal={toggleModalDeactivate.toggleModal}
+                getCategoriaNome={getCategoriaNome}
+                getInsumoNome={getInsumoNome}
+                loadProducts={loadProducts}
+              />
+            )}
            
           </Box>
           <Box sx={GridStyle}>
@@ -502,6 +426,7 @@ const Produto = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };

@@ -10,6 +10,7 @@ export const getSupplies = async () => {
 
 export const getDeactives = async () => {
   const response = await axios.get(BASE_URL);
+  console.log("response", response.data.insumosDesativos)
   return response.data.insumosDesativos;
 }
 

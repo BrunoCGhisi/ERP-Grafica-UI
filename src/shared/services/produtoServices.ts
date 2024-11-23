@@ -13,7 +13,6 @@ export const getProductsDeactivate = async () => {
   return response.data.produtosDesativos;
 };
 
-
 export const postProducts = async (data: produtoSchemaType) => {
   const { id, ...mydata } = data;
   const response = await axios.post(BASE_URL, mydata);

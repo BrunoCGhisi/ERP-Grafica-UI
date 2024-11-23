@@ -17,6 +17,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 import {
   insumoSchema,
@@ -171,7 +172,7 @@ const Insumo = () => {
               <Button
                 onClick={() => toggleModalDeactivate.toggleModal()}
                 variant="outlined"
-                startIcon={<AddCircleOutlineIcon />}
+                startIcon={<ArchiveIcon />}
               >
                 Arquivados
               </Button>
