@@ -14,8 +14,8 @@ import {
   Grid,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
-import { MiniDrawer } from "../shared/components";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { MiniDrawer } from "../../shared/components";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,8 +24,8 @@ import DoneIcon from "@mui/icons-material/Done";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../shared/components/ModalRoot";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -34,8 +34,8 @@ import {
   ProdutoDataRow,
   vendaSchemaType,
   vendaProdutoSchemaType,
-} from "../shared/services/types";
-import Insumo from "./insumo/insumo";
+} from "../../shared/services/types";
+import Insumo from "../insumo/insumo";
 import {
   deleteProducts,
   getProducts,
@@ -44,7 +44,7 @@ import {
   getSupplies,
   postProducts,
   putProducts,
-} from "../shared/services";
+} from "../../shared/services";
 import { NumericFormat } from "react-number-format";
 
 const insumoSchema = z.object({
@@ -89,15 +89,12 @@ const Produto = () => {
   const addOf = () => setAdOpen(false);
 
   // Trazendo isnumos e categoria  --------------------------------
-  useEffect(() => {
-
-    const response = getSupplies();
+  const loadSupplies = async () => {
+    const response = await getSupplies();
     setInsumos(response);
-    const getInsumos = async () => {
-      const response = await axios.get("http://localhost:3000/insumo");
-      setInsumos(response.data);
-    };
-    getInsumos();
+  };
+  useEffect(() => {
+    loadSupplies();
   }, []);
 
   useEffect(() => {
@@ -486,164 +483,7 @@ const Produto = () => {
             </Modal>
             {/* ------------------------------------------------------------------------------------------------------- */}
 
-            <Modal
-              open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-                <Grid container spacing={2} direction="column">
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Editar Produto
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                          <TextField
-                            id="outlined-helperText"
-                            label="Nome"
-                            helperText={errors.nome?.message || "Obrigatório"}
-                            error={!!errors.nome}
-                            fullWidth
-                            {...register("nome")}
-                          />
-
-                          <InputLabel id="insumo-label">Insumos</InputLabel>
-                          <Select
-                            {...register("idInsumo")}
-                            labelId="insumo-label"
-                            id="insumo-select"
-                            fullWidth
-                            defaultValue={
-                              insumos.length > 0 ? insumos[0].nome : ""
-                            }
-                            error={!!errors.idInsumo}
-                          >
-                            {insumos.map((insumo) => (
-                              <MenuItem key={insumo.id} value={insumo.id}>
-                                {insumo.nome}
-                              </MenuItem>
-                            ))}
-                          </Select>
-
-                          <InputLabel id="categoria-label">
-                            Categorias
-                          </InputLabel>
-                          <Select
-                            {...register("idCategoria")}
-                            labelId="categoria-label"
-                            id="categoria-select"
-                            fullWidth
-                            defaultValue={
-                              categorias.length > 0
-                                ? categorias[0].categoria
-                                : ""
-                            }
-                            error={!!errors.idCategoria}
-                          >
-                            {categorias.map((categoria) => (
-                              <MenuItem key={categoria.id} value={categoria.id}>
-                                {categoria.categoria}
-                              </MenuItem>
-                            ))}
-                          </Select>
-
-                          <InputLabel id="tipo-label">Tipo</InputLabel>
-                          <Controller
-                            control={control}
-                            name="tipo"
-                            defaultValue={true}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                labelId="tipo-label"
-                                id="tipo-select"
-                                fullWidth
-                              >
-                                <MenuItem value={true}>Não</MenuItem>
-                                <MenuItem value={false}>Sim</MenuItem>
-                              </Select>
-                            )}
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                          {/* Campo KeyWord */}
-                          <TextField
-                            id="outlined-helperText"
-                            label="KeyWord"
-                            helperText={
-                              errors.keyWord?.message || "Obrigatório"
-                            }
-                            error={!!errors.keyWord}
-                            fullWidth
-                            {...register("keyWord")}
-                          />
-
-                          <NumericFormat
-                            customInput={TextField}
-                            sx={{ marginTop: 2.8 }}
-                            prefix="R$"
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Preço"
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            allowLeadingZeros
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("preco", floatValue ?? 0);
-                            }}
-                            helperText={errors.preco?.message || "Obrigatório"}
-                            error={!!errors.preco}
-                          />
-
-                          <TextField
-                            id="outlined-helperText"
-                            label="Largura"
-                            helperText={
-                              errors.largura?.message || "Obrigatório"
-                            }
-                            error={!!errors.largura}
-                            fullWidth
-                            {...register("largura")}
-                          />
-
-                          <TextField
-                            id="outlined-helperText"
-                            label="Comprimento"
-                            helperText={
-                              errors.comprimento?.message || "Obrigatório"
-                            }
-                            error={!!errors.comprimento}
-                            fullWidth
-                            {...register("comprimento")}
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Editar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
+           
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
