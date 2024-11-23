@@ -74,7 +74,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={100}>
                           <TextField
-                            fullWidth
+                            sx={{width: 450}}
                             id="outlined-helperText"
                             label="Nome"
                             helperText={errors.nome?.message || "Obrigatório"}
@@ -86,7 +86,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                         <NumericFormat
                             customInput={TextField}
                             prefix="R$"
-                            fullWidth
+                            sx={{width: 450}}
                             id="outlined-helperText"
                             label="Valor Metro Quadrado"
                             thousandSeparator="."
@@ -104,7 +104,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                         </Grid>
                         <Grid item xs={12} md={100}>
                           <TextField
-                            fullWidth
+                            sx={{width: 450}}
                             id="outlined-helperText"
                             label="Estoque"
                             type="number"
@@ -118,11 +118,13 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                         </Grid>
                         <Grid item xs={12} md={8}>
                           <Controller
+                          
                             name="isActive"
                             control={control}
                             defaultValue={false}
                             render={({ field }) => (
                               <Select
+                                sx={{width: 450}}
                                 onChange={field.onChange}
                                 value={field.value}
                               >

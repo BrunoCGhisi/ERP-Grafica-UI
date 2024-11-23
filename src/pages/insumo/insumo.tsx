@@ -4,8 +4,10 @@ import {
   Modal,
   Button,
   Typography,
-  TextField, IconButton, Grid,
-  Alert
+  TextField,
+  IconButton,
+  Grid,
+  Alert,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
@@ -17,7 +19,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
-import ArchiveIcon from '@mui/icons-material/Archive';
+import ArchiveIcon from "@mui/icons-material/Archive";
 
 import {
   insumoSchema,
@@ -31,7 +33,7 @@ import {
   getProducts,
   getSupplies,
   postSupplie,
-  putSupplie
+  putSupplie,
 } from "../../shared/services";
 import { ModalEditInsumo } from "./components/modal-edit-insumos";
 import { NumericFormat } from "react-number-format";
@@ -43,7 +45,7 @@ const Insumo = () => {
   const toggleModalDeactivate = useOpenModal();
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [idToEdit, setIdToEdit] = useState<any>(null)
+  const [idToEdit, setIdToEdit] = useState<any>(null);
 
   const {
     register,
@@ -71,7 +73,7 @@ const Insumo = () => {
 
   const handleAdd = async (data: insumoSchemaType) => {
     const response = await postSupplie(data);
-    console.log(response)
+    console.log(response);
 
     if (response) {
       setAlertMessage(`${response.data}`);
@@ -87,11 +89,13 @@ const Insumo = () => {
 
   const handleDelete = async (data: insumoSchemaType) => {
     const produtos = await getProducts();
-    const filterProdutos = produtos.filter((produto: produtoSchemaType) => produto.idInsumo === data.id)
-    if (filterProdutos.length === 0){
-      await deleteSupplie(data.id!)}
-    else{
-      const deactivate = {...data, isActive: false}
+    const filterProdutos = produtos.filter(
+      (produto: produtoSchemaType) => produto.idInsumo === data.id
+    );
+    if (filterProdutos.length === 0) {
+      await deleteSupplie(data.id!);
+    } else {
+      const deactivate = { ...data, isActive: false };
       await putSupplie(deactivate);
     }
     loadSupplies();
@@ -102,18 +106,51 @@ const Insumo = () => {
   }, [open]);
 
   const columns: GridColDef<InsumoDataRow>[] = [
-    
-    { field: "nome", headerName: "Nome", editable: false, flex: 0, width: 500, minWidth: 500, headerClassName: "gridHeader--header", },
-    { field: "estoque", headerName: "Estoque", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", },
-    { field: "isActive", headerName: "Status", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Desativado" : "Ativo"),
+    {
+      field: "nome",
+      headerName: "Nome",
+      editable: false,
+      flex: 0,
+      width: 500,
+      minWidth: 500,
+      headerClassName: "gridHeader--header",
     },
-    { field: "valorM2", headerName: "Valor Metro Quadrado", editable: false, flex: 0, width: 200, minWidth: 200, headerClassName: "gridHeader--header", renderCell: (params) => {
-      const formattedValue = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(params.value);
-      return <span>{formattedValue}</span>;
-    },},
+    {
+      field: "estoque",
+      headerName: "Estoque",
+      editable: false,
+      flex: 0,
+      width: 200,
+      minWidth: 200,
+      headerClassName: "gridHeader--header",
+    },
+    
+    {
+      field: "valorM2",
+      headerName: "Valor Metro Quadrado",
+      editable: false,
+      flex: 0,
+      width: 200,
+      minWidth: 200,
+      headerClassName: "gridHeader--header",
+      renderCell: (params) => {
+        const formattedValue = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(params.value);
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      field: "isActive",
+      headerName: "Status",
+      editable: false,
+      flex: 0,
+      width: 200,
+      minWidth: 200,
+      headerClassName: "gridHeader--header",
+      valueGetter: ({ value }) => (value ? "Desativado" : "Ativo"),
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -124,12 +161,14 @@ const Insumo = () => {
       headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
-          <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row)}
-          >
+          <IconButton onClick={() => row.id !== undefined && handleDelete(row)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
+          <IconButton
+            onClick={() =>
+              row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
+            }
+          >
             <EditIcon />
           </IconButton>
         </div>
@@ -158,24 +197,27 @@ const Insumo = () => {
             <Grid item>
               <Typography variant="h6">Insumos</Typography>
             </Grid>
-
             <Grid item>
-              <Button
-                onClick={addOn}
-                variant="outlined"
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                Cadastrar
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                onClick={() => toggleModalDeactivate.toggleModal()}
-                variant="outlined"
-                startIcon={<ArchiveIcon />}
-              >
-                Arquivados
-              </Button>
+              <Grid container spacing={2} direction={"row"}>
+                <Grid item>
+                  <Button
+                    onClick={() => toggleModalDeactivate.toggleModal()}
+                    variant="outlined"
+                    startIcon={<ArchiveIcon />}
+                  >
+                    Arquivados
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={addOn}
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
           <Box>
@@ -201,7 +243,7 @@ const Insumo = () => {
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={100}>
                           <TextField
-                            fullWidth
+                            sx={{width: 450}}
                             id="outlined-helperText"
                             label="Nome"
                             helperText={errors.nome?.message || "Obrigatório"}
@@ -211,7 +253,7 @@ const Insumo = () => {
                         </Grid>
 
                         <Grid item xs={12} md={8}>
-                        <NumericFormat
+                          <NumericFormat
                             customInput={TextField}
                             prefix="R$"
                             fullWidth
@@ -233,11 +275,10 @@ const Insumo = () => {
 
                         <Grid item xs={12} md={100}>
                           <TextField
-                            fullWidth
+                            sx={{width: 450}}
                             id="outlined-helperText"
                             label="Estoque"
                             type="number"
-                            
                             helperText={
                               errors.estoque?.message || "Obrigatório"
                             }
@@ -245,7 +286,7 @@ const Insumo = () => {
                             {...register("estoque", { valueAsNumber: true })}
                           />
                         </Grid>
-                        
+
                         <Grid item xs={12} sx={{ textAlign: "right" }}>
                           <Button
                             type="submit"
@@ -262,24 +303,24 @@ const Insumo = () => {
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-           {open && (
-            <ModalEditInsumo
-            open={open}
-            toggleModal={toggleModal}
-            loadSupplies={loadSupplies}
-            setAlertMessage={setAlertMessage}
-            setShowAlert={setShowAlert}
-            insumos={supplies}
-            idToEdit={idToEdit}
-            />
-           )}
-           { toggleModalDeactivate.open && (
-            <ModalDeactivateInsumo
-            open={toggleModalDeactivate.open}
-            toggleModal={toggleModalDeactivate.toggleModal}
-            loadSupplies={loadSupplies}
-            />
-           )}
+            {open && (
+              <ModalEditInsumo
+                open={open}
+                toggleModal={toggleModal}
+                loadSupplies={loadSupplies}
+                setAlertMessage={setAlertMessage}
+                setShowAlert={setShowAlert}
+                insumos={supplies}
+                idToEdit={idToEdit}
+              />
+            )}
+            {toggleModalDeactivate.open && (
+              <ModalDeactivateInsumo
+                open={toggleModalDeactivate.open}
+                toggleModal={toggleModalDeactivate.toggleModal}
+                loadSupplies={loadSupplies}
+              />
+            )}
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
