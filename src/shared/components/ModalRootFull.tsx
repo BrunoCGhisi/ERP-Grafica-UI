@@ -8,9 +8,9 @@ interface ModalRootProps {
 
 }
 
-export const ModalRoot = forwardRef<HTMLDivElement, ModalRootProps>(
+export const ModalRootFull = forwardRef<HTMLDivElement, ModalRootProps>(
   ({ children }, ref) => (
-    <Box sx={ModalStyle} ref={ref}>
+    <Box sx={{ ...ModalStyle, width: "80%", height: "80vh" }} ref={ref}>
       {children}
     </Box>
   )

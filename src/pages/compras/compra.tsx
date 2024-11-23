@@ -526,7 +526,7 @@ const Compra = () => {
                           item
                           xs={12}
                           md={6}
-                          sx={{ marginTop: 2, marginLeft: 2 }}
+                          sx={{ marginTop: 2, marginLeft: 3 }}
                         >
                           <Grid container spacing={2} direction="column">
                             {/* Insumos */}
