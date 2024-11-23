@@ -66,7 +66,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                       variant="h6"
                       component="h2"
                     >
-                      Cadastro Insumo
+                      Editar Insumo
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -140,7 +140,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                             variant="outlined"
                             startIcon={<DoneIcon />}
                           >
-                            Atualizar
+                            Editar
                           </Button>
                         </Grid>
                       </Grid>

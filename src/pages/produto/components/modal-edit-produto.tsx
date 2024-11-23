@@ -100,7 +100,7 @@ export function ModalEditProduto({open, loadProducts, toggleModal, categoriasPro
                     control={control}
                     render={({ field }) => (
                       <Select
-                        style={{ width: 300 }}
+                        fullWidth
                         labelId="select-label"
                         id="demo-simple-select"
                         error={!!errors.idInsumo}
@@ -124,7 +124,7 @@ export function ModalEditProduto({open, loadProducts, toggleModal, categoriasPro
                     control={control}
                     render={({ field }) => (
                       <Select
-                        style={{ width: 300 }}
+                        fullWidth
                         labelId="select-label"
                         id="demo-simple-select"
                         error={!!errors.idCategoria}
@@ -173,6 +173,7 @@ export function ModalEditProduto({open, loadProducts, toggleModal, categoriasPro
                     />
 
                     <TextField
+                      sx={{marginTop: 2.9}}
                       id="outlined-helperText"
                       label="Largura"
                       helperText={

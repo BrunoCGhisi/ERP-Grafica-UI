@@ -9,7 +9,7 @@ import {
   Grid,
   Alert,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 import { MiniDrawer } from "../../shared/components";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -111,8 +111,8 @@ const Insumo = () => {
       headerName: "Nome",
       editable: false,
       flex: 0,
-      width: 500,
-      minWidth: 500,
+      width: 300,
+      minWidth: 300,
       headerClassName: "gridHeader--header",
     },
     {

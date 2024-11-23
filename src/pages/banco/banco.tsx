@@ -36,7 +36,7 @@ const Banco = () => {
 
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
   const { open, toggleModal } = useOpenModal();
-  const toggleDeactive = useOpenModal();
+  const toggleModalDeactivate = useOpenModal();
   const [idToEdit, setIdToEdit] = useState<any>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -180,7 +180,7 @@ const Banco = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Grid
+        <Grid
             container
             spacing={2}
             justifyContent="space-between"
@@ -189,23 +189,27 @@ const Banco = () => {
             <Grid item>
               <Typography variant="h6">Bancos</Typography>
             </Grid>
-
             <Grid item>
-              <Button
-                onClick={addOn}
-                variant="outlined"
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                Cadastrar
-              </Button>
-
-              <Button
-                onClick={() => toggleDeactive.toggleModal()}
-                variant="outlined"
-                startIcon={<ArchiveIcon />}
-              >
-                Arquivados
-              </Button>
+              <Grid container spacing={2} direction={"row"}>
+                <Grid item>
+                  <Button
+                    onClick={() => toggleModalDeactivate.toggleModal()}
+                    variant="outlined"
+                    startIcon={<ArchiveIcon />}
+                  >
+                    Arquivados
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={addOn}
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
           <Box>
@@ -292,11 +296,11 @@ const Banco = () => {
               toggleModal={toggleModal}
               />
             )}
-            { toggleDeactive.open && (
+            { toggleModalDeactivate.open && (
               <ModalDeactivateBanco
-              open={toggleDeactive.open}
+              open={toggleModalDeactivate.open}
               loadBanks={loadBanks}
-              toggleModal={toggleDeactive.toggleModal}
+              toggleModal={toggleModalDeactivate.toggleModal}
               />
             )}
           

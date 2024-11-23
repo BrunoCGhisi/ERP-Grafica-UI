@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { GridStyle, ModalStyle, SpaceStyle } from "../shared/styles";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
