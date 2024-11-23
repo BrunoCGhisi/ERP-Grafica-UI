@@ -189,12 +189,6 @@ const Compra = () => {
     loadPurchases();
   };
 
-  // População da modal  --------------------------------
-  // const handleEdit = (updateData: CompraDataRow) => {
-  //   setSelectedData(updateData);
-  //   toggleModal();
-  // };
-
   useEffect(() => {
     loadPurchases();
   }, [open]);
