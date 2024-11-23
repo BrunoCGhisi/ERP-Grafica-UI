@@ -79,6 +79,7 @@ const Venda = () => {
   const [totalQuantidade, setTotalQuantidade] = useState(0);
 
 
+
   const {
     register,
     handleSubmit,
@@ -187,6 +188,7 @@ const Venda = () => {
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadSales = async () => {
+ 
     const response = await axios.get("http://localhost:3000/venda");
     const responseFin = await axios.get("http://localhost:3000/financeiro");
     setVp(response.data.vendasProdutos);
@@ -194,7 +196,7 @@ const Venda = () => {
   
     const salesData = await getSales();
     setSales(salesData);
-  
+ 
   };
   const handleAdd = async (data: vendaSchemaType) => {
     
@@ -604,7 +606,7 @@ const Venda = () => {
           
           <Box sx={GridStyle}>
             <DataGrid
-              loading
+              
               rows={rows}
               columns={columns}
               initialState={{
