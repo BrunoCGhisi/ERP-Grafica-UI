@@ -145,6 +145,12 @@ const CategoriaProduto = () => {
     categoria: categoriaProduto.categoria,
   }));
 
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
+
   return (
     <Box>
       <MiniDrawer>
@@ -275,6 +281,7 @@ const CategoriaProduto = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {

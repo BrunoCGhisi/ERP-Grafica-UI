@@ -13,7 +13,7 @@ import {
   Typography,
   Grid
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
 import { MiniDrawer } from "../shared/components";
 
@@ -160,6 +160,13 @@ const Financeiro = () => {
     situacao: financeiro.situacao,
     parcelas: financeiro.parcelas,
   }));
+
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
+
   useEffect(() => {
     reset();
   }, [ reset]);
@@ -182,6 +189,7 @@ const Financeiro = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {
