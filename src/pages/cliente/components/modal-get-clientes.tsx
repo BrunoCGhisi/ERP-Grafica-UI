@@ -1,14 +1,10 @@
 import {
-    Box,
-    Modal, TextField,
-    Typography,
+    Modal, TextField
 } from "@mui/material";
-import { useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
-import { financeiroSchemaType, compraSchemaType, compraInsumoSchemaType, compraSchema, insumoSchemaType, clienteSchemaType } from "../../../shared/services/types";
+import { clienteSchemaType } from "../../../shared/services/types";
 import { GridRowParams } from "@mui/x-data-grid";
-import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { PatternFormat } from "react-number-format";
 
@@ -21,10 +17,6 @@ interface ModalGetCliente {
 export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGetCliente){
 
     const filterClientes = clientes.filter((cliente) => cliente.id === rowData?.row.id);
- 
-   
-    const { control } = useForm<compraSchemaType>({
-        resolver: zodResolver(compraSchema)});
            
    return (
        <Modal

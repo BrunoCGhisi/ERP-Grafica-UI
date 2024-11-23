@@ -1,7 +1,7 @@
-import { useState, useEffect, InputHTMLAttributes, HTMLAttributes  } from "react";
-import { NumericFormat, PatternFormat } from 'react-number-format';
-import axios from "axios";
-import {Box,
+import { useState, useEffect } from "react";
+import { PatternFormat } from 'react-number-format';
+import {
+  Box,
   InputLabel,
   Select,
   MenuItem,
@@ -10,9 +10,7 @@ import {Box,
   IconButton,
   Stack,
   TextField,
-  Typography,
-  InputAdornment,
-  Alert,
+  Typography, Alert
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
@@ -26,12 +24,10 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../../shared/components/ModalRoot";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import dayjs from "dayjs";
 import { clienteSchemaType, clienteSchema, ClienteDataRow } from "../../shared/services/types/clientsVO";
 import { deleteClients, getClients, postClients } from "../../shared/services/clienteService";
-import { SettingsCellTwoTone } from "@mui/icons-material";
 import { ModalEditCliente } from "./components/modal-edit-clientes";
 import { ModalGetCliente } from "./components/modal-get-clientes";
 
@@ -41,7 +37,7 @@ const Cliente = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+
     control,
     reset
   } = useForm<clienteSchemaType>({

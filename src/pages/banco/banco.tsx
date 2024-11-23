@@ -1,50 +1,51 @@
 import { useState, useEffect } from "react";
 
-import axios from "axios";
 import {
   Box,
   Modal,
   Button,
   Typography,
-  TextField,
-  Stack,
-  IconButton,
+  TextField, IconButton,
   Grid,
+  Alert
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import InputAdornment from "@mui/material/InputAdornment";
-import { MiniDrawer } from "../shared/components";
-import { getToken } from "../shared/services";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
+import { MiniDrawer } from "../../shared/components";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import { NumericFormat } from "react-number-format";
-
+import ArchiveIcon from '@mui/icons-material/Archive';
 import {
   bancoSchema,
   BancoDataRow,
   bancoSchemaType,
-} from "../shared/services/types";
-import { getBanks, postBank, putBank, deleteBank } from "../shared/services";
+  vendaSchemaType,
+  financeiroSchemaType,
+} from "../../shared/services/types";
+import { getBanks, postBank, deleteBank, getSales, getFinances, putBank } from "../../shared/services";
+import { ModalEditBanco } from "./components/modal-edit-banco";
+import { ModalDeactivateBanco } from "./components/modal-deactivate-banco";
 
 const Banco = () => {
-  const [selectedData, setSelectedData] = useState<BancoDataRow | null>(null);
+
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
   const { open, toggleModal } = useOpenModal();
+  const toggleDeactive = useOpenModal();
+  const [idToEdit, setIdToEdit] = useState<any>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<bancoSchemaType>({
     resolver: zodResolver(bancoSchema),
@@ -57,21 +58,6 @@ const Banco = () => {
   };
   const addOf = () => setAdOpen(false);
 
-  // População da Modal ----------------------------
-
-  const handleEdit = (updateData: BancoDataRow) => {
-    setSelectedData(updateData);
-    toggleModal();
-  };
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("nome", selectedData.nome);
-      setValue("valorTotal", selectedData.valorTotal);
-    }
-  }, [selectedData, setValue]);
-
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadBanks = async () => {
@@ -80,19 +66,28 @@ const Banco = () => {
   };
 
   const handleAdd = async (data: bancoSchemaType) => {
-    await postBank(data);
+    const response = await postBank(data);
+    if (response.data) {
+      setAlertMessage(`${response.data}`);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
     loadBanks();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: bancoSchemaType) => {
-    await putBank(data);
-    loadBanks();
-    toggleModal();
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteBank(id);
+  const handleDelete = async (data: bancoSchemaType) => {
+    const financeiro = await getFinances();
+    const filterFin = financeiro.filter((fin: financeiroSchemaType) => fin.idBanco === data.id)
+    if (filterFin.length === 0){
+      await deleteBank(data.id!);
+    }
+    else{
+      const deactivate = {...data, isActive: false}
+      await putBank(deactivate);
+    }
     loadBanks();
   };
 
@@ -157,11 +152,11 @@ const Banco = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row)}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined &&  [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -202,6 +197,14 @@ const Banco = () => {
                 startIcon={<AddCircleOutlineIcon />}
               >
                 Cadastrar
+              </Button>
+
+              <Button
+                onClick={() => toggleDeactive.toggleModal()}
+                variant="outlined"
+                startIcon={<ArchiveIcon />}
+              >
+                Arquivados
               </Button>
             </Grid>
           </Grid>
@@ -278,77 +281,25 @@ const Banco = () => {
             </Modal>
 
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-
-            <Modal
+            {open && (
+              <ModalEditBanco
               open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-                <Grid container spacing={2} direction="column">
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                      gutterBottom
-                    >
-                      Editar Banco
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Nome da Instituição Bancária"
-                            helperText={errors.nome?.message || "Obrigatório"}
-                            error={!!errors.nome}
-                            {...register("nome")}
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} md={8}>
-                          <NumericFormat
-                            customInput={TextField}
-                            prefix="R$"
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Saldo"
-                            thousandSeparator=","
-                            decimalSeparator="."
-                            allowLeadingZeros
-                            value={watch("valorTotal")} // Obtém o valor atual do formulário
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("valorTotal", floatValue ?? 0); // Atualiza o valor no formulário
-                            }}
-                            helperText={
-                              errors.valorTotal?.message || "Obrigatório"
-                            }
-                            error={!!errors.valorTotal}
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Editar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
+              idToEdit={idToEdit}
+              loadBanks={loadBanks}
+              bancos={banks}
+              setAlertMessage={setAlertMessage}
+              setShowAlert={setShowAlert}
+              toggleModal={toggleModal}
+              />
+            )}
+            { toggleDeactive.open && (
+              <ModalDeactivateBanco
+              open={toggleDeactive.open}
+              loadBanks={loadBanks}
+              toggleModal={toggleDeactive.toggleModal}
+              />
+            )}
+          
           </Box>
 
           <Box sx={GridStyle}>
@@ -368,6 +319,7 @@ const Banco = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };

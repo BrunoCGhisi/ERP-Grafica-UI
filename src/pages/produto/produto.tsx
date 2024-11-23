@@ -7,12 +7,10 @@ import {
   MenuItem,
   Modal,
   Button,
-  IconButton,
-  Stack,
-  TextField,
+  IconButton, TextField,
   Typography,
   Grid,
-  Alert,
+  Alert
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
@@ -23,32 +21,25 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../../shared/components/ModalRoot";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import { Controller, useForm } from "react-hook-form";
 
 import {
   produtoSchema,
   produtoSchemaType,
-  ProdutoDataRow,
-  vendaSchemaType,
-  vendaProdutoSchemaType,
+  ProdutoDataRow, vendaProdutoSchemaType,
   proCategorySchemaType,
   insumoSchemaType,
   insumoSchema,
-  proCategorySchema,
+  proCategorySchema
 } from "../../shared/services/types";
-import Insumo from "../insumo/insumo";
 import {
   deleteProducts,
-  getProducts,
-  getSales,
-  getSalesProd,
+  getProducts, getSalesProd,
   getSupplies,
   postProducts,
-  putProducts,
+  putProducts
 } from "../../shared/services";
 import { NumericFormat } from "react-number-format";
 import { ModalEditProduto } from "./components/modal-edit-produto";
@@ -126,9 +117,6 @@ const Produto = () => {
       await deleteProducts(data.id!);
     }
     else{
-
-
-
       const deactivate = {...data, isActive: false}
       await putProducts(deactivate);
     }
@@ -209,13 +197,6 @@ const Produto = () => {
             </Grid>
 
             <Grid item>
-              <Button
-                onClick={() => toggleModalDeactivate.toggleModal()}
-                variant="outlined"
-                startIcon={<ArchiveIcon />}
-              >
-                Arquivados
-              </Button>
 
               <Button
                 onClick={addOn}
@@ -223,6 +204,13 @@ const Produto = () => {
                 startIcon={<AddCircleOutlineIcon />}
               >
                 Cadastrar
+              </Button>
+              <Button
+                onClick={() => toggleModalDeactivate.toggleModal()}
+                variant="outlined"
+                startIcon={<ArchiveIcon />}
+              >
+                Arquivados
               </Button>
             </Grid>
           </Grid>

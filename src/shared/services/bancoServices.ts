@@ -8,6 +8,11 @@ export const getBanks = async () => {
   return response.data.getBancos;
 };
 
+export const getDeactiveBanks = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.bancoDesativos;
+};
+
 export const postBank = async (data: bancoSchemaType) => {
   const { id, ...mydata } = data;
   const response = await axios.post(BASE_URL, mydata);

@@ -4,7 +4,7 @@ export { default as Cliente } from "./cliente/cliente";
 export { default as Usuario } from "./usuario";
 export { default as Login } from "./login";
 export { default as SignUp } from "./signUp";
-export { default as Banco } from "./banco";
+export { default as Banco } from "./banco/banco";
 export { default as Produto } from "./produto/produto";
 export { default as CategoriaProduto } from "./categoriaProduto";
 // export { default as FormaPgto } from "./formaPgto";
