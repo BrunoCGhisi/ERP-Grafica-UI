@@ -140,7 +140,7 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                             variant="outlined"
                             startIcon={<DoneIcon />}
                           >
-                            Cadastrar
+                            Atualizar
                           </Button>
                         </Grid>
                       </Grid>

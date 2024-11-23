@@ -184,6 +184,12 @@ const Insumo = () => {
     valorM2: supplie.valorM2,
   }));
 
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
+
   return (
     <Box>
       <MiniDrawer>
@@ -326,6 +332,7 @@ const Insumo = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {
