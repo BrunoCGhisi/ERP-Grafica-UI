@@ -149,8 +149,8 @@ const Compra = () => {
   // Trazendo Insumo --------------------------------------------------
   useEffect(() => {
     const getInsumos = async () => {
-      const response = await axios.get("http://localhost:3000/insumo/");
-      setInsumos(response.data);
+      const response = await axios.get("http://localhost:3000/insumo");
+      setInsumos(response.data.insumosAtivos);
       console.log(response);
     };
     getInsumos();
@@ -447,7 +447,7 @@ const Compra = () => {
                                 Banco
                               </InputLabel>
                               <Controller
-                                name={`financeiro.0.idBanco`}
+                                name={`financeiros.0.idBanco`}
                                 control={control}
                                 render={({ field }) => (
                                   <Select
@@ -471,7 +471,7 @@ const Compra = () => {
                             <Grid item xs={12}>
                               <InputLabel>Forma de Pagamento</InputLabel>
                               <Controller
-                                name={`financeiro.0.idFormaPgto`}
+                                name={`financeiros.0.idFormaPgto`}
                                 control={control}
                                 render={({ field }) => (
                                   <Select

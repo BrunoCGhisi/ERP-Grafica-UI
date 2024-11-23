@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import {
     Box,
-    Modal, IconButton
+    Modal, IconButton,
+    Button
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { GridStyle, ModalStyle } from "../../../shared/styles";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {
     BancoDataRow,
     bancoSchemaType
@@ -24,6 +25,8 @@ interface ModalDeactivateBanco {
 
 export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeactivateBanco){
 
+  const addOf = () => toggleModal();
+
     const [deactivate, setDeactivate] = useState<bancoSchemaType[]>([]);
     const loadDeactives = async () => {
       const deactivatesData = await getDeactiveBanks();
@@ -39,7 +42,7 @@ export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeact
         const desactivate = {...data, isActive: true}
         await putBank(desactivate);
         loadBanks();
-        toggleModal()
+        loadDeactives();
       };
 
       
@@ -117,11 +120,16 @@ export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeact
         <Box>
         <Modal
               open={open}
-              onClose={toggleModal}
+              onClose={addOf}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
             <Box sx={ModalStyle}>
+            <Button
+                    onClick={addOf}
+                    variant="outlined"
+                    startIcon={<CloseRoundedIcon />}
+                />
               <Box sx={GridStyle}>
                 <DataGrid
                   rows={rows}

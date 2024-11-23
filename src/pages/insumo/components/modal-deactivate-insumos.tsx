@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import {
   Box,
-  Modal, IconButton
+  Modal, IconButton,
+  Button
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { GridStyle, ModalStyle } from "../../../shared/styles";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {
   InsumoDataRow,
   insumoSchemaType
@@ -24,6 +25,8 @@ interface ModalDeactivateInsumo {
 
 export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalDeactivateInsumo){
 
+  const addOf = () => toggleModal();
+
     const [deactivate, setDeactivate] = useState<insumoSchemaType[]>([]);
     const loadDeactives = async () => {
       const deactivatesData = await getDeactives();
@@ -38,7 +41,7 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
         const desactivate = {...data, isActive: true}
         await putSupplie(desactivate);
         loadSupplies();
-        toggleModal()
+        loadDeactives();
       };
 
       
@@ -86,11 +89,16 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
         <Box>
         <Modal
               open={open}
-              onClose={toggleModal}
+              onClose={addOf}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
             <Box sx={ModalStyle}>
+            <Button
+                    onClick={addOf}
+                    variant="outlined"
+                    startIcon={<CloseRoundedIcon />}
+                />
               <Box sx={GridStyle}>
                 <DataGrid
                   rows={rows}

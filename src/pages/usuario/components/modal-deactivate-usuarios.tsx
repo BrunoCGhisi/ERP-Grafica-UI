@@ -14,9 +14,7 @@ import {
 } from "../../../shared/services/types";
 
 import {
-    getDeactiveUsers,
-    getProductsDeactivate,
-    putUser
+    getDeactiveUsers, putUser
 } from "../../../shared/services";
 
 interface ModalDeactivateUsuario {
@@ -27,7 +25,6 @@ interface ModalDeactivateUsuario {
 
 export function ModalDeactivateUsuario({open, loadUsers, toggleModal}: ModalDeactivateUsuario){
 
-    const [adopen, setAdOpen] = useState<boolean>(false);
     const addOf = () => toggleModal();
 
     const [deactivate, setDeactivate] = useState<usuarioSchemaType[]>([]);
@@ -45,8 +42,9 @@ export function ModalDeactivateUsuario({open, loadUsers, toggleModal}: ModalDeac
     const handleActivate = async (data: usuarioSchemaType) => {
         const desactivate = {...data, isActive: true}
         await putUser(desactivate);
+        loadDeactives();
         loadUsers();
-        toggleModal()
+        
       };
       
       const columns: GridColDef<UsuarioDataRow>[] = [
@@ -114,9 +112,9 @@ export function ModalDeactivateUsuario({open, loadUsers, toggleModal}: ModalDeac
             
             <Box sx={ModalStyle}>
                 <Button
-                        onClick={addOf}
-                        variant="outlined"
-                        startIcon={<CloseRoundedIcon />}
+                    onClick={addOf}
+                    variant="outlined"
+                    startIcon={<CloseRoundedIcon />}
                 />
               <Box sx={GridStyle}>
                 <DataGrid
