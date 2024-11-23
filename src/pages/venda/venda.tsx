@@ -13,7 +13,7 @@ import {
   IconButton,
   Alert,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -25,11 +25,10 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
-
 import { MiniDrawer } from "../../shared/components";
 import dayjs from "dayjs";
 import "../venda.css";
-
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   vendaSchema,
   VendaDataRow,
@@ -43,6 +42,7 @@ import {
 import { getSales, postSale, deleteSale, getSupplies } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -64,7 +64,7 @@ const Venda = () => {
   }, []);
 
   const today = new Date();
-  const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
+  const [selectedRow, setSelectedRow] = useState<VendaDataRow>();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [idToEdit, setIdToEdit] = useState<any>(null)
@@ -146,7 +146,7 @@ const Venda = () => {
     remove(index);
   };
 
-  const handleRowClick = (params: GridRowParams) => {
+  const handleRowClick = (params: VendaDataRow) => {
    setSelectedRow(params)
    toggleGetModal.toggleModal()
    console.log(financeiros)
@@ -194,6 +194,7 @@ const Venda = () => {
   
     const salesData = await getSales();
     setSales(salesData);
+  
   };
   const handleAdd = async (data: vendaSchemaType) => {
     
@@ -225,6 +226,29 @@ const Venda = () => {
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
+  const situacaoNome = (situacaoData: number | undefined) =>{
+    
+    switch (situacaoData) {
+        case 0:
+            return "Em espera";
+            break;
+        case 2:
+            return "Em execução"
+            break;
+        case 3:
+            return "Em acabamento"
+            break;
+        case 4:
+            return "Finalizado"
+            break;
+        case 1:
+            return "Em criação (arte)"
+            break;
+        case 5:
+            return "Entregue"
+            break;
+    }
+  }
 
 
   // GRID ------------------------------------------------
@@ -240,10 +264,8 @@ const Venda = () => {
     { field: "idVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
     { field: "dataAtual", headerName: "DataAtual", editable: false, flex: 0 },
     { field: "isVendaOS", headerName: "IsVendaOS", editable: false, flex: 0 },
-    { field: "situacao", headerName: "Situacao", editable: false, flex: 0 },
+    { field: "situacao", headerName: "Situacao", editable: false, flex: 0, renderCell: (params) => <span>{situacaoNome(params.value)}</span>, },
     { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
-    
-
     {
       field: "acoes",
       headerName: "Ações",
@@ -253,6 +275,7 @@ const Venda = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
+
           <IconButton
             onClick={() => row.id !== undefined && handleDelete(row.id)}
           >
@@ -261,6 +284,10 @@ const Venda = () => {
           <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
+          <IconButton onClick={() => handleRowClick(row)}>
+            <OpenInNewIcon />
+          </IconButton>
+
         </div>
       ),
     },
@@ -270,7 +297,7 @@ const Venda = () => {
     idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
-    isVendaOS: venda.isVendaOS,
+    isVendaOS: venda.isVendaOS == 0 ?  "Venda" : "Orçamento",
     situacao: venda.situacao,
     desconto: venda.desconto,
   }));
@@ -294,9 +321,15 @@ const Venda = () => {
 
   return (
     <Box>
+      
+      
       <MiniDrawer>
+      
         <Box sx={SpaceStyle}>
+        
           <Box>
+            
+
             <Stack direction="row" spacing={2}>
               <Button
                 onClick={addOn}
@@ -566,11 +599,12 @@ const Venda = () => {
 
             )}
 
-            
-          </Box>
+           
+          </Box> 
+          
           <Box sx={GridStyle}>
             <DataGrid
-              onRowClick={handleRowClick}
+              loading
               rows={rows}
               columns={columns}
               initialState={{

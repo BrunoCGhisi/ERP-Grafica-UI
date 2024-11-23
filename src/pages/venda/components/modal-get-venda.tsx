@@ -6,7 +6,7 @@ import {
 import { useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
-import { vendaSchema, vendaSchemaType, vendaProdutoSchemaType, financeiroSchemaType } from "../../../shared/services/types";
+import { vendaSchema, vendaSchemaType, vendaProdutoSchemaType, financeiroSchemaType, VendaDataRow } from "../../../shared/services/types";
 import { GridRowParams } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,7 +15,7 @@ import {
 
 interface ModalGetVenda {
     open: boolean
-    rowData: GridRowParams<any> | null
+    rowData: VendaDataRow | undefined
     toggleModal: () => void
     clientes: {
         nome: string;
@@ -29,7 +29,7 @@ interface ModalGetVenda {
 
 export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, financeiro, produtos, vendasProdutos}: ModalGetVenda){
     
-    const filterVendas = vendas.filter((venda) => venda.id === rowData?.row.id);
+    const filterVendas = vendas.filter((venda) => venda.id === rowData?.id);
     const idVendas = filterVendas.map((venda) => venda.id);
     const venda_produto = vendasProdutos.filter((vp) => idVendas.includes(vp.idVenda));
     const cliente = clientes.filter((cliente) => cliente.id === filterVendas[0].idCliente);
@@ -74,7 +74,7 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
 
 
     let situacao = ""
-    switch (rowData?.row.situacao) {
+    switch (rowData?.situacao) {
         case 0:
             situacao = "Em espera";
             break;
@@ -108,7 +108,7 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                 <TextField
                     id="outlined-helperText"
                     label="Vendedor"
-                    value={rowData?.row.idVendedor}
+                    value={rowData?.idVendedor}
                     inputProps={{ readOnly: true }}
                     
                   />
@@ -134,13 +134,13 @@ export function ModalGetVenda({rowData, open, toggleModal, clientes, vendas, fin
                     id="outlined-helperText"
                     label="Desconto"
                     inputProps={{ readOnly: true }}
-                    value={(rowData?.row.desconto) || ""}
+                    value={(rowData?.desconto) || ""}
                   />
 
                 <TextField
                     id="outlined-helperText"
                     label="Venda ou Orçamento"
-                    value={rowData?.row.isVendaOS == 1 ? "Orçamento" : "Venda"}
+                    value={rowData?.isVendaOS == 1 ? "Orçamento" : "Venda"}
                     inputProps={{ readOnly: true }}
                 />
 

@@ -12,7 +12,7 @@ import {
   TextField,
   Typography, Alert
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 import { MiniDrawer } from "../../shared/components";
 //Icones
@@ -30,9 +30,9 @@ import { clienteSchemaType, clienteSchema, ClienteDataRow } from "../../shared/s
 import { deleteClients, getClients, postClients } from "../../shared/services/clienteService";
 import { ModalEditCliente } from "./components/modal-edit-clientes";
 import { ModalGetCliente } from "./components/modal-get-clientes";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Cliente = () => {
-
   const {
     register,
     handleSubmit,
@@ -49,7 +49,7 @@ const Cliente = () => {
   const [customers, setCustomers] = useState<clienteSchemaType[]>([]);
   const {open, toggleModal} = useOpenModal();
   const toggleGetModal = useOpenModal();
-  const [selectedRow, setSelectedRow] = useState<GridRowParams | null>(null);
+  const [selectedRow, setSelectedRow] = useState<ClienteDataRow>();
   const [idToEdit, setIdToEdit] = useState<any>(null)
 
   // Modal ADD
@@ -57,14 +57,12 @@ const Cliente = () => {
   const addOn = () => {setAdOpen(true), reset()};
   const addOf = () => setAdOpen(false);
 
-  const handleRowClick = (params: GridRowParams) => {
+  const handleRowClick = (params: ClienteDataRow) => {
+    console.log(params)
     setSelectedRow(params)
     toggleGetModal.toggleModal()
    };
 
-  // useEffect(() => {
-  //   loadClients();
-  // }, [open]);
 // CRUDs--------------------------------------------------  
 
 const loadClients = async () => {
@@ -155,6 +153,9 @@ useEffect(() => {
           </IconButton>
           <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleRowClick(row)}>
+            <OpenInNewIcon />
           </IconButton>
         </div>
       ),
@@ -400,7 +401,6 @@ useEffect(() => {
         </Box>
         <Box sx={GridStyle}>
           <DataGrid
-          onRowClick={handleRowClick}
             rows={rows}
             columns={columns}
             initialState={{
