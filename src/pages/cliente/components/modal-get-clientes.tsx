@@ -3,20 +3,20 @@ import {
 } from "@mui/material";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
-import { clienteSchemaType } from "../../../shared/services/types";
+import { ClienteDataRow, clienteSchemaType } from "../../../shared/services/types";
 import { GridRowParams } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { PatternFormat } from "react-number-format";
 
 interface ModalGetCliente {
     open: boolean
-    rowData: GridRowParams<any> | null
+    rowData: ClienteDataRow | undefined
     toggleModal: () => void
     clientes: clienteSchemaType[]
 }
 export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGetCliente){
 
-    const filterClientes = clientes.filter((cliente) => cliente.id === rowData?.row.id);
+    const filterClientes = clientes.filter((cliente) => cliente.id === rowData?.id);
            
    return (
        <Modal
@@ -30,20 +30,20 @@ export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGe
                <TextField
                    id="outlined-helperText"
                    label="Nome"
-                   value={rowData?.row.nome}
+                   value={rowData?.nome}
                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                    id="outlined-helperText"
                    label="Nome Fantasia"
-                   value={rowData?.row.nomeFantasia}
+                   value={rowData?.nomeFantasia}
                    inputProps={{ readOnly: true }}
                 />
                 <TextField
                    id="outlined-helperText"
                    label="CPF/CNPJ"
-                   value={rowData?.row.cpfCnpj}
+                   value={rowData?.cpfCnpj}
                    inputProps={{ readOnly: true }}
                 />
 
@@ -52,7 +52,7 @@ export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGe
                     mask="_"
                     customInput={TextField} // Utiliza TextField como input
                     inputProps={{ readOnly: true }}
-                    value={rowData?.row.telefone}
+                    value={rowData?.telefone}
                     label="Telefone"
                     fullWidth
                 />
@@ -60,14 +60,14 @@ export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGe
                 <TextField
                    id="outlined-helperText"
                    label="E-Mail"
-                   value={(rowData?.row.email)}
+                   value={(rowData?.email)}
                    inputProps={{ readOnly: true }}
                 />
 
                 <TextField
                    id="outlined-helperText"
                    label="Perfil de Cadastro"
-                   value={(rowData?.row.email) == true ? "Fornecedor" : "Clientes" }
+                   value={(rowData?.isFornecedor) == true ? "Fornecedor" : "Clientes" }
                    inputProps={{ readOnly: true }}
                 />
 
@@ -85,50 +85,50 @@ export function ModalGetCliente({ rowData, open, toggleModal, clientes}: ModalGe
                     mask="_"
                     customInput={TextField} // Utiliza TextField como input
                     label="CEP"
-                    value={(rowData?.row.cep) || "Não cadastrado"}
+                    value={(rowData?.cep) || "Não cadastrado"}
                     inputProps={{ readOnly: true }}
                     fullWidth
                 />
                <TextField
                    id="outlined-helperText"
                    label="Estado"
-                   value={rowData?.row.estado ||"Não cadastrado"}
+                   value={rowData?.estado ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                <TextField
                    id="outlined-helperText"
                    label="Cidade"
-                   value={rowData?.row.cidade ||"Não cadastrado"}
+                   value={rowData?.cidade ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                <TextField
                    id="outlined-helperText"
                    label="Número"
-                   value={rowData?.row.numero ||"Não cadastrado"}
+                   value={rowData?.numero ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                <TextField
                    id="outlined-helperText"
                    label="Endereço"
-                   value={rowData?.row.endereco ||"Não cadastrado"}
+                   value={rowData?.endereco ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                <TextField
                    id="outlined-helperText"
                    label="Complemento"
-                   value={rowData?.row.complemento ||"Não cadastrado"}
+                   value={rowData?.complemento ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                 <TextField
                    id="outlined-helperText"
                    label="Numéro da Inscrição Estadual"
-                   value={rowData?.row.numIe ||"Não cadastrado"}
+                   value={rowData?.numIe ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
                 <TextField
                    id="outlined-helperText"
                    label="Status da Inscrição Estadual"
-                   value={rowData?.row.statusIe ||"Não cadastrado"}
+                   value={rowData?.statusIe ||"Não cadastrado"}
                    inputProps={{ readOnly: true }}
                />
              </ModalRoot>

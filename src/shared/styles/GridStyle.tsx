@@ -1,7 +1,7 @@
 import { borderColor } from "@mui/system";
 
 const GridStyle = {
-  height: 427,
+  height: 428,
   width: "100%",
   border: 1,
   borderColor: "primary.main",
