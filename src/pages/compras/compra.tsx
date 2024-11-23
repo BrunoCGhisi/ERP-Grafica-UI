@@ -145,8 +145,8 @@ const Compra = () => {
   // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
     const getInsumos = async () => {
-      const response = await axios.get("http://localhost:3000/insumo/itens");
-      setInsumos(response.data);
+      const response = await axios.get("http://localhost:3000/insumo");
+      setInsumos(response.data.insumosAtivos);
     };
     getInsumos();
   }, []);
@@ -185,12 +185,6 @@ const Compra = () => {
     await deletePurchases(id);
     loadPurchases();
   };
-
-  // População da modal  --------------------------------
-  // const handleEdit = (updateData: CompraDataRow) => {
-  //   setSelectedData(updateData);
-  //   toggleModal();
-  // };
 
   useEffect(() => {
     loadPurchases();
