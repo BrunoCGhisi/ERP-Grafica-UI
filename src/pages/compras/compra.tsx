@@ -54,6 +54,7 @@ import {
 } from "../../shared/services/compraServices";
 import { ModalEditCompra } from "./components/modal-edit-compra";
 import { ModalGetCompra } from "./components/modal-get-compra";
+import { width } from "@mui/system";
 
 const fornecedorSchema = z.object({
   id: z.number(),
@@ -109,7 +110,12 @@ const Compra = () => {
   });
 
   const handleAddInsumo = () => {
-    append({ idInsumo: 0, largura: 0, comprimento: 0, preco: 0 }); // Adiciona um novo produto com quantidade inicial
+    append({
+      idInsumo: 0,
+      largura: 1,
+      comprimento: 1,
+      preco: 1,
+    });
   };
 
   const handleRemoveProduct = (index: number) => {
@@ -149,8 +155,8 @@ const Compra = () => {
   // Trazendo Insumo --------------------------------------------------
   useEffect(() => {
     const getInsumos = async () => {
-      const response = await axios.get("http://localhost:3000/insumo/");
-      setInsumos(response.data);
+      const response = await axios.get("http://localhost:3000/insumo");
+      setInsumos(response.data.insumosAtivos);
       console.log(response);
     };
     getInsumos();
@@ -294,8 +300,6 @@ const Compra = () => {
     footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
   };
 
-  
-
   return (
     <Box>
       <MiniDrawer>
@@ -328,7 +332,7 @@ const Compra = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={ModalStyle}>
+              <Box sx={{ ...ModalStyle, width: "80%", height: "80vh" }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography
@@ -342,16 +346,14 @@ const Compra = () => {
 
                   <Grid item xs={12}>
                     <form onSubmit={handleSubmit(handleAdd)}>
-                      <Grid container spacing={1}>
+                      <Grid container spacing={2}>
                         <Grid item xs={12} md={5}>
-                          {/* Ajustei para 5 ao invés de 6 */}
                           <Grid container spacing={2}>
                             {/* Fornecedor */}
-
-                            <Grid item xs={12}>
-                              <Typography variant="subtitle1">
+                            <Grid item xs={12} sm={12}>
+                              <InputLabel id="demo-simple-select-label">
                                 Fornecedor
-                              </Typography>
+                              </InputLabel>
                               <Select
                                 {...register("idFornecedor")}
                                 labelId="select-label"
@@ -414,7 +416,7 @@ const Compra = () => {
                             </Grid>
 
                             {/* Número da Nota */}
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                               <TextField
                                 id="outlined-numNota"
                                 label="N° Nota"
@@ -429,7 +431,7 @@ const Compra = () => {
                             </Grid>
 
                             {/* Desconto */}
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                               <TextField
                                 id="outlined-desconto"
                                 label="Desconto"
@@ -442,22 +444,38 @@ const Compra = () => {
                                 fullWidth
                               />
                             </Grid>
-                            <Grid item xs={12}>
+
+                            <Grid item xs={4}>
+                              <TextField
+                                id="outlined-parcelas"
+                                label="Parcelas"
+                                placeholder="1"
+                                helperText={
+                                  errors.financeiros?.[0]?.parcelas?.message ||
+                                  "Obrigatório"
+                                }
+                                error={!!errors.financeiros?.[0]?.parcelas}
+                                {...register("financeiros.0.parcelas")}
+                                fullWidth
+                              />
+                            </Grid>
+
+                            {/* Banco */}
+                            <Grid item xs={6}>
                               <InputLabel id="demo-simple-select-label">
                                 Banco
                               </InputLabel>
                               <Controller
-                                name={`financeiro.0.idBanco`}
+                                name={`financeiros.0.idBanco`}
                                 control={control}
                                 render={({ field }) => (
                                   <Select
                                     {...field}
-                                    value={field.value || ""} // Valor padrão do idBanco
+                                    value={field.value || ""}
                                     onChange={(e) =>
                                       field.onChange(e.target.value)
                                     }
                                     fullWidth
-                                    
                                   >
                                     {bancos?.map((banco) => (
                                       <MenuItem key={banco.id} value={banco.id}>
@@ -468,15 +486,17 @@ const Compra = () => {
                                 )}
                               />
                             </Grid>
-                            <Grid item xs={12}>
+
+                            {/* Forma de Pagamento */}
+                            <Grid item xs={6}>
                               <InputLabel>Forma de Pagamento</InputLabel>
                               <Controller
-                                name={`financeiro.0.idFormaPgto`}
+                                name={`financeiros.0.idFormaPgto`}
                                 control={control}
                                 render={({ field }) => (
                                   <Select
                                     {...field}
-                                    value={field.value || ""} // Valor padrão do idForma_pgto
+                                    value={field.value || ""}
                                     onChange={(e) =>
                                       field.onChange(e.target.value)
                                     }
@@ -495,142 +515,158 @@ const Compra = () => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        {/* Espaço entre as colunas */}
-                        <Grid item xs={0} md={1} />{" "}
-                        {/* Usado como espaçamento */}
+
                         {/* Coluna 2 */}
-                        <Grid item xs={12} md={6}>
-                          <Grid container spacing={2} direction={"column"}>
+                        <Grid
+                          item
+                          xs={12}
+                          md={6}
+                          sx={{ marginTop: 2, marginLeft: 2 }}
+                        >
+                          <Grid container spacing={2} direction="column">
                             {/* Insumos */}
-                            <Grid item xs={12}>
-                              <Typography variant="subtitle1">
-                                Insumos
-                              </Typography>
-                            </Grid>
+                            <Grid container spacing={2}>
+                              {fields.map((item, index) => (
+                                <Grid
+                                  key={item.id}
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                  md={6}
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <Grid
+                                    container
+                                    spacing={2}
+                                    alignItems="center"
+                                  >
+                                    {/* Select Insumo */}
+                                    <Grid item xs={9}>
+                                      <InputLabel id={`insumo-label-${index}`}>
+                                        Insumo
+                                      </InputLabel>
 
-                            {fields.map((item, index) => (
-                              <Box key={item.id} mb={2}>
-                                {/* Linha do Select */}
-                                <Grid container spacing={2}>
-                                  <Grid item xs={12}>
-                                    <Controller
-                                      control={control}
-                                      name={
-                                        `compras_insumos.${index}.idInsumo` as const
-                                      }
-                                      defaultValue={0}
-                                      render={({ field }) => (
-                                        <Select {...field} fullWidth>
-                                          {insumos.map((insumo) => (
-                                            <MenuItem
-                                              key={insumo.id}
-                                              value={insumo.id}
-                                            >
-                                              {insumo.nome}
-                                            </MenuItem>
-                                          ))}
-                                        </Select>
-                                      )}
-                                    />
+                                      <Controller
+                                        control={control}
+                                        name={`compras_insumos.${index}.idInsumo`}
+                                        defaultValue={0}
+                                        render={({ field }) => (
+                                          <Select {...field} fullWidth>
+                                            {insumos.map((insumo) => (
+                                              <MenuItem
+                                                key={insumo.id}
+                                                value={insumo.id}
+                                              >
+                                                {insumo.nome}
+                                              </MenuItem>
+                                            ))}
+                                          </Select>
+                                        )}
+                                      />
+                                    </Grid>
+
+                                    {/* Botão Remover */}
+                                    <Grid item xs={3}>
+                                      <IconButton
+                                        onClick={() =>
+                                          handleRemoveProduct(index)
+                                        }
+                                        color="error"
+                                        sx={{ alignSelf: "flex-end", mt: 1 }}
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Grid>
+                                  </Grid>
+
+                                  {/* Largura, Comprimento, Preço */}
+                                  <Grid container spacing={2} mt={1}>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.largura`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.largura
+                                        }
+                                        label="Largura"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.comprimento`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.comprimento
+                                        }
+                                        label="Comprimento"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.preco`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.preco
+                                        }
+                                        label="Preço"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
                                   </Grid>
                                 </Grid>
-
-                                {/* Linha de Largura, Comprimento e Preço */}
-                                <Grid container spacing={2} mt={1}>
-                                  <Grid item xs={4}>
-                                    <TextField
-                                      {...register(
-                                        `compras_insumos.${index}.largura` as const
-                                      )}
-                                      type="number"
-                                      error={
-                                        !!errors.compras_insumos?.[index]
-                                          ?.largura
-                                      }
-                                      label="Largura"
-                                      defaultValue={1}
-                                      InputProps={{ inputProps: { min: 1 } }}
-                                      fullWidth
-                                    />
-                                  </Grid>
-                                  <Grid item xs={4}>
-                                    <TextField
-                                      {...register(
-                                        `compras_insumos.${index}.comprimento` as const
-                                      )}
-                                      type="number"
-                                      error={
-                                        !!errors.compras_insumos?.[index]
-                                          ?.comprimento
-                                      }
-                                      label="Comprimento"
-                                      defaultValue={1}
-                                      InputProps={{ inputProps: { min: 1 } }}
-                                      fullWidth
-                                    />
-                                  </Grid>
-                                  <Grid item xs={4}>
-                                    <TextField
-                                      {...register(
-                                        `compras_insumos.${index}.preco` as const
-                                      )}
-                                      type="number"
-                                      error={
-                                        !!errors.compras_insumos?.[index]?.preco
-                                      }
-                                      label="Preço"
-                                      defaultValue={1}
-                                      InputProps={{ inputProps: { min: 1 } }}
-                                      fullWidth
-                                    />
-                                  </Grid>
-                                </Grid>
-
-                                {/* Botão de Remover */}
-                                <Grid container spacing={2} mt={1}>
-                                  <Grid item xs={12}>
-                                    <IconButton
-                                      onClick={() => handleRemoveProduct(index)}
-                                      color="error"
-                                      sx={{
-                                        display: "block",
-                                        marginLeft: "auto",
-                                      }}
-                                    >
-                                      <DeleteIcon />
-                                    </IconButton>
-                                  </Grid>
-                                </Grid>
-                              </Box>
-                            ))}
-
-                            {/* Botão de Adicionar Produto */}
-                            <Grid item xs={12}>
-                              <Button
-                                variant="outlined"
-                                startIcon={<AddCircleOutlineIcon />}
-                                onClick={handleAddInsumo}
-                              >
-                                Adicionar Produto
-                              </Button>
+                              ))}
                             </Grid>
                           </Grid>
                         </Grid>
                       </Grid>
 
-                      <Button
-                        type="submit"
-                        variant="outlined"
-                        startIcon={<DoneIcon />}
-                        sx={{ mt: 2 }}
-                      >
-                        Cadastrar
-                      </Button>
+                      {/* Botões de Submit */}
+                      <Grid item xs={12} sx={{ textAlign: "right", mt: 2 }}>
+                        
+                        <Button
+                          variant="outlined"
+                          startIcon={<AddCircleOutlineIcon />}
+                          
+                          onClick={handleAddInsumo}
+                        >
+                          Adicionar Insumo
+                        </Button>
+
+                        <Button
+                          type="submit"
+                          variant="outlined"
+                          startIcon={<DoneIcon />}
+                          sx={{ ml: 2 }}
+                        >
+                          Cadastrar
+                        </Button>
+                      </Grid>
                     </form>
                   </Grid>
                 </Grid>
               </Box>
             </Modal>
+
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
             {open && (
               <ModalEditCompra
