@@ -6,6 +6,8 @@ const ModalStyle = {
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
+    overflow: "auto", 
+    maxHeight: "90vh"
     
 };
 
