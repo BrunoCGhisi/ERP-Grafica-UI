@@ -195,6 +195,24 @@ export function ModalEditProduto({open, loadProducts, toggleModal, categoriasPro
                       {...register("comprimento")}
                     />
                   </Grid>
+                  <Grid item xs={12} md={8}>
+                          <Controller
+                          
+                            name="isActive"
+                            control={control}
+                            defaultValue={false}
+                            render={({ field }) => (
+                              <Select
+                                sx={{width: 450}}
+                                onChange={field.onChange}
+                                value={field.value}
+                              >
+                                <MenuItem value={true}>Ativo</MenuItem>
+                                <MenuItem value={false}>Desativado</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
 
                   <Grid item xs={12} sx={{ textAlign: "right" }}>
                     <Button

@@ -5,8 +5,14 @@ const BASE_URL = "http://localhost:3000/usuario";
 
 export const getUsers = async () => {
   const response = await axios.get(BASE_URL);
-  return response.data.usuarios;
+  return response.data.usuariosAtivos;
 };
+
+export const getDeactiveUsers = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.usuariosDesativos;
+};
+
 
 export const postUser = async (data: usuarioSchemaType) => {
   const { id, ...mydata } = data;

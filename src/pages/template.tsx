@@ -60,7 +60,7 @@ const Template = ({ toggleTheme }: TemplateProps) => {
   async function getUsers() {
     try {
       const response = await axios.get("http://localhost:3000/usuario");
-      setUsers(response.data.usuarios);
+      setUsers(response.data.usuariosAtivos);
     } catch (error: any) {
       console.error(error);
     }

@@ -12,11 +12,12 @@ import {
   IconButton,
   MenuItem,
   Grid,
+  Alert,
 } from "@mui/material";
 
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
-import { MiniDrawer } from "../shared/components";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { MiniDrawer } from "../../shared/components";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,34 +27,39 @@ import DoneIcon from "@mui/icons-material/Done";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
-
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import ArchiveIcon from '@mui/icons-material/Archive';
 import {
   usuarioSchema,
   UsuarioDataRow,
   usuarioSchemaType,
-} from "../shared/services/types";
+  vendaSchemaType,
+} from "../../shared/services/types";
 
-import { getUsers, postUser, putUser, deleteUser } from "../shared/services";
+import { getUsers, postUser, putUser, deleteUser, getSales } from "../../shared/services";
 
-import { getToken } from "../shared/services/payload";
+import { getToken } from "../../shared/services/payload";
+import { ModalEditUsuario } from "./components/modal-edit-usuarios";
+import { ModalDeactivateUsuario } from "./components/modal-deactivate-usuarios";
 
 const Usuario = () => {
   const [user, setUser] = useState<usuarioSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<UsuarioDataRow | null>(null);
-  const { open, toggleModal } = useOpenModal();
 
+  const { open, toggleModal } = useOpenModal();
+  const [idToEdit, setIdToEdit] = useState<any>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [nome, setNome] = useState<string | null>(null);
   const [isAdm, setIsAdm] = useState<boolean | null>(null);
+  const toggleModalDeactivate = useOpenModal();
 
   const {
     register,
     handleSubmit,
     reset,
     control,
-    setValue,
     formState: { errors },
   } = useForm<usuarioSchemaType>({
     resolver: zodResolver(usuarioSchema),
@@ -65,23 +71,6 @@ const Usuario = () => {
     setAdOpen(true), reset();
   };
   const addOf = () => setAdOpen(false);
-
-  // População da modal  -----------------------------------------------------------------------------------------------------
-  const handleEdit = (updateData: UsuarioDataRow) => {
-    setSelectedData(updateData);
-    toggleModal();
-  };
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("nome", selectedData.nome);
-      setValue("email", selectedData.email);
-      setValue("senha", selectedData.senha);
-      setValue("isAdm", selectedData.isAdm);
-    }
-  }, [selectedData, setValue]);
-
   //CRUD -----------------------------------------------------------------------------------------------------
   const loadUsers = async () => {
     const usersData = await getUsers();
@@ -89,20 +78,34 @@ const Usuario = () => {
   };
 
   const handleAdd = async (data: usuarioSchemaType) => {
-    await postUser(data);
+    const response = await postUser(data);
+    if (response.data) {
+      setAlertMessage(response.data);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
     loadUsers();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: usuarioSchemaType) => {
-    await putUser(data);
-    loadUsers();
-    setSelectedData(null);
-    toggleModal();
-  };
+  const handleDelete = async (data: usuarioSchemaType) => {
+    const vendas = await getSales()
 
-  const handleDelete = async (id: number) => {
-    await deleteUser(id);
+    const filterVendas = vendas.filter((venda: vendaSchemaType) => venda.idVendedor === data.id)
+
+    if (filterVendas.length === 0){
+     
+      await deleteUser(data.id!);
+    }
+    else{
+     
+      const deactivate = {...data, isActive: false}
+      await putUser(deactivate);
+    }
+    
+    
     loadUsers();
   };
 
@@ -161,12 +164,12 @@ const Usuario = () => {
           {isAdm ? (
             <>
               <IconButton
-                onClick={() => row.id !== undefined && handleDelete(row.id)}
+                onClick={() => row.id !== undefined && handleDelete(row)}
               >
                 <DeleteIcon />
               </IconButton>
               <IconButton
-                onClick={() => row.id !== undefined && handleEdit(row)}
+                onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
               >
                 <EditIcon />
               </IconButton>
@@ -182,6 +185,7 @@ const Usuario = () => {
     email: usuario.email,
     senha: usuario.senha,
     isAdm: usuario.isAdm,
+    isActive: usuario.isActive
   }));
 
   const localeText: Partial<GridLocaleText> = {
@@ -205,13 +209,26 @@ const Usuario = () => {
             </Grid>
 
             <Grid item>
-              <Button
-                onClick={addOn}
-                variant="outlined"
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                Cadastrar
-              </Button>
+              <Grid container spacing={2} direction={"row"}>
+                <Grid item>
+                  <Button
+                    onClick={() => toggleModalDeactivate.toggleModal()}
+                    variant="outlined"
+                    startIcon={<ArchiveIcon />}
+                  >
+                    Arquivados
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={addOn}
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
           <Box>
@@ -262,6 +279,7 @@ const Usuario = () => {
                           <TextField
                             id="outlined-helperText"
                             label="Senha"
+                            type="password"
                             helperText={errors.senha?.message || "Obrigatório"}
                             error={!!errors.senha}
                             fullWidth
@@ -309,76 +327,24 @@ const Usuario = () => {
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-            <Modal
-              open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-                <Grid container spacing={2} direction="column">
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                      gutterBottom
-                    >
-                      Editar Usuário
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                          <TextField
-                            id="outlined-helperText"
-                            label="Nome"
-                            helperText={errors.nome?.message || "Obrigatório"}
-                            error={!!errors.nome}
-                            {...register("nome")}
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <Controller
-                          
-                            control={control}
-                            name="isAdm"
-                            defaultValue={false} // valor booleano padrão
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                fullWidth
-                                displayEmpty
-                                inputProps={{
-                                  "aria-label": "Adm ou Funcionário",
-                                }}
-                              >
-                                <MenuItem value="" disabled>
-                                  Administrador ou
-                                </MenuItem>
-                                <MenuItem value={true}>Administrador</MenuItem>
-                                <MenuItem value={false}>Funcionário</MenuItem>
-                              </Select>
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Atualizar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
+            {open && (
+              <ModalEditUsuario              
+                open={open}
+                setAlertMessage={setAlertMessage}
+                setShowAlert={setShowAlert}
+                toggleModal={toggleModal}
+                idToEdit={idToEdit}
+                usuarios={user}
+                loadUsers = {loadUsers}
+              />
+            )}
+            {toggleModalDeactivate.open && (
+              <ModalDeactivateUsuario
+                open={toggleModalDeactivate.open}
+                toggleModal={toggleModalDeactivate.toggleModal}
+                loadUsers = {loadUsers}
+              />
+            )}
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
@@ -397,6 +363,7 @@ const Usuario = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };
