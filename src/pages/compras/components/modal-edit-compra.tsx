@@ -453,7 +453,7 @@ export function ModalEditCompra({
                   startIcon={<DoneIcon />}
                   sx={{ ml: 2 }}
                 >
-                  Cadastrar
+                  Editar
                 </Button>
               </Grid>
             </form>

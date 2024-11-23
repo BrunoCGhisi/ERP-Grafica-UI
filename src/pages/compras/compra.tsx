@@ -262,17 +262,23 @@ const Compra = () => {
             <IconButton
               onClick={() => row.id !== undefined && handleDelete(row.id)}
             >
-              <DeleteIcon />
+              <DeleteIcon 
+              color="primary"
+              />
             </IconButton>
             <IconButton
               onClick={() =>
                 row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
               }
             >
-              <EditIcon />
+              <EditIcon 
+              color="primary"
+              />
             </IconButton>
             <IconButton onClick={() => handleRowClick(row)}>
-              <OpenInNewIcon />
+              <OpenInNewIcon 
+              color="primary"
+              />
           </IconButton>
           </div>
         </>
@@ -579,7 +585,7 @@ const Compra = () => {
                                         onClick={() =>
                                           handleRemoveProduct(index)
                                         }
-                                        color="error"
+                                        color="primary"
                                         sx={{ alignSelf: "flex-end", mt: 1 }}
                                       >
                                         <DeleteIcon />
