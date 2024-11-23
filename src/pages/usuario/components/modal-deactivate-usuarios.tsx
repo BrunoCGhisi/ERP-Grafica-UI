@@ -9,87 +9,69 @@ import { GridStyle, ModalStyle } from "../../../shared/styles";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {
-    BancoDataRow,
-    bancoSchemaType
+    UsuarioDataRow,
+    usuarioSchemaType
 } from "../../../shared/services/types";
 
 import {
-    getDeactiveBanks, putBank
+    getDeactiveUsers, putUser
 } from "../../../shared/services";
 
-interface ModalDeactivateBanco {
+interface ModalDeactivateUsuario {
     open: boolean
     toggleModal: () => void
-    loadBanks: () => void
+    loadUsers: () => void
 }
 
-export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeactivateBanco){
+export function ModalDeactivateUsuario({open, loadUsers, toggleModal}: ModalDeactivateUsuario){
 
-  const addOf = () => toggleModal();
+    const addOf = () => toggleModal();
 
-    const [deactivate, setDeactivate] = useState<bancoSchemaType[]>([]);
+    const [deactivate, setDeactivate] = useState<usuarioSchemaType[]>([]);
     const loadDeactives = async () => {
-      const deactivatesData = await getDeactiveBanks();
-      console.log(deactivatesData)
+      const deactivatesData = await getDeactiveUsers();
+     
       setDeactivate(deactivatesData);
+      console.log(deactivatesData)
     };
     useEffect(() => {
       loadDeactives();
     }, [open]);
   
 
-    const handleActivate = async (data: bancoSchemaType) => {
+    const handleActivate = async (data: usuarioSchemaType) => {
         const desactivate = {...data, isActive: true}
-        await putBank(desactivate);
-        loadBanks();
+        await putUser(desactivate);
         loadDeactives();
+        loadUsers();
+        
       };
-
       
-
-    const columns: GridColDef<BancoDataRow>[] = [
+      const columns: GridColDef<UsuarioDataRow>[] = [
         {
             field: "nome",
-            headerName: "Nome da Instituição Bancária",
+            headerName: "Nome",
             editable: false,
             flex: 0,
-            minWidth: 700,
-            maxWidth: 800,
-            width: 700,
+            width: 390,
             headerClassName: "gridHeader--header",
           },
           {
-            field: "valorTotal",
-            headerName: "Saldo",
+            field: "email",
+            headerName: "Email",
             editable: false,
             flex: 0,
-      
-            minWidth: 200,
-            width: 200,
-            maxWidth: 250,
+            width: 400,
             headerClassName: "gridHeader--header",
-      
-            renderCell: (params) => {
-              const formattedValue = new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(params.value);
-      
-              return (
-                <Box
-                  sx={{
-                    backgroundColor: params.value < 0 ? "error.light" : "transparent",
-                    color: params.value < 0 ? "#fff" : "#000",
-                    opacity: params.value < 0 ? "60%" : "100%",
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                  }}
-                >
-                  {formattedValue}
-                </Box>
-              );
-            },
+          },
+          {
+            field: "isAdm",
+            headerName: "Administrador",
+            editable: false,
+            flex: 0,
+            width: 110,
+            headerClassName: "gridHeader--header",
+            renderCell: ({ value }) => (value ? "Sim" : "Não"),
           },
           {
             field: "acoes",
@@ -99,22 +81,25 @@ export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeact
             type: "actions",
             flex: 0,
             headerClassName: "gridHeader--header",
-            renderCell: ({ row }) => (
-                <div>
-                <IconButton onClick={() => row.id !== undefined && handleActivate(row)}>
-                  <AddCircleIcon />
-                </IconButton>
-              </div>
-            ),
-          },
-        ];
-      
-        const rows = deactivate.map((banco) => ({
-          id: banco.id,
-          nome: banco.nome,
-          valorTotal: banco.valorTotal,
-          isActive: banco.isActive,
-        }));
+      renderCell: ({ row }) => (
+            <div>
+              <IconButton onClick={() => row.id !== undefined && handleActivate(row)}>
+                <AddCircleIcon />
+              </IconButton>
+            </div>
+          ),
+        },
+      ];
+    
+      const rows = deactivate.map((usuario) => ({
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        senha: usuario.senha,
+        isAdm: usuario.isAdm,
+        isActive: usuario.isActive
+      }));
+
     
     return (
         <Box>
@@ -124,8 +109,9 @@ export function ModalDeactivateBanco({open, loadBanks, toggleModal,}: ModalDeact
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
+            
             <Box sx={ModalStyle}>
-            <Button
+                <Button
                     onClick={addOf}
                     variant="outlined"
                     startIcon={<CloseRoundedIcon />}
