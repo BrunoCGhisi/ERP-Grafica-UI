@@ -98,9 +98,10 @@ const Produto = () => {
   };
 
   const handleAdd = async (data: produtoSchemaType) => {
+    console.log(data)
     const response = await postProducts(data);
     if (response) {
-      setAlertMessage(`${response}`);
+      setAlertMessage(`${response.data}`);
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
@@ -313,53 +314,70 @@ const Produto = () => {
                           {/* Campo KeyWord */}
                           <TextField
                             id="outlined-helperText"
-                            label="KeyWord"
+                            label="Palavra Chave"
                             helperText={
-                              errors.keyWord?.message || "Obrigatório"
+                              errors.keyWord?.message
                             }
                             error={!!errors.keyWord}
                             fullWidth
                             {...register("keyWord")}
                           />
 
-                          <NumericFormat
-                            customInput={TextField}
-                            sx={{marginTop: 2.9}}
-                            suffix="cm"
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Largura"
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            allowLeadingZeros
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("largura", floatValue ?? 0);
-                            }}
-                            helperText={
-                              errors.largura?.message || "Obrigatório"
-                            }
-                            error={!!errors.largura}
-                          />
+                        <Controller
+                          name="largura"
+                          control={control}
+                          defaultValue={0} // Valor padrão
+                          rules={{ required: "Largura é obrigatória" }}
+                          render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <NumericFormat
+                              customInput={TextField}
+                              sx={{ marginTop: 2.9 }}
+                              suffix="cm"
+                              fullWidth
+                              id="outlined-helperText"
+                              label="Largura"
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              allowLeadingZeros
+                              value={value} // Valor atual
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                              }}
+                              helperText={error ? error.message : "Obrigatório"}
+                              error={!!error}
+                            />
+                          )}
+                        />
 
-                          <NumericFormat
-                            customInput={TextField}
-                            suffix="cm"
-                            fullWidth
-                            id="outlined-helperText"
-                            label="Comprimento"
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            allowLeadingZeros
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("comprimento", floatValue ?? 0);
-                            }}
-                            helperText={
-                              errors.comprimento?.message || "Obrigatório"
-                            }
-                            error={!!errors.comprimento}
-                          />
+                        <Controller
+                          name="comprimento"
+                          control={control}
+                          defaultValue={0} // Valor padrão
+                          rules={{ required: "Comprimento é obrigatório" }}
+                          render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <NumericFormat
+                              customInput={TextField}
+                              sx={{ marginTop: 2.9 }}
+                              suffix="cm"
+                              fullWidth
+                              id="outlined-helperText"
+                              label="Comprimento"
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              allowLeadingZeros
+                              value={value} // Valor atual
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                              }}
+                              helperText={error ? error.message : "Obrigatório"}
+                              error={!!error}
+                            />
+                          )}
+                        />
+
+
                         </Grid>
 
                         <Grid item xs={12} sx={{ textAlign: "right" }}>
