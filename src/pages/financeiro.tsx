@@ -184,6 +184,7 @@ const Financeiro = () => {
             <Grid item>
               <Typography variant="h6">Financeiro</Typography>
             </Grid>
+            
           </Grid>
           <Box sx={GridStyle}>
             <DataGrid
