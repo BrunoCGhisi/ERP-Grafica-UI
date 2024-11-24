@@ -344,7 +344,7 @@ const Compra = () => {
                       variant="h6"
                       component="h2"
                     >
-                      Nova Compra
+                      Cadastro Compra
                     </Typography>
                   </Grid>
 

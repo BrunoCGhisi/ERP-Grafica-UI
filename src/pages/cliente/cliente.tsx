@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
   Alert,
-  Grid
+  Grid,
 } from "@mui/material";
 import {
   DataGrid,
@@ -27,7 +27,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import ArchiveIcon from '@mui/icons-material/Archive';
+import ArchiveIcon from "@mui/icons-material/Archive";
 import { Controller, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -212,7 +212,9 @@ const Cliente = () => {
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleRowClick(row)}>
-            <OpenInNewIcon />
+            <OpenInNewIcon 
+            color="primary"
+            />
           </IconButton>
         </div>
       ),
@@ -242,26 +244,18 @@ const Cliente = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-        <Grid
+          <Grid
             container
             spacing={2}
             justifyContent="space-between"
             alignItems="center"
           >
             <Grid item>
-              <Typography variant="h6">Bancos</Typography>
+              <Typography variant="h6">Clientes</Typography>
             </Grid>
             <Grid item>
               <Grid container spacing={2} direction={"row"}>
-                <Grid item>
-                  <Button
-                    onClick={() => toggleModalDeactivate.toggleModal()}
-                    variant="outlined"
-                    startIcon={<ArchiveIcon />}
-                  >
-                    Arquivados
-                  </Button>
-                </Grid>
+              
                 <Grid item>
                   <Button
                     onClick={addOn}
@@ -275,194 +269,261 @@ const Cliente = () => {
             </Grid>
           </Grid>
           <Box>
-
             <Modal
               open={adopen}
               onClose={addOf}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={ModalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Novo Cliente
-                </Typography>
-                <form onSubmit={handleSubmit(handleAddClients)}>
-                  <TextField
-                    {...register("nome")}
-                    id="outlined-helperText"
-                    label="Nome"
-                    defaultValue=""
-                    helperText={errors.nome?.message || "Obrigatório"}
-                    error={!!errors.nome}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="Nome Fantasia"
-                    defaultValue=""
-                    helperText={errors.nomeFantasia?.message || "Obrigatório"}
-                    error={!!errors.nomeFantasia}
-                    {...register("nomeFantasia")}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="CPF/CNPJ"
-                    defaultValue=""
-                    helperText={errors.cpfCnpj?.message || "Obrigatório"}
-                    error={!!errors.cpfCnpj}
-                    {...register("cpfCnpj")}
-                  />
-
-                  <Controller
-                    name="telefone"
-                    control={control}
-                    render={({ field }) => (
-                      <PatternFormat
-                        {...field}
-                        format="(##) #####-####" // Formato de telefone
-                        mask="_"
-                        customInput={TextField} // Utiliza TextField como input
-                        label="Telefone"
-                        error={!!errors.telefone}
-                        helperText={
-                          errors.telefone
-                            ? errors.telefone.message
-                            : "Obrigatório"
-                        }
-                        fullWidth
-                      />
-                    )}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="E-Mail"
-                    defaultValue=""
-                    helperText={errors.email?.message || "Obrigatório"}
-                    error={!!errors.email}
-                    {...register("email")}
-                  />
-                  <InputLabel id="demo-simple-select-label">
-                    StatusIe
-                  </InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="isFornecedor"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select
-                        onChange={field.onChange}
-                        labelId="select-label"
-                        id="demo-simple-select"
-                        label="Perfil de Cadastro"
-                        error={!!errors.isFornecedor}
-                        value={field.value}
-                      >
-                        <MenuItem value={false}>Cliente</MenuItem>
-                        <MenuItem value={true}>Fornecedor </MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    name="cep"
-                    control={control}
-                    render={({ field }) => (
-                      <PatternFormat
-                        {...field}
-                        format="####-####" // Formato de telefone
-                        mask="_"
-                        customInput={TextField} // Utiliza TextField como input
-                        label="CEP"
-                        error={!!errors.cep}
-                        helperText={
-                          errors.cep ? errors.cep.message : "Obrigatório"
-                        }
-                        fullWidth
-                      />
-                    )}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="Estado"
-                    defaultValue=""
-                    helperText={errors.estado?.message || "Obrigatório"}
-                    error={!!errors.estado}
-                    {...register("estado")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Cidade"
-                    defaultValue=""
-                    helperText={errors.cidade?.message || "Obrigatório"}
-                    error={!!errors.cidade}
-                    {...register("cidade")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Número"
-                    defaultValue=""
-                    helperText={errors.numero?.message || "Obrigatório"}
-                    error={!!errors.numero}
-                    {...register("numero")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Endereço"
-                    defaultValue=""
-                    helperText={errors.endereco?.message || "Obrigatório"}
-                    error={!!errors.endereco}
-                    {...register("endereco")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Complemento"
-                    defaultValue=""
-                    helperText={errors.complemento?.message || "Obrigatório"}
-                    error={!!errors.complemento}
-                    {...register("complemento")}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="Numéro da Inscrição Estadual"
-                    defaultValue=""
-                    helperText={errors.numIe?.message || "Obrigatório"}
-                    error={!!errors.numIe}
-                    {...register("numIe")}
-                  />
-                  <InputLabel id="demo-simple-select-label">
-                    Inscrição Estadual
-                  </InputLabel>
-
-                  <Controller
-                    control={control}
-                    name="statusIe"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select
-                        onChange={field.onChange}
-                        labelId="select-label"
-                        id="demo-simple-select"
-                        label="Status da Inscrição Estadual"
-                        value={field.value}
-                      >
-                        <MenuItem value={true}>Não contribuinte</MenuItem>
-                        <MenuItem value={false}>Contribuinte</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
+              <Box sx={{ ...ModalStyle, width: "80%", height: "73vh" }}>
+                <Grid item xs={12} sx={{mb: 2}}>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h6"
+                    component="h2"
                   >
-                    Cadastrar
-                  </Button>
+                    Cadastro Cliente
+                  </Typography>
+                </Grid>
+                <form onSubmit={handleSubmit(handleAddClients)}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <TextField
+                            {...register("nome")}
+                            id="outlined-helperText"
+                            label="Nome"
+                            defaultValue=""
+                            helperText={errors.nome?.message || "Obrigatório"}
+                            error={!!errors.nome}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Nome Fantasia"
+                            defaultValue=""
+                            helperText={
+                              errors.nomeFantasia?.message
+                            }
+                            error={!!errors.nomeFantasia}
+                            {...register("nomeFantasia")}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2} sx={{ mt: 0 }}>
+                        <Grid item xs={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="CPF/CNPJ"
+                            defaultValue=""
+                            helperText={
+                              errors.cpfCnpj?.message || "Obrigatório"
+                            }
+                            error={!!errors.cpfCnpj}
+                            {...register("cpfCnpj")}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="E-Mail"
+                            defaultValue=""
+                            helperText={errors.email?.message || "Obrigatório"}
+                            error={!!errors.email}
+                            {...register("email")}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+
+                      <Grid container spacing={2}>
+                        <Grid item xs={6} sx={{ mt: 3 }}>
+                          <Controller
+                            name="telefone"
+                            control={control}
+                            render={({ field }) => (
+                              <PatternFormat
+                                fullWidth
+                                {...field}
+                                format="(##) #####-####" // Formato de telefone
+                                mask="_"
+                                customInput={TextField} // Utiliza TextField como input
+                                label="Telefone"
+                                error={!!errors.telefone}
+                                helperText={
+                                  errors.telefone
+                                    ? errors.telefone.message
+                                    : "Obrigatório"
+                                }
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid item xs={6}>
+                          <InputLabel id="demo-simple-select-label">
+                            Inscrição Estadual
+                          </InputLabel>
+                          <Controller
+                            control={control}
+                            name="statusIe"
+                            defaultValue={true}
+                            render={({ field }) => (
+                              <Select
+                                onChange={field.onChange}
+                                labelId="select-label"
+                                id="demo-simple-select"
+                                label="Status da Inscrição Estadual"
+                                value={field.value}
+                                fullWidth
+                              >
+                                <MenuItem value={true}>
+                                  Não contribuinte
+                                </MenuItem>
+                                <MenuItem value={false}>Contribuinte</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <InputLabel id="demo-simple-select-label">
+                            StatusIe
+                          </InputLabel>
+                          <Controller
+                            control={control}
+                            name="isFornecedor"
+                            defaultValue={true}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                onChange={field.onChange}
+                                labelId="select-label"
+                                id="demo-simple-select"
+                                label="Perfil de Cadastro"
+                                error={!!errors.isFornecedor}
+                                value={field.value}
+                              >
+                                <MenuItem value={false}>Cliente</MenuItem>
+                                <MenuItem value={true}>Fornecedor </MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid item xs={6} sx={{ mt: 3 }}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Numéro da Inscrição Estadual"
+                            defaultValue=""
+                            helperText={errors.numIe?.message}
+                            error={!!errors.numIe}
+                            {...register("numIe")}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={2.5}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Estado"
+                            defaultValue=""
+                            helperText={errors.estado?.message}
+                            error={!!errors.estado}
+                            {...register("estado")}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Cidade"
+                            defaultValue=""
+                            helperText={errors.cidade?.message}
+                            error={!!errors.cidade}
+                            {...register("cidade")}
+                          />
+                        </Grid>
+                        <Grid item xs={2.5}>
+                          <TextField
+                            id="outlined-helperText"
+                            label="Número"
+                            defaultValue=""
+                            helperText={errors.numero?.message}
+                            error={!!errors.numero}
+                            {...register("numero")}
+                          />
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Controller
+                            name="cep"
+                            control={control}
+                            render={({ field }) => (
+                              <PatternFormat
+                                {...field}
+                                format="####-####" // Formato de telefone
+                                mask="_"
+                                customInput={TextField} // Utiliza TextField como input
+                                label="CEP"
+                                error={!!errors.cep}
+                                helperText={
+                                  errors.cep
+                                    ? errors.cep.message
+                                    : ""
+                                }
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+
+                      <Grid item xs={12} sx={{ mt: 5 }}>
+                        <TextField
+                          fullWidth
+                          id="outlined-helperText"
+                          label="Endereço"
+                          defaultValue=""
+                          helperText={errors.endereco?.message }
+                          error={!!errors.endereco}
+                          {...register("endereco")}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sx={{ mt: 5.5 }}>
+                        <TextField
+                          fullWidth
+                          id="outlined-helperText"
+                          label="Complemento"
+                          defaultValue=""
+                          helperText={
+                            errors.complemento?.message 
+                          }
+                          error={!!errors.complemento}
+                          {...register("complemento")}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sx={{ textAlign: "right", mt: 11 }}>
+                        <Button
+                          type="submit"
+                          variant="outlined"
+                          startIcon={<DoneIcon />}
+                        >
+                          Cadastrar
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </form>
               </Box>
             </Modal>

@@ -241,7 +241,7 @@ const CategoriaProduto = () => {
                       variant="h6"
                       component="h2"
                     >
-                      Atualizar
+                      Editar
                     </Typography>
                   </Grid>
             
