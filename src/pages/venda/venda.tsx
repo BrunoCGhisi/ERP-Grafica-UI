@@ -114,19 +114,26 @@ const Venda = () => {
             const insumos = response.filter(
               (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
             );
-            console.log(produto.comprimento)
+          
             const insumoVal = insumos.reduce(
               (accInsumo: number, insumo: insumoSchemaType) => {
                 const area = produto.comprimento && produto.largura
-                  ? ((produto.comprimento / 100) * (produto.largura / 100)) + 23
+                  ? ((produto.comprimento / 100) * (produto.largura / 100))
                   : 0;
 
                 const valorM2 = insumo.valorM2 || 0;
-                return accInsumo + (valorM2 * area);
+                console.log("AREA", valorM2 * area)
+                console.log("ACC", accInsumo)
+                console.log("InsumosVAl",accInsumo + ((valorM2 * area)))
+                return accInsumo + ((valorM2 * area));
+                
               },
               0
             );
-            return acc + insumoVal * (Number(item?.quantidade) || 0);
+            console.log("InsumosVAl 2", insumoVal)
+            console.log("ItemQuantifafe 2", insumoVal)
+            console.log(insumoVal * (Number(item?.quantidade))+ 23)
+            return acc + (insumoVal * (Number(item?.quantidade))+ 23 || 0);
           }, 0);
           setTotalQuantidade(Number(sum?.toFixed(2)) || 0);
         });
