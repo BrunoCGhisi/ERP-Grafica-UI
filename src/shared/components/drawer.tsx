@@ -16,7 +16,10 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
 
 // Ícones
 import PieChartIcon from "@mui/icons-material/PieChart";
@@ -29,16 +32,18 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import LayersIcon from "@mui/icons-material/Layers";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SellIcon from "@mui/icons-material/Sell";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-
-import { ReactNode } from "react";
-import { PieChart } from "@mui/icons-material";
-import { Divider } from "@mui/material";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import BuildIcon from "@mui/icons-material/Build"; // Ícone para "Serviços"
+import ExpandLess from "@mui/icons-material/ExpandLess"; //Icone fechar
+import ExpandMore from "@mui/icons-material/ExpandMore"; //Icone abrir
+import CategoryIcon from '@mui/icons-material/Category'; //Insumo
 
 const drawerWidth = 230;
 
+
+
 interface DrawerProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -62,7 +67,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 });
 
-export const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
@@ -112,6 +117,17 @@ const Drawer = styled(MuiDrawer, {
 export function MiniDrawer({ children }: DrawerProps) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [openServices, setOpenServices] = React.useState(false);
+  const [openProduction, setOpenProduction] = React.useState(false);
+  const [openService, setOpenService] = React.useState(false);
+
+  const handleToggleCaixa = () => {
+    setOpenServices((prevOpen) => !prevOpen);
+  };
+
+  const handleToggleEstoque = () => {
+    setOpenServices((prevOpen) => !prevOpen);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -157,57 +173,118 @@ export function MiniDrawer({ children }: DrawerProps) {
         </DrawerHeader>
 
         <List>
-          {[
-            "DashBoard",
-            "Banco",
-            "CategoriaProduto",
-            "Cliente",
-            "Compra",
-            "FormaPagamento",
-            "Insumo",
-            "Produto",
-            "Usuario",
-            "Venda",
-            "Financeiro",
-          ].map((text, index) => (
-            <ListItem key={index} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                component={Link}
-                to={"/" + text}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index === 0 && <PieChartIcon />}
-                  <Divider />
-                  {index === 1 && <AccountBalanceIcon />}
-                  {index === 2 && <ClassIcon />}
-                  {index === 3 && <BadgeIcon />}
-                  {index === 4 && <LocalMallIcon />}
-                  {index === 5 && <CreditCardIcon />}
-                  {index === 6 && <InventoryIcon />}
-                  {index === 7 && <LayersIcon />}
-                  {index === 8 && <AccountBoxIcon />}
-                  {index === 9 && <SellIcon />}
-                  {index === 10 && <AttachMoneyIcon />}
+          {/* Dashboard */}
+          <ListItemButton component={Link} to="/Dashboard">
+            <ListItemIcon>
+              <PieChartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
+
+          {/* Cliente */}
+          <ListItemButton component={Link} to="/Cliente">
+            <ListItemIcon>
+              <BadgeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cliente" />
+          </ListItemButton>
+          <Divider sx={{ bgcolor: "primary.main" }} />
+          {/* Finanças */}
+          <ListItemButton onClick={() => setOpenServices(!openServices)}>
+            <ListItemIcon>
+              <AttachMoneyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Finanças" />
+            {openServices ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openServices} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton component={Link} to="/Banco" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <AccountBalanceIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary="Banco" />
               </ListItemButton>
-            </ListItem>
-          ))}
+              <ListItemButton component={Link} to="/Financeiro" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <CurrencyExchangeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Financeiro" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+          <Divider sx={{ bgcolor: "primary.main" }} />
+          {/* Produção */}
+          <ListItemButton onClick={() => setOpenProduction(!openProduction)}>
+            <ListItemIcon>
+              <InventoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Produção" />
+            {openProduction ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          
+          <Collapse in={openProduction} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton component={Link} to="/Categoria" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <ClassIcon />
+                </ListItemIcon>
+                <ListItemText primary="Categoria" />
+              </ListItemButton>
+              <ListItemButton component={Link} to="/Produto" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <LayersIcon />
+                </ListItemIcon>
+                <ListItemText primary="Produto" />
+              </ListItemButton>
+              <ListItemButton component={Link} to="/Insumo" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <CategoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Insumo" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+          <Divider sx={{ bgcolor: "primary.main" }} />
+
+          {/* Serviço */}
+          <ListItemButton onClick={() => setOpenService(!openService)}>
+            <ListItemIcon>
+              <BuildIcon />
+            </ListItemIcon>
+            <ListItemText primary="Serviços" />
+            {openService ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openService} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton component={Link} to="/Compra" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <LocalMallIcon />
+                </ListItemIcon>
+                <ListItemText primary="Compra" />
+              </ListItemButton>
+              <ListItemButton component={Link} to="/Venda" sx={{ pl: 3   }}>
+                <ListItemIcon>
+                  <SellIcon />
+                </ListItemIcon>
+                <ListItemText primary="Venda" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+          <Divider sx={{ bgcolor: "primary.main" }} />
+
+          {/* Usuário */}
+          <ListItemButton component={Link} to="/Usuario">
+            <ListItemIcon>
+              <AccountBoxIcon />
+            </ListItemIcon>
+            <ListItemText primary="Usuário" />
+          </ListItemButton>
         </List>
       </Drawer>
 
-      <Box height="100vh" marginTop={2}>
+      <Box component="main">
+        <DrawerHeader />
         {children}
       </Box>
     </Box>
