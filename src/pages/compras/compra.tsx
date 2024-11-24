@@ -703,7 +703,7 @@ const Compra = () => {
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
-              onRowClick={handleRowClick}
+             
               rows={rows}
               columns={columns}
               localeText={localeText}
