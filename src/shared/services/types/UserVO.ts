@@ -6,7 +6,7 @@ export const usuarioSchema = z.object({
   email: z.string().email().min(1, "Campo Obrigatório"),
   senha: z.string().min(5, "A senha deve conter pelo menos 5 caracteres"),
   isAdm: z.boolean(),
-  isActive: z.boolean(),
+  isActive: z.boolean().optional(),
 });
 
 export interface UsuarioDataRow {

@@ -112,14 +112,20 @@ const Produto = () => {
   };
 
   const handleDelete = async (data: produtoSchemaType) => {
-    const vendas = await getSalesProd();
-    const filterVendas = vendas.filter((venda: vendaProdutoSchemaType) => venda.idProduto === data.id)
-    if (filterVendas.length === 0){
+    try {
+      const vendas = await getSalesProd();
+      const filterVendas = vendas.filter((venda: vendaProdutoSchemaType) => venda.idProduto === data.id)
+      if (filterVendas.length === 0){
+        await deleteProducts(data.id!);
+      }
+      else{
+        const deactivate = {...data, isActive: false}
+        await putProducts(deactivate);
+      }
+      
+      
+    } catch (error) {
       await deleteProducts(data.id!);
-    }
-    else{
-      const deactivate = {...data, isActive: false}
-      await putProducts(deactivate);
     }
     loadProducts();
   };

@@ -10,8 +10,13 @@ export const getSales = async () => {
 };
 
 export const getSalesProd = async () => {
-  const response = await axios.get(BASE_URL);
-  return response.data.vendasProdutos;
+  try {
+    const response = await axios.get(BASE_URL);
+    return response.data.vendasProdutos;
+  } catch (error) {
+    console.log("Não foi possível obter Vendas: ", error)
+  }
+  
 };
 
 
