@@ -163,7 +163,7 @@ export function ModalEditProduto({open, loadProducts, toggleModal, categoriasPro
                     {/* Campo KeyWord */}
                     <TextField
                       id="outlined-helperText"
-                      label="KeyWord"
+                      label="Palavra Chave"
                       helperText={
                         errors.keyWord?.message || "Obrigatório"
                       }

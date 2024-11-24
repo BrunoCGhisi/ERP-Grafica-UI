@@ -123,6 +123,7 @@ const Insumo = () => {
       width: 200,
       minWidth: 200,
       headerClassName: "gridHeader--header",
+      renderCell: (params) => <span>{params.value} m²</span>,
     },
     
     {
@@ -273,24 +274,41 @@ const Insumo = () => {
                               setValue("valorM2", floatValue ?? 0);
                             }}
                             helperText={
-                              errors.valorM2?.message || "Obrigatório"
+                               "Obrigatório"
                             }
                             error={!!errors.valorM2}
                           />
                         </Grid>
 
                         <Grid item xs={12} md={100}>
-                          <TextField
-                            sx={{width: 450}}
-                            id="outlined-helperText"
-                            label="Estoque"
-                            type="number"
-                            helperText={
-                              errors.estoque?.message || "Obrigatório"
-                            }
-                            error={!!errors.estoque}
-                            {...register("estoque", { valueAsNumber: true })}
-                          />
+
+                        <Controller
+                          name="estoque"
+                          control={control}
+                          defaultValue={0} // Valor padrão
+                          rules={{ required: "Estoque é obrigatória" }}
+                          render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <NumericFormat
+                              customInput={TextField}
+                              sx={{ marginTop: 2.9 }}
+                              suffix="m²"
+                              fullWidth
+                              id="outlined-helperText"
+                              label="Estoque"
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              allowLeadingZeros
+                              value={value} // Valor atual
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                              }}
+                              error={!!error}
+                            />
+                          )}
+                        />
+
+                          
                         </Grid>
 
                         <Grid item xs={12} sx={{ textAlign: "right" }}>

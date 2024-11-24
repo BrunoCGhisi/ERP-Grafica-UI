@@ -31,6 +31,7 @@ export const clienteSchema = z.object({
     complemento: z.string().optional(),
     numIe: z.string().optional(),
     statusIe: z.boolean(),
+    
   });
   
   

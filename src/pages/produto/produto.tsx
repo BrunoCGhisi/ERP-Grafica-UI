@@ -85,9 +85,9 @@ const Produto = () => {
   useEffect(() => {
     const getCategorias = async () => {
       const response = await axios.get(
-        "http://localhost:3000/categoria_produto/itens"
+        "http://localhost:3000/categoria_produto"
       );
-      setCategorias(response.data);
+      setCategorias(response.data.catProdAtivos);
     };
     getCategorias();
   }, []);
@@ -303,8 +303,8 @@ const Produto = () => {
                                 id="tipo-select"
                                 fullWidth
                               >
-                                <MenuItem value={true}>Não</MenuItem>
-                                <MenuItem value={false}>Sim</MenuItem>
+                                <MenuItem value={true}>Serviço</MenuItem>
+                                <MenuItem value={false}>Produto</MenuItem>
                               </Select>
                             )}
                           />

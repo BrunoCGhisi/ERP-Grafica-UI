@@ -87,7 +87,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
             const insumoVal = insumos.reduce(
               (accInsumo: number, insumo: insumoSchemaType) => {
                 const area = produto.comprimento && produto.largura
-                  ? ((produto.comprimento / 100) * (produto.largura / 100)) + 23
+                  ? ((produto.comprimento / 100) * (produto.largura / 100))
                   : 0;
 
                 const valorM2 = insumo.valorM2 || 0;
@@ -95,7 +95,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
               },
               0
             );
-            return acc + insumoVal * (Number(item?.quantidade) || 0);
+            return acc +( insumoVal * (Number(item?.quantidade))  + 23|| 0);
           }, 0);
           setTotalQuantidade(sum || 0);
         });
@@ -185,11 +185,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                     id="demo-simple-select"
                     label="idCliente"
                     error={!!errors.idCliente}
-                    defaultValue={
-                      clientes.length > 0
-                        ? clientes[0].nome
-                        : "Sem clientes"
-                    }
+                    defaultValue={cliente[0]?.id || ""}
                   >
                     {clientes &&
                       clientes.map((cliente) => (

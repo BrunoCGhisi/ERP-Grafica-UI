@@ -229,6 +229,7 @@ export function ModalEditCliente({clientes, open, toggleModal, loadClients, idTo
             <MenuItem value={false}>Contribuinte</MenuItem>
           </Select>
         )}/>
+        
           <Button
             type="submit"
             variant="outlined"

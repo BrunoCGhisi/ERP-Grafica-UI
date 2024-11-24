@@ -55,6 +55,7 @@ import {
 import { ModalEditCompra } from "./components/modal-edit-compra";
 import { ModalGetCompra } from "./components/modal-get-compra";
 import { width } from "@mui/system";
+import { NumericFormat } from "react-number-format";
 
 const fornecedorSchema = z.object({
   id: z.number(),
@@ -507,7 +508,15 @@ const Compra = () => {
                               <TextField
                                 id="outlined-parcelas"
                                 label="Parcelas"
+                                type="number"
                                 placeholder="1"
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                InputProps={{
+                                  readOnly:
+                                    waiter === 2 || waiter === 1 || waiter === 4,
+                                }}
                                 helperText={
                                   errors.financeiros?.[0]?.parcelas?.message ||
                                   "Obrigatório"
@@ -587,56 +596,93 @@ const Compra = () => {
                                   </Grid>
 
                                   {/* Largura, Comprimento, Preço */}
-                                  <Grid container spacing={2} mt={1}>
-                                    <Grid item xs={4}>
-                                      <TextField
-                                        {...register(
-                                          `compras_insumos.${index}.largura`
-                                        )}
-                                        type="number"
-                                        error={
-                                          !!errors.compras_insumos?.[index]
-                                            ?.largura
-                                        }
-                                        label="Largura"
-                                        defaultValue={1}
-                                        InputProps={{ inputProps: { min: 1 } }}
-                                        fullWidth
-                                      />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                      <TextField
-                                        {...register(
-                                          `compras_insumos.${index}.comprimento`
-                                        )}
-                                        type="number"
-                                        error={
-                                          !!errors.compras_insumos?.[index]
-                                            ?.comprimento
-                                        }
-                                        label="Comprimento"
-                                        defaultValue={1}
-                                        InputProps={{ inputProps: { min: 1 } }}
-                                        fullWidth
-                                      />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                      <TextField
-                                        {...register(
-                                          `compras_insumos.${index}.preco`
-                                        )}
-                                        type="number"
-                                        error={
-                                          !!errors.compras_insumos?.[index]
-                                            ?.preco
-                                        }
-                                        label="Preço"
-                                        defaultValue={1}
-                                        InputProps={{ inputProps: { min: 1 } }}
-                                        fullWidth
-                                      />
-                                    </Grid>
-                                  </Grid>
+                                  
+                                <Grid container spacing={2} mt={1}>
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.largura`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Largura é obrigatória" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      suffix="m"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Largura"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.comprimento`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Comprimento é obrigatório" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      suffix="m"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Comprimento"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.preco`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Preço é obrigatório" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      prefix="R$"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Preço"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+                                </Grid>
+
                                 </Grid>
                               ))}
                             </Grid>
