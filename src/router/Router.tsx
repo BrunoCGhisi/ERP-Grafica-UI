@@ -76,7 +76,7 @@ const Router = () => {
         />
         
         <Route
-          path="/categoriaProduto"
+          path="/categoria"
           element={
             <ProtectedRoute>
               <CategoriaProduto />

@@ -1,15 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Grid } from "@mui/material";
+
 import { MiniDrawer } from "../shared/components";
 import { SpaceStyle } from "../shared/styles";
-import { getToken } from "../shared/services/payload"; 
+import { getToken } from "../shared/services/payload";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<number | null>(null); 
-  const [nome, setNome] = useState<string | null>(null); 
-  const [isAdm, setIsAdm] = useState<boolean | null>(null); 
+  const [userId, setUserId] = useState<number | null>(null);
+  const [nome, setNome] = useState<string | null>(null);
+  const [isAdm, setIsAdm] = useState<boolean | null>(null);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -31,16 +32,43 @@ const Dashboard = () => {
 
   return (
     <Box sx={SpaceStyle}>
-      <MiniDrawer>
-      <Typography>Home do Aplicativo</Typography>
-      {userId && <Typography>ID do Usuário: {userId}</Typography>}
-      {nome && <Typography>Nome do Usuário: {nome}</Typography>}
-      {isAdm && <Typography>Role do Usuário: {isAdm}</Typography>}
-      <Button onClick={handleLogout} variant="contained" color="primary">
-        Log Out
-      </Button>
-      </MiniDrawer>
-    </Box>
+  <MiniDrawer>
+    <Grid container spacing={2}>
+      {/* Texto principal */}
+      <Grid item xs={12}>
+      {nome && <Typography>Olá {nome}</Typography>}
+      </Grid>
+
+      {/* A pagar e A receber */}
+      <Grid container item xs={12} spacing={2}>
+        <Grid item xs={6}>
+          <Typography>A pagar</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography>A receber</Typography>
+        </Grid>
+      </Grid>
+
+      {/* Gráficos */}
+      <Grid container item xs={12} spacing={2}>
+        <Grid item xs={6}>
+          <Typography>Gráfico 1</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography>Gráfico 2</Typography>
+        </Grid>
+      </Grid>
+      <Grid container item xs={12} spacing={2}>
+        <Grid item xs={6}>
+          <Typography>Gráfico 3</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography>Gráfico 4</Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+  </MiniDrawer>
+</Box>
   );
 };
 
