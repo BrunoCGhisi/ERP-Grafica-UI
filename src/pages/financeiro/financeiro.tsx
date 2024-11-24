@@ -11,11 +11,12 @@ import {
   Stack,
   TextField,
   Typography,
-  Grid
+  Grid,
+  Alert
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../shared/styles";
-import { MiniDrawer } from "../shared/components";
+import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { MiniDrawer } from "../../shared/components";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,8 +25,8 @@ import DoneIcon from "@mui/icons-material/Done";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../shared/components/ModalRoot";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -33,9 +34,11 @@ import {
   financiaSchemaType,
   FinanciaDataRow,
   financeiroSchemaType,
-} from "../shared/services/types";
+} from "../../shared/services/types";
 
-import { getFinances, postFinances, putFinances, deleteFinances } from "../shared/services";
+import { getFinances, postFinances, putFinances, deleteFinances } from "../../shared/services";
+import dayjs from "dayjs";
+import { ModalEditFinanceiro } from "./components/modal-edit-fin";
 
 const Financeiro = () => {
   const {
@@ -53,6 +56,9 @@ const Financeiro = () => {
     null
   );
   const { toggleModal, open } = useOpenModal();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [idToEdit, setIdToEdit] = useState<any>(null);
 
   const handleEdit = (updateDate: FinanciaDataRow) => {
     setSelectedData(updateDate);
@@ -88,24 +94,6 @@ const Financeiro = () => {
     const FinancesData = await getFinances();
     setFinances(FinancesData);
   };
-
-  const handleAdd = async (data: financiaSchemaType) => {
-    await postFinances(data);
-    loadFinances();
-    setAdOpen(false);
-  };
-
-  const handleUpdate = async (data: financiaSchemaType) => {
-    await putFinances(data);
-    loadFinances();
-    toggleModal();
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteFinances(id);
-    loadFinances();
-  };
-
   useEffect(() => {
     loadFinances();
   }, [open]);
@@ -134,12 +122,7 @@ const Financeiro = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -184,6 +167,21 @@ const Financeiro = () => {
             <Grid item>
               <Typography variant="h6">Financeiro</Typography>
             </Grid>
+
+{/*---------------------------------- MODAL -------------------------------------- */}
+            {open && (
+              <ModalEditFinanceiro                         
+                open={open}             
+                setAlertMessage={setAlertMessage}
+                setShowAlert={setShowAlert}
+                toggleModal={toggleModal}
+                idToEdit={idToEdit}
+                finances={finances}
+                loadFinances={loadFinances}
+
+              />
+            )}
+
             
           </Grid>
           <Box sx={GridStyle}>
@@ -203,8 +201,10 @@ const Financeiro = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };
 
 export default Financeiro;
+  
