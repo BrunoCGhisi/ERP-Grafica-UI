@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 // Material UI
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -20,6 +21,7 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import Divider from "@mui/material/Divider";
+import Button  from "@mui/material/Button";
 
 // Ícones
 import PieChartIcon from "@mui/icons-material/PieChart";
@@ -121,12 +123,11 @@ export function MiniDrawer({ children }: DrawerProps) {
   const [openProduction, setOpenProduction] = React.useState(false);
   const [openService, setOpenService] = React.useState(false);
 
-  const handleToggleCaixa = () => {
-    setOpenServices((prevOpen) => !prevOpen);
-  };
+  const navigate = useNavigate();
 
-  const handleToggleEstoque = () => {
-    setOpenServices((prevOpen) => !prevOpen);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const handleDrawerOpen = () => {
@@ -157,6 +158,15 @@ export function MiniDrawer({ children }: DrawerProps) {
           <Typography variant="h6" noWrap component="div">
             ArtFox Sistemas
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            color="inherit"
+            variant="outlined"
+            onClick={handleLogout}
+            sx={{ borderColor: "white", color: "white" }}
+          >
+            Log Out
+          </Button>
         </Toolbar>
       </AppBar>
 

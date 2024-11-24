@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useAppThemeContext } from "../shared/contexts";
 
 import {
-  Home,
+  Dashboard,
   Template,
   Login,
   SignUp,
@@ -31,8 +31,8 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/DashBoard" element={<Home />} />
-        <Route index element={<Home />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route index element={<Dashboard />} />
 
         <Route
           path="/banco"

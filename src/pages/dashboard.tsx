@@ -5,7 +5,7 @@ import { MiniDrawer } from "../shared/components";
 import { SpaceStyle } from "../shared/styles";
 import { getToken } from "../shared/services/payload"; 
 
-const Home = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<number | null>(null); 
   const [nome, setNome] = useState<string | null>(null); 
@@ -44,4 +44,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;
