@@ -18,7 +18,8 @@ import {
   Testes,
   Insumo,
   Financeiro,
-  PieMostProduct
+  PieMostProduct,
+  BasicSwitch
 } from "../pages";
 
 import { ProtectedRoute } from "../shared/components";
@@ -84,16 +85,16 @@ const Router = () => {
           }
         />
 
-        {/*  
+        
         <Route
           path="/formaPagamento"
           element={
             <ProtectedRoute>
-              <FormaPgto />
+              <BasicSwitch />
             </ProtectedRoute>
           }
         />
-        */}
+        
 
         <Route
           path="/produto"

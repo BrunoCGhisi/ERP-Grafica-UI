@@ -55,6 +55,7 @@ import {
   postSale,
   deleteSale,
   getSupplies,
+  getProducts,
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
@@ -115,46 +116,46 @@ const Venda = () => {
     name: "vendas_produtos",
   });
 
-  useEffect(() => {
-    const PriceSugestion = async () => {
-      try {
-        const response = await getSupplies();
-        const subscription = watch((values) => {
-          const sum = values.vendas_produtos?.reduce((acc, item) => {
-            const produto = produtos.find(
-              (produto: produtoSchemaType) => produto.id === item?.idProduto
-            );
-            if (!produto) return acc;
+ useEffect(() => {
+   const PriceSugestion = async () => {
+     try {
+       const response = await getSupplies();
+       const subscription = watch((values) => {
+         const sum = values.vendas_produtos?.reduce((acc, item) => {
+           const produto = produtos.find(
+             (produto: produtoSchemaType) => produto.id === item?.idProduto
+           );
+           if (!produto) return acc;
 
-            const insumos = response.filter(
-              (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
-            );
+           const insumos = response.filter(
+             (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
+           );
           
-            const insumoVal = insumos.reduce(
-              (accInsumo: number, insumo: insumoSchemaType) => {
-                const area = produto.comprimento && produto.largura
-                  ? ((produto.comprimento / 100) * (produto.largura / 100))
-                  : 0;
+           const insumoVal = insumos.reduce(
+             (accInsumo: number, insumo: insumoSchemaType) => {
+               const area = produto.comprimento && produto.largura
+                 ? ((produto.comprimento / 100) * (produto.largura / 100))
+                 : 0;
 
-                const valorM2 = insumo.valorM2 || 0;
-                return accInsumo + ((valorM2 * area));
+               const valorM2 = insumo.valorM2 || 0;
+               return accInsumo + ((valorM2 * area));
                 
-              },
-              0
-            );
+             },
+             0
+           );
           
-            return acc + (insumoVal * (Number(item?.quantidade))+ 23 || 0);
-          }, 0);
-          setTotalQuantidade(Number(sum?.toFixed(2)) || 0);
-        });
-        return () => subscription.unsubscribe();
-      } catch (error) {
-        console.error("Erro ao buscar insumos ou calcular valores:", error);
-      }
-    };
+           return acc + (insumoVal * (Number(item?.quantidade))+ 23 || 0);
+         }, 0);
+         setTotalQuantidade(Number(sum?.toFixed(2)) || 0);
+       });
+       return () => subscription.unsubscribe();
+     } catch (error) {
+       console.error("Erro ao buscar insumos ou calcular valores:", error);
+     }
+   };
 
-    PriceSugestion();
-  }, [watch, getSupplies]);
+   PriceSugestion();
+ }, [watch, getSupplies]);
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -194,11 +195,11 @@ const Venda = () => {
 
   // Trazendo Produtos    --------------------------------------------------
   useEffect(() => {
-    const getProducts = async () => {
-      const response = await axios.get("http://localhost:3000/produto/itens");
-      setProdutos(response.data);
+    const getProdutos = async () => {
+      const responses = await getProducts();
+      setProdutos(responses);
     };
-    getProducts();
+    getProdutos();
   }, []);
 
   //CRUD -----------------------------------------------------------------------------------------------------
