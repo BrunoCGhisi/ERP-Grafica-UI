@@ -19,7 +19,12 @@ export const clienteSchema = z.object({
 
     telefone: z.string().transform((val) => val.replace(/[^0-9]/g, "")).refine((doc) => {
       return doc.length >= 11;}, 'CPF/CNPJ deve conter no mínimo 11 caracteres.'),
-    email: z.string().email(),
+      email: z
+      .string()
+      .email({ message: "Insira um email válido." }) 
+      .refine((email) => email.trim() !== "", {
+        message: "Email é obrigatório.",
+      }),
     isFornecedor: z.boolean(),
     dataCadastro: z.string().optional(),
     cep: z.string().transform((val) => val.replace(/[^0-9]/g, "")).refine((doc) => {

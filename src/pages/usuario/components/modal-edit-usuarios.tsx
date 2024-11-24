@@ -126,7 +126,7 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
                       variant="outlined"
                       startIcon={<DoneIcon />}
                     >
-                      Atualizar
+                      Editar
                     </Button>
                   </Grid>
                 </Grid>

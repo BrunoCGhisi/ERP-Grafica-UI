@@ -20,8 +20,11 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridRowParams,
-  GridLocaleText
+  GridLocaleText,
+  
 } from "@mui/x-data-grid";
+
+
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -312,6 +315,9 @@ const Venda = () => {
       flex: 0,
       width: 80,
       headerClassName: "gridHeader--header",
+      renderCell: (params) => (
+        <span>{params.value != null ? `${params.value}%` : "N/A"}</span>
+      ),
     },
     {
       field: "acoes",
@@ -671,7 +677,7 @@ const Venda = () => {
                               <Grid item xs={2}>
                                 <IconButton
                                   onClick={() => handleRemoveProduct(index)}
-                                  color="error"
+                                  color="primary"
                                   sx={{ mt: 1 }}
                                 >
                                   <DeleteIcon />

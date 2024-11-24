@@ -345,7 +345,7 @@ const Compra = () => {
                       variant="h6"
                       component="h2"
                     >
-                      Nova Compra
+                      Cadastro Compra
                     </Typography>
                   </Grid>
 
@@ -683,6 +683,56 @@ const Compra = () => {
                                 </Grid>
                                 </Grid>
 
+                                  <Grid container spacing={2} mt={1} mb={2.3}>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.largura`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.largura
+                                        }
+                                        label="Largura"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.comprimento`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.comprimento
+                                        }
+                                        label="Comprimento"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        {...register(
+                                          `compras_insumos.${index}.preco`
+                                        )}
+                                        type="number"
+                                        error={
+                                          !!errors.compras_insumos?.[index]
+                                            ?.preco
+                                        }
+                                        label="Preço"
+                                        defaultValue={1}
+                                        InputProps={{ inputProps: { min: 1 } }}
+                                        fullWidth
+                                      />
+                                    </Grid>
+                                  </Grid>
                                 </Grid>
                               ))}
                             </Grid>
@@ -749,7 +799,7 @@ const Compra = () => {
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
-              onRowClick={handleRowClick}
+             
               rows={rows}
               columns={columns}
               localeText={localeText}
