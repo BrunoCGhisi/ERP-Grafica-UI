@@ -163,16 +163,25 @@ const Usuario = () => {
         <div>
           {isAdm ? (
             <>
-              <IconButton
-                onClick={() => row.id !== undefined && handleDelete(row)}
-              >
-                <DeleteIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
-              >
-                <EditIcon />
-              </IconButton>
+             {userId === row.id && (
+        <IconButton
+          onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
+        >
+          <EditIcon />
+        </IconButton>
+      )}
+      {userId !== row.id && (
+        <>
+          <IconButton
+            onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => row.id !== undefined && handleDelete(row)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      )}
             </>
           ) : null}
         </div>

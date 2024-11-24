@@ -137,17 +137,12 @@ const Venda = () => {
                   : 0;
 
                 const valorM2 = insumo.valorM2 || 0;
-                console.log("AREA", valorM2 * area)
-                console.log("ACC", accInsumo)
-                console.log("InsumosVAl",accInsumo + ((valorM2 * area)))
                 return accInsumo + ((valorM2 * area));
                 
               },
               0
             );
-            console.log("InsumosVAl 2", insumoVal)
-            console.log("ItemQuantifafe 2", insumoVal)
-            console.log(insumoVal * (Number(item?.quantidade))+ 23)
+          
             return acc + (insumoVal * (Number(item?.quantidade))+ 23 || 0);
           }, 0);
           setTotalQuantidade(Number(sum?.toFixed(2)) || 0);
@@ -358,7 +353,7 @@ const Venda = () => {
     idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
-    isVendaOS: venda.isVendaOS == 0 ? "Venda" : "Orçamento",
+    isVendaOS: venda.isVendaOS == 0 ? "Orçamento" : "Venda",
     situacao: venda.situacao,
     desconto: venda.desconto,
   }));
@@ -489,8 +484,8 @@ const Venda = () => {
                                 onChange={field.onChange}
                                 value={field.value}
                               >
-                                <MenuItem value={0}>Venda</MenuItem>
-                                <MenuItem value={1}>Orçamento</MenuItem>
+                                <MenuItem value={0}>Orçamento</MenuItem>
+                                <MenuItem value={1}>Venda</MenuItem>
                               </Select>
                             )}
                           />
@@ -594,6 +589,9 @@ const Venda = () => {
                             label="Parcelas"
                             type="number"
                             defaultValue={1}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
                             InputProps={{
                               readOnly:
                                 waiter === 2 || waiter === 1 || waiter === 4,

@@ -38,6 +38,7 @@ import { ModalStyle } from "../../../shared/styles";
 const today = new Date();
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ModalRootFull } from "../../../shared/components/ModalRootFull";
+import { NumericFormat } from "react-number-format";
 interface ModalEditCompra {
   open: boolean;
   toggleModal: () => void;
@@ -81,6 +82,7 @@ export function ModalEditCompra({
   const fornecedor = fornecedores.filter(
     (fornecedor) => fornecedor.id === filterCompras[0]?.idFornecedor
   );
+  console.log(fornecedores)
   const compra_insumo = comprasInsumos.filter((ci) =>
     idCompras.includes(ci.idCompra)
   );
@@ -189,11 +191,7 @@ export function ModalEditCompra({
                         label="Fornecedor"
                         fullWidth
                         error={!!errors.idFornecedor}
-                        defaultValue={
-                          fornecedores.length > 0
-                            ? fornecedores[0].nome
-                            : "Sem Fornecedores"
-                        }
+                        defaultValue={fornecedor[0]?.id || ""}
                       >
                         {fornecedores.map((fornecedor) => (
                           <MenuItem value={fornecedor.id} key={fornecedor.id}>
@@ -238,49 +236,8 @@ export function ModalEditCompra({
                     />
                     </Grid>
 
-                    {/* Número da Nota */}
-                    <Grid item xs={4}>
-                      <TextField
-                        id="outlined-numNota"
-                        label="N° Nota"
-                        placeholder="0"
-                        helperText={errors.numNota?.message || "Obrigatório"}
-                        error={!!errors.numNota}
-                        {...register("numNota")}
-                        fullWidth
-                      />
-                    </Grid>
-
-                    {/* Desconto */}
-                    <Grid item xs={4}>
-                      <TextField
-                        id="outlined-desconto"
-                        label="Desconto"
-                        placeholder="0"
-                        helperText={errors.desconto?.message || "Obrigatório"}
-                        error={!!errors.desconto}
-                        {...register("desconto")}
-                        fullWidth
-                      />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField
-                        id="outlined-parcelas"
-                        label="Parcelas"
-                        placeholder="1"
-                        helperText={
-                          errors.financeiros?.[0]?.parcelas?.message ||
-                          "Obrigatório"
-                        }
-                        error={!!errors.financeiros?.[0]?.parcelas}
-                        {...register("financeiros.0.parcelas")}
-                        fullWidth
-                      />
-                    </Grid>
-
-                    {/* Banco */}
-                    <Grid item xs={6}>
+                     {/* Banco */}
+                     <Grid item xs={6}>
                       <InputLabel id="demo-simple-select-label">
                         Banco
                       </InputLabel>
@@ -328,6 +285,57 @@ export function ModalEditCompra({
                         )}
                       />
                     </Grid>
+
+                    {/* Número da Nota */}
+                    <Grid item xs={4}>
+                      <TextField
+                        id="outlined-numNota"
+                        label="N° Nota"
+                        placeholder="0"
+                        helperText={errors.numNota?.message || "Obrigatório"}
+                        error={!!errors.numNota}
+                        {...register("numNota")}
+                        fullWidth
+                      />
+                    </Grid>
+
+                    {/* Desconto */}
+                    <Grid item xs={4}>
+                      <TextField
+                        id="outlined-desconto"
+                        label="Desconto"
+                        placeholder="0"
+                        helperText={errors.desconto?.message || "Obrigatório"}
+                        error={!!errors.desconto}
+                        {...register("desconto")}
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField
+                        id="outlined-parcelas"
+                        label="Parcelas"
+                        type="number"
+                        placeholder="1"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        InputProps={{
+                          readOnly:
+                            waiter === 2 || waiter === 1 || waiter === 4,
+                        }}
+                        helperText={
+                          errors.financeiros?.[0]?.parcelas?.message ||
+                          "Obrigatório"
+                        }
+                        error={!!errors.financeiros?.[0]?.parcelas}
+                        {...register("financeiros.0.parcelas")}
+                        fullWidth
+                      />
+                      </Grid>
+
+                   
                   </Grid>
                 </Grid>
 
@@ -388,48 +396,90 @@ export function ModalEditCompra({
 
                           {/* Largura, Comprimento, Preço */}
                           <Grid container spacing={2} mt={1}>
-                            <Grid item xs={4}>
-                              <TextField
-                                {...register(
-                                  `compras_insumos.${index}.largura`
-                                )}
-                                type="number"
-                                error={
-                                  !!errors.compras_insumos?.[index]?.largura
-                                }
-                                label="Largura"
-                                defaultValue={1}
-                                InputProps={{ inputProps: { min: 1 } }}
-                                fullWidth
-                              />
-                            </Grid>
-                            <Grid item xs={4}>
-                              <TextField
-                                {...register(
-                                  `compras_insumos.${index}.comprimento`
-                                )}
-                                type="number"
-                                error={
-                                  !!errors.compras_insumos?.[index]?.comprimento
-                                }
-                                label="Comprimento"
-                                defaultValue={1}
-                                InputProps={{ inputProps: { min: 1 } }}
-                                fullWidth
-                              />
-                            </Grid>
-                            <Grid item xs={4}>
-                              <TextField
-                                {...register(`compras_insumos.${index}.preco`)}
-                                type="number"
-                                error={!!errors.compras_insumos?.[index]?.preco}
-                                label="Preço"
-                                defaultValue={1}
-                                InputProps={{ inputProps: { min: 1 } }}
-                                fullWidth
-                              />
-                            </Grid>
-                          </Grid>
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.largura`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Largura é obrigatória" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      suffix="m"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Largura"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.comprimento`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Comprimento é obrigatório" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      suffix="m"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Comprimento"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                  <Controller
+                                  name={`compras_insumos.${index}.preco`}
+                                  control={control}
+                                  defaultValue={1} // Valor padrão
+                                  rules={{ required: "Preço é obrigatório" }}
+                                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                    <NumericFormat
+                                      customInput={TextField}
+                                      sx={{ marginTop: 2.9 }}
+                                      prefix="R$"
+                                      fullWidth
+                                      id="outlined-helperText"
+                                      label="Preço"
+                                      thousandSeparator="."
+                                      decimalSeparator=","
+                                      allowLeadingZeros
+                                      value={value} // Valor atual
+                                      onValueChange={(values) => {
+                                        const { floatValue } = values;
+                                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                                      }}
+                                      error={!!error}
+                                    />
+                                  )}
+                                />
+                                </Grid>
+                                </Grid>
                         </Grid>
                       ))}
                     </Grid>

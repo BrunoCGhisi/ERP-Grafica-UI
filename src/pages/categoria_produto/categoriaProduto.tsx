@@ -1,59 +1,61 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Box,
   Modal,
   Button,
   Typography,
-  TextField,
-  Stack,
-  IconButton,
+  TextField, IconButton,
   Grid,
-  Divider,
+  Select,
+  MenuItem,
+  Alert
 } from "@mui/material";
 
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { GridStyle, ModalStyle, SpaceStyle } from "../shared/styles";
+import { GridStyle, ModalStyle, SpaceStyle } from "../../shared/styles";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
-import { MiniDrawer } from "../shared/components";
-
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
+import { MiniDrawer } from "../../shared/components";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOpenModal } from "../shared/hooks/useOpenModal";
-import { ModalRoot } from "../shared/components/ModalRoot";
+import { useOpenModal } from "../../shared/hooks/useOpenModal";
+import { ModalRoot } from "../../shared/components/ModalRoot";
 
 import {
   proCategorySchema,
   ProductCategoryDataRow,
   proCategorySchemaType,
-} from "../shared/services/types";
+  produtoSchemaType,
+} from "../../shared/services/types";
 
 import {
   getCategories,
   postCategories,
   putCategories,
   deleteCategories,
-} from "../shared/services";
+  getProducts,
+} from "../../shared/services";
+import { ModalDeactivateCatProd } from "./components/modal-deactivate.catprod";
+import { ModalEditCategoria } from "./components/modal-edit-catprod";
 
 const CategoriaProduto = () => {
   const [productCategorys, setProductCategorys] = useState<
     proCategorySchemaType[]
   >([]);
-  const [selectedData, setSelectedData] =
-    useState<ProductCategoryDataRow | null>(null);
   const { open, toggleModal } = useOpenModal();
+  const toggleModalDeactivate = useOpenModal();
+  const [idToEdit, setIdToEdit] = useState<any>(null);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    control,
-    setValue,
     formState: { errors },
   } = useForm<proCategorySchemaType>({
     resolver: zodResolver(proCategorySchema),
@@ -66,19 +68,6 @@ const CategoriaProduto = () => {
   };
   const addOf = () => setAdOpen(false);
 
-  // População da modal  -----------------------------------------------------------------------------------------------------
-  const handleEdit = (updateData: ProductCategoryDataRow) => {
-    setSelectedData(updateData);
-    toggleModal();
-  };
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("categoria", selectedData.categoria);
-    }
-  }, [selectedData, setValue]);
-
   // CRUD ----------------------------------------------------------------------------------------------------------------------------
   const loadProductCategories = async () => {
     const productCategoriesData = await getCategories();
@@ -86,19 +75,29 @@ const CategoriaProduto = () => {
   };
 
   const handleAdd = async (data: proCategorySchemaType) => {
-    await postCategories(data);
+    const response = await postCategories(data);
+    if (response) {
+      setAlertMessage(`${response.data}`);
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
     loadProductCategories();
     setAdOpen(false);
   };
 
-  const handleUpdate = async (data: proCategorySchemaType) => {
-    await putCategories(data);
-    loadProductCategories();
-    toggleModal();
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteCategories(id);
+  const handleDelete = async (data: proCategorySchemaType) => {
+    const produtos = await getProducts();
+    const filterProdutos = produtos.filter(
+      (produto: produtoSchemaType) => produto.idInsumo === data.id
+    );
+    if (filterProdutos.length === 0) {
+      await deleteCategories(data.id!);
+    } else {
+      const deactivate = { ...data, isActive: false };
+      await putCategories(deactivate);
+    }    
     loadProductCategories();
   };
 
@@ -128,11 +127,11 @@ const CategoriaProduto = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
+            onClick={() => row.id !== undefined && handleDelete(row)}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleEdit(row)}>
+          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
         </div>
@@ -173,6 +172,15 @@ const CategoriaProduto = () => {
               >
                 Cadastrar
               </Button>
+               
+                  <Button
+                    onClick={toggleModalDeactivate.toggleModal}
+                    variant="outlined"
+                    startIcon={<ArchiveIcon />}
+                  >
+                    Arquivados
+                  </Button>
+                
             </Grid>
           </Grid>
           <Box>
@@ -227,55 +235,24 @@ const CategoriaProduto = () => {
               </Box>
             </Modal>
             {/* ---------UPDATE----------------------------------------------------------------------------------------------------------- */}
-            <Modal
+            {open && (
+            <ModalEditCategoria
               open={open}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-              <Grid container spacing={2}>
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Editar
-                    </Typography>
-                  </Grid>
-            
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            id="outlined-helperText"
-                            label="Categoria Produto"
-                            helperText={
-                              errors.categoria?.message || "Obrigatório"
-                            }
-                            error={!!errors.categoria}
-                            {...register("categoria")}
-                            fullWidth 
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Editar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
+              toggleModal={toggleModal}
+              loadProductCategories={loadProductCategories}
+              setAlertMessage={setAlertMessage}
+              setShowAlert={setShowAlert}
+              categorias={productCategorys}
+              idToEdit={idToEdit}
+            />
+            )}
+            {toggleModalDeactivate.open && (
+              <ModalDeactivateCatProd
+                open={toggleModalDeactivate.open}
+                toggleModal={toggleModalDeactivate.toggleModal}
+                loadProductCategories={loadProductCategories}
+              />
+            )}
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
@@ -294,6 +271,7 @@ const CategoriaProduto = () => {
           </Box>
         </Box>
       </MiniDrawer>
+      {showAlert && <Alert severity="info">{alertMessage}</Alert>}
     </Box>
   );
 };

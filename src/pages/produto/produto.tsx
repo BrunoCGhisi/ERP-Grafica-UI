@@ -85,9 +85,9 @@ const Produto = () => {
   useEffect(() => {
     const getCategorias = async () => {
       const response = await axios.get(
-        "http://localhost:3000/categoria_produto/itens"
+        "http://localhost:3000/categoria_produto"
       );
-      setCategorias(response.data);
+      setCategorias(response.data.catProdAtivos);
     };
     getCategorias();
   }, []);
@@ -112,14 +112,20 @@ const Produto = () => {
   };
 
   const handleDelete = async (data: produtoSchemaType) => {
-    const vendas = await getSalesProd();
-    const filterVendas = vendas.filter((venda: vendaProdutoSchemaType) => venda.idProduto === data.id)
-    if (filterVendas.length === 0){
+    try {
+      const vendas = await getSalesProd();
+      const filterVendas = vendas.filter((venda: vendaProdutoSchemaType) => venda.idProduto === data.id)
+      if (filterVendas.length === 0){
+        await deleteProducts(data.id!);
+      }
+      else{
+        const deactivate = {...data, isActive: false}
+        await putProducts(deactivate);
+      }
+      
+      
+    } catch (error) {
       await deleteProducts(data.id!);
-    }
-    else{
-      const deactivate = {...data, isActive: false}
-      await putProducts(deactivate);
     }
     loadProducts();
   };
@@ -303,8 +309,8 @@ const Produto = () => {
                                 id="tipo-select"
                                 fullWidth
                               >
-                                <MenuItem value={true}>Não</MenuItem>
-                                <MenuItem value={false}>Sim</MenuItem>
+                                <MenuItem value={true}>Serviço</MenuItem>
+                                <MenuItem value={false}>Produto</MenuItem>
                               </Select>
                             )}
                           />

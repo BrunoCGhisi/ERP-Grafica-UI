@@ -6,7 +6,7 @@ export { default as Login } from "./login";
 export { default as SignUp } from "./signUp";
 export { default as Banco } from "./banco/banco";
 export { default as Produto } from "./produto/produto";
-export { default as CategoriaProduto } from "./categoriaProduto";
+export { default as CategoriaProduto } from "./categoria_produto/categoriaProduto";
 // export { default as FormaPgto } from "./formaPgto";
 export { default as Compra } from "./compras/compra";
 export { default as Venda } from "./venda/venda";
