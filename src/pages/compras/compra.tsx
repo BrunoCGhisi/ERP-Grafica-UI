@@ -587,7 +587,7 @@ const Compra = () => {
                                   </Grid>
 
                                   {/* Largura, Comprimento, Preço */}
-                                  <Grid container spacing={2} mt={1}>
+                                  <Grid container spacing={2} mt={1} mb={2.3}>
                                     <Grid item xs={4}>
                                       <TextField
                                         {...register(
