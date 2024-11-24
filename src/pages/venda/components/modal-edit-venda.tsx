@@ -417,7 +417,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                       <Grid item xs={2}>
                         <IconButton
                           onClick={() => handleRemoveProduct(index)}
-                          color="error"
+                          color="primary"
                           sx={{ mt: 1 }}
                         >
                           <DeleteIcon />
