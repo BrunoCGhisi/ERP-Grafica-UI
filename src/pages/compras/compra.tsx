@@ -45,7 +45,7 @@ import {
   financeiroSchema,
   financeiroSchemaType,
 } from "../../shared/services/types";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   getPurchases,
   postPurchases,
@@ -123,11 +123,10 @@ const Compra = () => {
   };
 
   const handleRowClick = (params: CompraDataRow) => {
-    console.log(params)
-    setSelectedRow(params)
-    toggleGetModal.toggleModal()
-   };
-
+    console.log(params);
+    setSelectedRow(params);
+    toggleGetModal.toggleModal();
+  };
 
   // Trazendo fornecedores--------------------------------------------------
   useEffect(() => {
@@ -262,24 +261,18 @@ const Compra = () => {
             <IconButton
               onClick={() => row.id !== undefined && handleDelete(row.id)}
             >
-              <DeleteIcon 
-              color="primary"
-              />
+              <DeleteIcon />
             </IconButton>
             <IconButton
               onClick={() =>
                 row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
               }
             >
-              <EditIcon 
-              color="primary"
-              />
+              <EditIcon />
             </IconButton>
             <IconButton onClick={() => handleRowClick(row)}>
-              <OpenInNewIcon 
-              color="primary"
-              />
-          </IconButton>
+              <OpenInNewIcon color="primary" />
+            </IconButton>
           </div>
         </>
       ),
@@ -343,7 +336,7 @@ const Compra = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={{ ...ModalStyle, width: "80%", height: "80vh" }}>
+              <Box sx={{ ...ModalStyle, width: "90%", height: "80vh" }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography
@@ -426,51 +419,6 @@ const Compra = () => {
                               />
                             </Grid>
 
-                            {/* Número da Nota */}
-                            <Grid item xs={4}>
-                              <TextField
-                                id="outlined-numNota"
-                                label="N° Nota"
-                                placeholder="0"
-                                helperText={
-                                  errors.numNota?.message || "Obrigatório"
-                                }
-                                error={!!errors.numNota}
-                                {...register("numNota")}
-                                fullWidth
-                              />
-                            </Grid>
-
-                            {/* Desconto */}
-                            <Grid item xs={4}>
-                              <TextField
-                                id="outlined-desconto"
-                                label="Desconto"
-                                placeholder="0"
-                                helperText={
-                                  errors.desconto?.message || "Obrigatório"
-                                }
-                                error={!!errors.desconto}
-                                {...register("desconto")}
-                                fullWidth
-                              />
-                            </Grid>
-
-                            <Grid item xs={4}>
-                              <TextField
-                                id="outlined-parcelas"
-                                label="Parcelas"
-                                placeholder="1"
-                                helperText={
-                                  errors.financeiros?.[0]?.parcelas?.message ||
-                                  "Obrigatório"
-                                }
-                                error={!!errors.financeiros?.[0]?.parcelas}
-                                {...register("financeiros.0.parcelas")}
-                                fullWidth
-                              />
-                            </Grid>
-
                             {/* Banco */}
                             <Grid item xs={6}>
                               <InputLabel id="demo-simple-select-label">
@@ -522,6 +470,51 @@ const Compra = () => {
                                     <MenuItem value={7}>Cheque</MenuItem>
                                   </Select>
                                 )}
+                              />
+                            </Grid>
+
+                            {/* Número da Nota */}
+                            <Grid item xs={4}>
+                              <TextField
+                                id="outlined-numNota"
+                                label="N° Nota"
+                                placeholder="0"
+                                helperText={
+                                  errors.numNota?.message || "Obrigatório"
+                                }
+                                error={!!errors.numNota}
+                                {...register("numNota")}
+                                fullWidth
+                              />
+                            </Grid>
+
+                            {/* Desconto */}
+                            <Grid item xs={4}>
+                              <TextField
+                                id="outlined-desconto"
+                                label="Desconto"
+                                placeholder="0"
+                                helperText={
+                                  errors.desconto?.message || "Obrigatório"
+                                }
+                                error={!!errors.desconto}
+                                {...register("desconto")}
+                                fullWidth
+                              />
+                            </Grid>
+
+                            <Grid item xs={4}>
+                              <TextField
+                                id="outlined-parcelas"
+                                label="Parcelas"
+                                placeholder="1"
+                                helperText={
+                                  errors.financeiros?.[0]?.parcelas?.message ||
+                                  "Obrigatório"
+                                }
+                                error={!!errors.financeiros?.[0]?.parcelas}
+                                {...register("financeiros.0.parcelas")}
+                                fullWidth
                               />
                             </Grid>
                           </Grid>
@@ -653,11 +646,9 @@ const Compra = () => {
 
                       {/* Botões de Submit */}
                       <Grid item xs={12} sx={{ textAlign: "right", mt: 2 }}>
-                        
                         <Button
                           variant="outlined"
                           startIcon={<AddCircleOutlineIcon />}
-                          
                           onClick={handleAddInsumo}
                         >
                           Adicionar Insumo

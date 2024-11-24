@@ -1,4 +1,4 @@
-import { Box, Grid, Modal, TextField, Typography } from "@mui/material";
+import { Box, Grid, Modal, TextField, Typography, InputAdornment } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
@@ -184,7 +184,7 @@ export function ModalGetCompra({
           <Box key={item.id} display="flex" alignItems="center" gap={2} marginBottom={2}  marginTop={2}>
             <TextField
               id="outlined-helperText"
-              label="Insumos"
+              label="Insumo"
               value={
                 insumos.find((insumo) => insumo.id === item.idInsumo)?.nome ||
                 ""
@@ -193,23 +193,30 @@ export function ModalGetCompra({
             />
             <TextField
               id="outlined-helperText"
-              label="Quantidade"
-              value={item.largura}
+              label="Largura"
+              value={`${item.largura} cm`}
               inputProps={{ readOnly: true }}
             />
 
             <TextField
               id="outlined-helperText"
-              label="Quantidade"
-              value={item.comprimento}
+              label="Comprimento"
+              value={`${item.comprimento} cm`}
               inputProps={{ readOnly: true }}
+              
+              
             />
 
             <TextField
               id="outlined-helperText"
-              label="Quantidade"
+              label="Custo"
               value={item.preco}
               inputProps={{ readOnly: true }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">R$</InputAdornment>
+                ),
+              }}
             />
           </Box>
         ))}

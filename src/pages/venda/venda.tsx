@@ -12,8 +12,16 @@ import {
   Typography,
   IconButton,
   Alert,
+  Grid,
+  InputAdornment,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowParams,
+  GridLocaleText
+} from "@mui/x-data-grid";
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -28,7 +36,7 @@ import { useOpenModal } from "../../shared/hooks/useOpenModal";
 import { MiniDrawer } from "../../shared/components";
 import dayjs from "dayjs";
 import "../venda.css";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   vendaSchema,
   VendaDataRow,
@@ -39,7 +47,12 @@ import {
   financeiroSchemaType,
   insumoSchemaType,
 } from "../../shared/services/types";
-import { getSales, postSale, deleteSale, getSupplies } from "../../shared/services";
+import {
+  getSales,
+  postSale,
+  deleteSale,
+  getSupplies,
+} from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -67,37 +80,35 @@ const Venda = () => {
   const [selectedRow, setSelectedRow] = useState<VendaDataRow>();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const [idToEdit, setIdToEdit] = useState<any>(null)
+  const [idToEdit, setIdToEdit] = useState<any>(null);
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [vp, setVp] = useState<vendaProdutoSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
-  const [financeiros, setFinanceiros] =  useState<financeiroSchemaType[]>([]);
+  const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [totalQuantidade, setTotalQuantidade] = useState(0);
 
-
-
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    control, watch,
+    control,
+    watch,
     formState: { errors },
   } = useForm<vendaSchemaType>({
     resolver: zodResolver(vendaSchema),
     defaultValues: {
       vendas_produtos: [{ idProduto: 0, quantidade: 1 }], // Inicializa com um produto
-      financeiro: [{ parcelas: 1, idFormaPgto: 1}], 
+      financeiro: [{ parcelas: 1, idFormaPgto: 1 }],
     },
   });
 
-
   const { fields, append, remove } = useFieldArray({
-    control, 
+    control,
     name: "vendas_produtos",
   });
 
@@ -109,20 +120,22 @@ const Venda = () => {
           const sum = values.vendas_produtos?.reduce((acc, item) => {
             const produto = produtos.find(
               (produto: produtoSchemaType) => produto.id === item?.idProduto
-            ); if (!produto) return acc;
-  
+            );
+            if (!produto) return acc;
+
             const insumos = response.filter(
               (insumo: insumoSchemaType) => insumo.id === produto.idInsumo
             );
-            console.log(produto.comprimento)
+            console.log(produto.comprimento);
             const insumoVal = insumos.reduce(
               (accInsumo: number, insumo: insumoSchemaType) => {
-                const area = produto.comprimento && produto.largura
-                  ? ((produto.comprimento / 100) * (produto.largura / 100)) + 23
-                  : 0;
+                const area =
+                  produto.comprimento && produto.largura
+                    ? (produto.comprimento / 100) * (produto.largura / 100) + 23
+                    : 0;
 
                 const valorM2 = insumo.valorM2 || 0;
-                return accInsumo + (valorM2 * area);
+                return accInsumo + valorM2 * area;
               },
               0
             );
@@ -135,7 +148,7 @@ const Venda = () => {
         console.error("Erro ao buscar insumos ou calcular valores:", error);
       }
     };
-  
+
     PriceSugestion();
   }, [watch, getSupplies]);
 
@@ -148,8 +161,8 @@ const Venda = () => {
   };
 
   const handleRowClick = (params: VendaDataRow) => {
-   setSelectedRow(params)
-   toggleGetModal.toggleModal()
+    setSelectedRow(params);
+    toggleGetModal.toggleModal();
   };
 
   // Trazendo clientes--------------------------------------------------
@@ -187,20 +200,17 @@ const Venda = () => {
   //CRUD -----------------------------------------------------------------------------------------------------
 
   const loadSales = async () => {
- 
     const response = await axios.get("http://localhost:3000/venda");
     const responseFin = await axios.get("http://localhost:3000/financeiro");
     setVp(response.data.vendasProdutos);
     setFinanceiros(responseFin.data);
-  
+
     const salesData = await getSales();
     setSales(salesData);
- 
   };
   const handleAdd = async (data: vendaSchemaType) => {
-    
     const response = await postSale(data);
-    
+
     if (response.data.info) {
       setAlertMessage(response.data.info);
       setShowAlert(true);
@@ -210,7 +220,7 @@ const Venda = () => {
     }
     loadSales();
     reset();
-    
+
     setAdOpen(false);
   };
 
@@ -227,46 +237,81 @@ const Venda = () => {
   const addOn = () => setAdOpen(true);
   const addOf = () => setAdOpen(false);
 
-  const situacaoNome = (situacaoData: number | undefined) =>{
-    
+  const situacaoNome = (situacaoData: number | undefined) => {
     switch (situacaoData) {
-        case 0:
-            return "Em espera";
-            break;
-        case 2:
-            return "Em execução"
-            break;
-        case 3:
-            return "Em acabamento"
-            break;
-        case 4:
-            return "Finalizado"
-            break;
-        case 1:
-            return "Em criação (arte)"
-            break;
-        case 5:
-            return "Entregue"
-            break;
+      case 0:
+        return "Em espera";
+        break;
+      case 2:
+        return "Em execução";
+        break;
+      case 3:
+        return "Em acabamento";
+        break;
+      case 4:
+        return "Finalizado";
+        break;
+      case 1:
+        return "Em criação (arte)";
+        break;
+      case 5:
+        return "Entregue";
+        break;
     }
-  }
-
+  };
 
   // GRID ------------------------------------------------
 
   const columns: GridColDef<VendaDataRow>[] = [
-    { field: "id", headerName: "id", editable: false, flex: 0 },
     {
       field: "idCliente",
-      headerName: "IdCliente",
+      headerName: "Cliente",
       editable: false,
       flex: 0,
+      width: 250,
+      headerClassName: "gridHeader--header",
     },
-    { field: "idVendedor", headerName: "IdVendedor", editable: false, flex: 0 },
-    { field: "dataAtual", headerName: "DataAtual", editable: false, flex: 0 },
-    { field: "isVendaOS", headerName: "IsVendaOS", editable: false, flex: 0 },
-    { field: "situacao", headerName: "Situacao", editable: false, flex: 0, renderCell: (params) => <span>{situacaoNome(params.value)}</span>, },
-    { field: "desconto", headerName: "Desconto", editable: false, flex: 0 },
+    {
+      field: "idVendedor",
+      headerName: "Vendedor",
+      editable: false,
+      flex: 0,
+      width: 250,
+      headerClassName: "gridHeader--header",
+    },
+    {
+      field: "dataAtual",
+      headerName: "Data Cadastro",
+      editable: false,
+      flex: 0,
+      width: 120,
+      headerClassName: "gridHeader--header",
+    },
+    {
+      field: "isVendaOS",
+      headerName: "OS",
+      editable: false,
+      flex: 0,
+      width: 100,
+      headerClassName: "gridHeader--header",
+    },
+    {
+      field: "situacao",
+      headerName: "Situacao",
+      editable: false,
+      flex: 0,
+      width: 100,
+      headerClassName: "gridHeader--header",
+      renderCell: (params) => <span>{situacaoNome(params.value)}</span>,
+    },
+    {
+      field: "desconto",
+      headerName: "Desconto",
+      editable: false,
+      flex: 0,
+      width: 80,
+      headerClassName: "gridHeader--header",
+    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -274,30 +319,34 @@ const Venda = () => {
       align: "center",
       type: "actions",
       flex: 0,
+      headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
-
           <IconButton
             onClick={() => row.id !== undefined && handleDelete(row.id)}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
+          <IconButton
+            onClick={() =>
+              row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
+            }
+          >
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleRowClick(row)}>
-            <OpenInNewIcon />
+            <OpenInNewIcon color="primary" />
           </IconButton>
         </div>
       ),
     },
   ];
   const rows = sales.map((venda) => ({
-    id: venda.id, 
+    id: venda.id,
     idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
-    isVendaOS: venda.isVendaOS == 0 ?  "Venda" : "Orçamento",
+    isVendaOS: venda.isVendaOS == 0 ? "Venda" : "Orçamento",
     situacao: venda.situacao,
     desconto: venda.desconto,
   }));
@@ -309,34 +358,44 @@ const Venda = () => {
     console.log(showAlert);
   }, [showAlert]);
 
-  const waiter = watch("financeiro.0.idFormaPgto");  
+  const waiter = watch("financeiro.0.idFormaPgto");
   useEffect(() => {
     if (waiter === 0 || waiter === 1 || waiter === 4) {
       setValue("financeiro.0.parcelas", 1); // Atualiza o valor de parcelas
     }
-   
-  }, [waiter, setValue]);  
+  }, [waiter, setValue]);
+
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
 
   return (
     <Box>
-      
-      
       <MiniDrawer>
-      
         <Box sx={SpaceStyle}>
-        
-          <Box>
-            
+        <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography variant="h6">Vendas</Typography>
+            </Grid>
 
-            <Stack direction="row" spacing={2}>
+            <Grid item>
               <Button
                 onClick={addOn}
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
               >
-                Adicionar
+                Cadastrar
               </Button>
-            </Stack>
+            </Grid>
+          </Grid>
+          <Box>
 
             <Modal
               open={adopen}
@@ -344,246 +403,323 @@ const Venda = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={ModalStyle}>
+              <Box sx={{ ...ModalStyle, width: "80%", height: "80vh" }}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                   Nova Venda
                 </Typography>
 
                 <form onSubmit={handleSubmit(handleAdd)}>
-                  <TextField
-                    id="outlined-helperText"
-                    label="Vendedor"
-                    inputProps={{ readOnly: true }}
-                    helperText={errors.idVendedor?.message || "Obrigatório"}
-                    error={!!errors.idVendedor}
-                    defaultValue={userId}
-                    {...register("idVendedor")}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">
-                    Clientes
-                  </InputLabel>
-                  <Select
-                    {...register("idCliente")}
-                    labelId="select-label"
-                    id="demo-simple-select"
-                    label="idCliente"
-                    error={!!errors.idCliente}
-                    defaultValue={
-                      clientes.length > 0 ? clientes[0].nome : "Sem clientes"
-                    }
-                  >
-                    {clientes &&
-                      clientes.map((cliente) => (
-                        <MenuItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </MenuItem>
-                      ))}
-                  </Select>
-
-                  <TextField
-                    type="date"
-                    id="outlined-helperText"
-                    label={"Data compra"}
-                    InputLabelProps={{ shrink: true }}
-                    helperText={errors.dataAtual?.message || "Obrigatório"}
-                    error={!!errors.dataAtual}
-                    defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                    {...register("dataAtual")}
-                  />
-                  <TextField
-                    id="outlined-helperText"
-                    label="Desconto"
-                    defaultValue={0}
-                    helperText={errors.desconto?.message || "Obrigatório"}
-                    error={!!errors.desconto}
-                    {...register("desconto", { valueAsNumber: true })}
-                  />
-
-                  <Controller
-                    control={control}
-                    name="isVendaOS"
-                    defaultValue={1}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={0}>Venda</MenuItem>
-                        <MenuItem value={1}>Orçamento</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    control={control}
-                    name="situacao"
-                    defaultValue={0}
-                    render={({ field }) => (
-                      <Select onChange={field.onChange} value={field.value}>
-                        <MenuItem value={0}>Em espera</MenuItem>
-                        <MenuItem value={1}>Em criação (arte)</MenuItem>
-                        <MenuItem value={2}>Em execução</MenuItem>
-                        <MenuItem value={3}>Em acabamento</MenuItem>
-                        <MenuItem value={4}>Finalizado</MenuItem>
-                        <MenuItem value={5}>Entregue</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-                  <InputLabel id="demo-simple-select-label">Banco</InputLabel>
-
-                  <Controller
-                    name={`financeiro.0.idBanco`}
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        value={field.value || ""} // Valor padrão do idBanco
-                        onChange={(e) => field.onChange(e.target.value)}
-                        style={{ width: 300 }}
-                      >
-                        {bancos?.map((banco) => (
-                          <MenuItem key={banco.id} value={banco.id}>
-                            {banco.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}/>
-
-
-                  <InputLabel>Forma de Pagamento</InputLabel>
-                  <Controller
-                    name={`financeiro.0.idFormaPgto`}
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        value={field.value || ""} // Valor padrão do idForma_pgto
-                        onChange={(e) => field.onChange(e.target.value)}
-                        style={{ width: 300 }}
-                      >
-                        <MenuItem value={1}>Dinheiro</MenuItem>
-                        <MenuItem value={2}>Débito</MenuItem>
-                        <MenuItem value={3}>Crédito</MenuItem>
-                        <MenuItem value={4}>Pix</MenuItem>
-                        <MenuItem value={5}>Boleto</MenuItem>
-                        <MenuItem value={6}>À prazo</MenuItem>
-                        <MenuItem value={7}>Cheque</MenuItem>
-                      </Select>
-                    )}
-                  />
-
-
-                  <Typography variant="h6">Produtos da Venda</Typography>
-                  {fields.map((item, index) => (
-                    <Box
-                      key={item.id}
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                    >
-                      <Controller
-                        control={control}
-                        name={`vendas_produtos.${index}.idProduto` as const}
-                        defaultValue={0}
-                        render={({ field }) => (
+                  <Grid container spacing={2}>
+                    <Grid item xs={8}>
+                      {/* Primeira coluna */}
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <InputLabel>Vendedor</InputLabel>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            inputProps={{ readOnly: true }}
+                            error={!!errors.idVendedor}
+                            defaultValue={userId}
+                            {...register("idVendedor")}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <InputLabel>Cliente </InputLabel>
                           <Select
-                            {...field}
-                            error={!!errors.vendas_produtos?.[index]?.idProduto}
+                            fullWidth
+                            {...register("idCliente")}
+                            labelId="select-label"
+                            id="demo-simple-select"
+                            label="idCliente"
+                            error={!!errors.idCliente}
+                            defaultValue={
+                              clientes.length > 0
+                                ? clientes[0].nome
+                                : "Sem clientes"
+                            }
                           >
-                            {produtos.map((produto) => (
-                              <MenuItem key={produto.id} value={produto.id}>
-                                {produto.nome}
-                              </MenuItem>
-                            ))}
+                            {clientes &&
+                              clientes.map((cliente) => (
+                                <MenuItem key={cliente.id} value={cliente.id}>
+                                  {cliente.nome}
+                                </MenuItem>
+                              ))}
                           </Select>
-                        )}
-                      />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={1} sx={{ mt: 1 }}>
+                        <Grid item xs={3}>
+                          <InputLabel>Data da Compra</InputLabel>
+                          <TextField
+                            fullWidth
+                            type="date"
+                            id="outlined-helperText"
+                            InputLabelProps={{ shrink: true }}
+                            helperText={
+                              errors.dataAtual?.message || "Obrigatório"
+                            }
+                            error={!!errors.dataAtual}
+                            defaultValue={dayjs(today).format("YYYY-MM-DD")}
+                            {...register("dataAtual")}
+                          />
+                        </Grid>
 
-                      <TextField
-                        {...register(
-                          `vendas_produtos.${index}.quantidade` as const
-                        )}
-                        type="number"
-                        error={!!errors.vendas_produtos?.[index]?.quantidade}
-                        helperText={
-                          errors.vendas_produtos?.[index]?.quantidade
-                            ?.message || "Quantidade"
-                        }
-                        label="Quantidade"
-                        defaultValue={1}
-                        InputProps={{ inputProps: { min: 1 } }}
-                      />
-                                          
+                        <Grid item xs={3}>
+                          <InputLabel>Tipo</InputLabel>
+                          <Controller
+                            control={control}
+                            name="isVendaOS"
+                            defaultValue={1}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                onChange={field.onChange}
+                                value={field.value}
+                              >
+                                <MenuItem value={0}>Venda</MenuItem>
+                                <MenuItem value={1}>Orçamento</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={3}>
+                          <InputLabel>Situação</InputLabel>
+                          <Controller
+                            control={control}
+                            name="situacao"
+                            defaultValue={0}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                onChange={field.onChange}
+                                value={field.value}
+                              >
+                                <MenuItem value={0}>Em espera</MenuItem>
+                                <MenuItem value={1}>Em criação (arte)</MenuItem>
+                                <MenuItem value={2}>Em execução</MenuItem>
+                                <MenuItem value={3}>Em acabamento</MenuItem>
+                                <MenuItem value={4}>Finalizado</MenuItem>
+                                <MenuItem value={5}>Entregue</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={3}>
+                          <TextField
+                            fullWidth
+                            id="outlined-helperText"
+                            label="Desconto"
+                            defaultValue={0}
+                            sx={{ mt: 3 }}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="start">
+                                  %
+                                </InputAdornment>
+                              ),
+                            }}
+                            helperText={
+                              errors.desconto?.message || "Obrigatório"
+                            }
+                            error={!!errors.desconto}
+                            {...register("desconto", { valueAsNumber: true })}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <InputLabel id="demo-simple-select-label">
+                            Banco
+                          </InputLabel>
+                          <Controller
+                            name={`financeiro.0.idBanco`}
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                {...field}
+                                value={field.value || ""} // Valor padrão do idBanco
+                                onChange={(e) => field.onChange(e.target.value)}
+                              >
+                                {bancos?.map((banco) => (
+                                  <MenuItem key={banco.id} value={banco.id}>
+                                    {banco.nome}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <InputLabel>Forma de Pagamento</InputLabel>
+                          <Controller
+                            name={`financeiro.0.idFormaPgto`}
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                {...field}
+                                value={field.value || ""} // Valor padrão do idForma_pgto
+                                onChange={(e) => field.onChange(e.target.value)}
+                              >
+                                <MenuItem value={1}>Dinheiro</MenuItem>
+                                <MenuItem value={2}>Débito</MenuItem>
+                                <MenuItem value={3}>Crédito</MenuItem>
+                                <MenuItem value={4}>Pix</MenuItem>
+                                <MenuItem value={5}>Boleto</MenuItem>
+                                <MenuItem value={6}>À prazo</MenuItem>
+                                <MenuItem value={7}>Cheque</MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2} sx={{ marginTop: 1 }}>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            label="Parcelas"
+                            type="number"
+                            defaultValue={1}
+                            InputProps={{
+                              readOnly:
+                                waiter === 2 || waiter === 1 || waiter === 4,
+                            }}
+                            {...register("financeiro.0.parcelas")}
+                          />
+                        </Grid>
 
-                      <IconButton
-                        onClick={() => handleRemoveProduct(index)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
+                        <Grid item xs={6}>
+                          <TextField
+                            placeholder={`Valor bruto: ${totalQuantidade}`}
+                            {...register("financeiro.0.valor")}
+                            variant="outlined"
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    {/* Segunda coluna */}
+                    <Grid item xs={4}>
+                      <Grid item xs={12}>
+                        {fields.map((item, index) => (
+                          <Box
+                            key={item.id}
+                            display="flex"
+                            flexDirection="column" // Alterado para 'column' para separar o Select da quantidade + delete
+                            gap={2}
+                          >
+                            <Grid container spacing={2}>
+                              {/* Select ocupando a linha inteira */}
+                              <Grid item xs={12}>
+                                <InputLabel id={`produto-label-${index}`}>
+                                  Produto
+                                </InputLabel>
+                                <Controller
+                                  control={control}
+                                  name={
+                                    `vendas_produtos.${index}.idProduto` as const
+                                  }
+                                  defaultValue={0}
+                                  render={({ field }) => (
+                                    <Select
+                                      fullWidth
+                                      {...field}
+                                      error={
+                                        !!errors.vendas_produtos?.[index]
+                                          ?.idProduto
+                                      }
+                                    >
+                                      {produtos.map((produto) => (
+                                        <MenuItem
+                                          key={produto.id}
+                                          value={produto.id}
+                                        >
+                                          {produto.nome}
+                                        </MenuItem>
+                                      ))}
+                                    </Select>
+                                  )}
+                                />
+                              </Grid>
+                            </Grid>
 
-                    <Box mt={2}>
-                    <Typography variant="h6">Valor</Typography>
-                      <TextField
-                        placeholder={`Valor bruto: ${totalQuantidade}`}
-                        
-                        {...register('financeiro.0.valor')}
+                            {/* Quantidade e Ícone de Delete lado a lado */}
+                            <Grid container spacing={2} sx={{ mt: 1 }}>
+                              <Grid item xs={10}>
+                                <TextField
+                                  {...register(
+                                    `vendas_produtos.${index}.quantidade` as const
+                                  )}
+                                  type="number"
+                                  error={
+                                    !!errors.vendas_produtos?.[index]
+                                      ?.quantidade
+                                  }
+                                  label="Quantidade"
+                                  fullWidth
+                                  defaultValue={1}
+                                  InputProps={{ inputProps: { min: 1 } }}
+                                  sx={{ mb: 1 }}
+                                />
+                              </Grid>
+                              <Grid item xs={2}>
+                                <IconButton
+                                  onClick={() => handleRemoveProduct(index)}
+                                  color="error"
+                                  sx={{ mt: 1 }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        ))}
+                      </Grid>
+                    </Grid>
+
+                    <Grid item xs={12} sx={{ textAlign: "right", mt: 2 }}>
+                      <Button
                         variant="outlined"
-                        fullWidth
-                      />
-                    </Box>  
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={handleAddProduct}
+                      >
+                        Adicionar Produto
+                      </Button>
 
-                <Typography>Financeiro</Typography>
-                  <TextField
-                    label="Parcelas"
-                    type="number"
-                    defaultValue={1}
-                    InputProps={{
-                      readOnly: waiter === 2 || waiter === 1 || waiter === 4,
-                    }}
-                    {...register("financeiro.0.parcelas")}
-                  />
-
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddCircleOutlineIcon />}
-                    onClick={handleAddProduct}
-                  >
-                    Adicionar Produto
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Cadastrar
-                  </Button>
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        startIcon={<DoneIcon />}
+                        sx={{ ml: 2 }}
+                      >
+                        Cadastrar
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </form>
               </Box>
             </Modal>
             {/* ------------------UPDATE---------------------------------------------------------------------------- */}
-            {
-              open &&  (
-                <ModalEditVenda 
-                  clientes={clientes}
-                  bancos={bancos}                 
-                  open={open}
-                  produtos={produtos}
-                  setAlertMessage={setAlertMessage}
-                  setShowAlert={setShowAlert}
-                  toggleModal={toggleModal}
-                  userId={userId}
-                  idToEdit={idToEdit}
-                  vendas={sales}
-                  vendasProdutos={vp}
-                  financeiro={financeiros}
-                  loadSales = {loadSales}
-                />
-              )
-            }
-            { toggleGetModal.open && (
+            {open && (
+              <ModalEditVenda
+                clientes={clientes}
+                bancos={bancos}
+                open={open}
+                produtos={produtos}
+                setAlertMessage={setAlertMessage}
+                setShowAlert={setShowAlert}
+                toggleModal={toggleModal}
+                userId={userId}
+                idToEdit={idToEdit}
+                vendas={sales}
+                vendasProdutos={vp}
+                financeiro={financeiros}
+                loadSales={loadSales}
+              />
+            )}
+            {toggleGetModal.open && (
               <ModalGetVenda
                 vendasProdutos={vp}
                 produtos={produtos}
@@ -594,17 +730,14 @@ const Venda = () => {
                 open={toggleGetModal.open}
                 toggleModal={toggleGetModal.toggleModal}
               />
-
             )}
+          </Box>
 
-           
-          </Box> 
-          
           <Box sx={GridStyle}>
             <DataGrid
-              
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {

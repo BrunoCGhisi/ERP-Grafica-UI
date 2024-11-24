@@ -168,7 +168,7 @@ export function ModalEditCompra({
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Nova Compra
+              Editar Compra
             </Typography>
           </Grid>
 
@@ -224,18 +224,18 @@ export function ModalEditCompra({
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
-                        sx={{ marginTop: 1 }}
-                        type="date"
-                        label="Data"
-                        InputLabelProps={{ shrink: true }}
-                        size="medium"
-                        helperText={errors.dataCompra?.message || "Obrigatório"}
-                        error={!!errors.dataCompra}
-                        defaultValue={dayjs(today).format("YYYY-MM-DD")}
-                        {...register("dataCompra")}
-                        fullWidth
-                      />
+                    <TextField
+                      type="date"
+                      label={"Data compra"}
+                      InputLabelProps={{ shrink: true }}
+                      size="medium"
+                      helperText={errors.dataCompra?.message || "Obrigatório"}
+                      error={!!errors.dataCompra}
+                      //defaultValue={dayjs(dataC).format("YYYY-MM-DD")}
+                      {...register("dataCompra")}
+                      sx={{mt: 1}}
+                      fullWidth
+                    />
                     </Grid>
 
                     {/* Número da Nota */}
@@ -378,7 +378,7 @@ export function ModalEditCompra({
                             <Grid item xs={3}>
                               <IconButton
                                 onClick={() => handleRemoveSupplie(index)}
-                                color="error"
+                                color="primary"
                                 sx={{ alignSelf: "flex-end", mt: 1 }}
                               >
                                 <DeleteIcon />
