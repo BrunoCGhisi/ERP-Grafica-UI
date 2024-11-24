@@ -24,7 +24,7 @@ const AdmRoute = ({ children }: { children: JSX.Element }) => {
 
   if (!isAdm) {
     // Se não for admin, redireciona para login ou outra página de acesso negado
-    return <Navigate to="/home" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return children; // Se é admin, renderiza as rotas protegidas
