@@ -18,7 +18,7 @@ interface ModalEditCategoria {
 }
 
 export function ModalEditCategoria({open, loadProductCategories, toggleModal, setAlertMessage, setShowAlert, idToEdit, categorias, }: ModalEditCategoria){
-    console.log("BBBBBBBBBBBBB")
+ 
     const filterCategoria= categorias.filter((categoria) => categoria.id === idToEdit);
     
 
@@ -31,7 +31,7 @@ export function ModalEditCategoria({open, loadProductCategories, toggleModal, se
     });
 
   async function handleUpdate(data: proCategorySchemaType){
-    console.log("AAAAAAAAAAAAAA")
+
     try {
       const newData = {...data, id: idToEdit}
       const response = await putCategories(newData);

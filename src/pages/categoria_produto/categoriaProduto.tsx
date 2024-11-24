@@ -253,53 +253,6 @@ const CategoriaProduto = () => {
                 loadProductCategories={loadProductCategories}
               />
             )}
-              onClose={toggleModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <ModalRoot>
-              <Grid container spacing={2}>
-                  <Grid item>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Editar
-                    </Typography>
-                  </Grid>
-            
-                  <Grid item xs={12}>
-                    <form onSubmit={handleSubmit(handleUpdate)}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                          <TextField
-                            id="outlined-helperText"
-                            label="Categoria Produto"
-                            helperText={
-                              errors.categoria?.message || "Obrigatório"
-                            }
-                            error={!!errors.categoria}
-                            {...register("categoria")}
-                            fullWidth 
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ textAlign: "right" }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            startIcon={<DoneIcon />}
-                          >
-                            Editar
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Grid>
-                </Grid>
-              </ModalRoot>
-            </Modal>
           </Box>
           <Box sx={GridStyle}>
             <DataGrid
