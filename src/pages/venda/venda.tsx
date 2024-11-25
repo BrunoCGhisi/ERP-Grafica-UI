@@ -212,7 +212,6 @@ const Venda = () => {
     const response = await axios.get("http://localhost:3000/venda");
     const responseFin = await axios.get("http://localhost:3000/financeiro");
     setVp(response.data.vendasProdutos);
-    console.log("WATAFUCK", response.data.vendasProdutos)
     setFinanceiros(responseFin.data);
 
     const salesData = await getSales();

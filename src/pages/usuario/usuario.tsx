@@ -51,7 +51,6 @@ const Usuario = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
-  const [nome, setNome] = useState<string | null>(null);
   const [isAdm, setIsAdm] = useState<boolean | null>(null);
   const toggleModalDeactivate = useOpenModal();
 
@@ -92,20 +91,25 @@ const Usuario = () => {
 
   const handleDelete = async (data: usuarioSchemaType) => {
     const vendas = await getSales()
+    if (vendas) {
+      const filterVendas = vendas.filter((venda: vendaSchemaType) => venda.idVendedor === data.id)
 
-    const filterVendas = vendas.filter((venda: vendaSchemaType) => venda.idVendedor === data.id)
-
-    if (filterVendas.length === 0){
-     
-      await deleteUser(data.id!);
+      if (filterVendas.length === 0){
+       
+        await deleteUser(data.id!);
+      }
+      else{
+       
+        const deactivate = {...data, isActive: false}
+        await putUser(deactivate);
+      }
     }
     else{
-     
+           
       const deactivate = {...data, isActive: false}
       await putUser(deactivate);
     }
-    
-    
+
     loadUsers();
   };
 
@@ -118,7 +122,6 @@ const Usuario = () => {
       const tokenData = await getToken();
       if (tokenData) {
         setUserId(tokenData.userId);
-        setNome(tokenData.nome);
         setIsAdm(tokenData.isAdm);
       }
     };

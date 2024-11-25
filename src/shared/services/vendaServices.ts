@@ -19,8 +19,6 @@ export const getSalesProd = async () => {
   
 };
 
-
-
 export const postSale = async (data: vendaSchemaType) => {
   const { id, ...mydata } = data;
   const response = await axios.post(BASE_URL, mydata);
