@@ -779,6 +779,9 @@ const Compra = () => {
               columns={columns}
               localeText={localeText}
               initialState={{
+                sorting: {
+                  sortModel: [{ field: 'id', sort: 'desc' }],
+                },
                 pagination: {
                   paginationModel: {
                     pageSize: 6,

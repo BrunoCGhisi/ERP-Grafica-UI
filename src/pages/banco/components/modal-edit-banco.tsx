@@ -26,7 +26,8 @@ export function ModalEditBanco({open, loadBanks, toggleModal, setAlertMessage, s
       resolver: zodResolver(bancoSchema),
       defaultValues: {
         nome: filterBancos[0].nome,
-        valorTotal:  filterBancos[0].valorTotal
+        valorTotal:  filterBancos[0].valorTotal,
+        isActive:  filterBancos[0].isActive
       },
     });
 
