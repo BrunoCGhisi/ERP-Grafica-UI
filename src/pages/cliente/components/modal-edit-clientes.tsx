@@ -204,7 +204,7 @@ export function ModalEditCliente({
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <InputLabel id="demo-simple-select-label">
-                    StatusIe
+                  Perfil de Cadastro
                   </InputLabel>
                   <Controller
                     control={control}

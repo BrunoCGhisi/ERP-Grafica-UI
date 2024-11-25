@@ -8,6 +8,11 @@ export const getUsers = async () => {
   return response.data.usuariosAtivos;
 };
 
+export const getUsersAll = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.allData;
+};
+
 export const getDeactiveUsers = async () => {
   const response = await axios.get(BASE_URL);
   return response.data.usuariosDesativos;

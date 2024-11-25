@@ -6,6 +6,8 @@ import { putUser } from "../../../shared/services";
 import { usuarioSchemaType, usuarioSchema } from "../../../shared/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModalRoot } from "../../../shared/components/ModalRoot";
+import { getToken } from "../../../shared/services/payload";
+import { useEffect, useState } from "react";
 
 interface ModalEditUsuario {
     open: boolean
@@ -17,17 +19,31 @@ interface ModalEditUsuario {
     usuarios: usuarioSchemaType[],
 }
 
+
+
 export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage, setShowAlert, idToEdit, usuarios, }: ModalEditUsuario){
 
     const filterUsers= usuarios.filter((usuario) => usuario.id === idToEdit);
-    console.log("filter", filterUsers )
-    console.log(filterUsers[0].isAdm)
+    const [userId, setUserId] = useState<number | null>(null);
+
+    useEffect(() => {
+      const fetchToken = async () => {
+        const tokenData = await getToken();
+        if (tokenData) {
+          setUserId(tokenData.userId);
+        }
+      };
+      fetchToken();
+    }, []);
+  
 
     const { register, handleSubmit, reset, control, formState: { errors } } = useForm<usuarioSchemaType>({
       resolver: zodResolver(usuarioSchema),
       defaultValues: {
         nome: filterUsers[0].nome,
+        email: filterUsers[0].email,
         isAdm: filterUsers[0].isAdm,
+        isActive: filterUsers[0].isActive,
       },
     });
 
@@ -82,6 +98,9 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
                       fullWidth
                     />
                   </Grid>
+
+                  {userId != filterUsers[0]?.id && (
+                    <>
                   <Grid item xs={12} md={6}>
                     <Controller
                       control={control}
@@ -120,6 +139,36 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
                             )}
                           />
                         </Grid>
+                        </>
+                    )}
+
+                  {userId === filterUsers[0]?.id &&(
+                    <>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        id="outlined-helperText"
+                        label="Email"
+                        helperText={errors.email?.message || "Obrigatório"}
+                        error={!!errors.email}
+                        fullWidth
+                        {...register("email")}
+                      />
+                    </Grid>
+
+                    {/* Segunda coluna - Senha e Select de Administrador */}
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        id="outlined-helperText"
+                        label="Senha"
+                        type="password"
+                        helperText={errors.senha?.message || "Obrigatório"}
+                        error={!!errors.senha}
+                        fullWidth
+                        {...register("senha")}
+                      />
+                    </Grid>
+                  </>
+                )}
                   <Grid item xs={12} sx={{ textAlign: "right" }}>
                     <Button
                       type="submit"

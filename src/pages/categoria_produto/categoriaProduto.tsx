@@ -91,7 +91,7 @@ const CategoriaProduto = () => {
   const handleDelete = async (data: proCategorySchemaType) => {
     const produtos = await getProductsAll();
     const filterProdutos = produtos.filter(
-      (produto: produtoSchemaType) => produto.idInsumo === data.id
+      (produto: produtoSchemaType) => produto.idCategoria === data.id
     );
     if (filterProdutos.length === 0) {
       await deleteCategories(data.id!);
