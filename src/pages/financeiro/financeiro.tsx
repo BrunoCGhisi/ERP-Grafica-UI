@@ -83,7 +83,27 @@ const Financeiro = () => {
     { field: "dataVencimento", headerName: "Vencimento", editable: false, flex: 0, width: 150, minWidth: 95, headerClassName: "gridHeader--header", },
     { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 150, headerClassName: "gridHeader--header",
       renderCell: (params) => <span>{situacaoNome(params.value)}</span> },
-    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", },
+    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", renderCell: (params) => {
+      const formattedValue = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(params.value);
+
+      return (
+        <Box
+          sx={{
+            backgroundColor: params.value < 0 ? "error.light" : "transparent",
+            color: params.value < 0 ? "#fff" : "#000",
+            opacity: params.value < 0 ? "60%" : "100%",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+          }}
+        > 
+          {formattedValue}
+        </Box>
+      );
+    }, },
 
     {
       field: "acoes",

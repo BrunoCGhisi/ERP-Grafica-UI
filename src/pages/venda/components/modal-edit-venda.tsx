@@ -15,6 +15,7 @@ import {
 } from "../../../shared/services/types";
 import { ModalRootFull } from "../../../shared/components/ModalRootFull";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { NumericFormat } from "react-number-format";
 
 
 
@@ -161,6 +162,9 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
         </Typography>
 
         <form onSubmit={handleSubmit(handleUpdate)}>
+        {filterVendas[0].isVendaOS === 0 ? (
+            <Typography>a</Typography>
+        ) : (<Typography>a</Typography>) }
           <Grid container spacing={2}>
             <Grid item xs={8}>
               {/* Primeira coluna */}
@@ -197,8 +201,9 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                 </Grid>
               </Grid>
               <Grid container spacing={1} sx={{ mt: 1 }}>
+                
                 <Grid item xs={3}>
-                  <InputLabel>Data da Compra</InputLabel>
+                  <InputLabel>Data da Venda</InputLabel>
                   <TextField
                     type="date"
                     id="outlined-helperText"
@@ -337,12 +342,33 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                 </Grid>
 
                 <Grid item xs={6}>
-                  <TextField
-                    label="Valor"
-                    placeholder={`Valor bruto: ${totalQuantidade}`}
-                    {...register("financeiro.0.valor")}
-                    variant="outlined"
-                    fullWidth
+                <Controller
+                  name={"financeiro.0.valor"}
+                  control={control}
+                    
+                  rules={{ required: "Valor é obrigatório" }}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <NumericFormat
+                      customInput={TextField}
+                      prefix="R$"
+                      fullWidth
+                      id="outlined-helperText"
+                      label="Preço por m²"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      allowLeadingZeros
+                      placeholder={`Valor bruto: ${totalQuantidade}`}
+                      value={value} // Valor atual
+                      onValueChange={(values) => {
+                        const { floatValue } = values;
+                        onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                      }}
+                      error={!!error}
+                    />
+                  )}
                   />
                 </Grid>
               </Grid>
