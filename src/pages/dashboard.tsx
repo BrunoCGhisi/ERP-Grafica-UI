@@ -119,16 +119,16 @@ const Dashboard = () => {
                   boxShadow: 2,
                 }}
               >
-                <Typography variant="h4" color="error" sx={{ ml: 2 }}>
+                <Typography variant="h4" color="#20c404" sx={{ ml: 2 }}>
                   {resumo.qtdContasReceber}
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
                   <Typography variant="h6">Contas a Receber</Typography>
-                  <Typography variant="body1" color="error">
+                  <Typography variant="body1" color="#20c404">
                     Total R$ {resumo.totalReceber.toFixed(2)}
                   </Typography>
                 </Box>
-                <Box sx={{ color: "#0f0" }}>
+                <Box sx={{ color: "#20c404" }}>
                   <ArchiveIcon
                     sx={{ ml: 4, fontSize: 40 }}
                     onClick={() => finalizarConta(2, false)} // Passando o ID e o tipo de conta
@@ -140,7 +140,7 @@ const Dashboard = () => {
 
           {/* Gráficos */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               {/* Gráfico 1 */}
               <Box>
                 <Box
@@ -166,16 +166,85 @@ const Dashboard = () => {
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={6}>
-              <Typography>Gráfico 2</Typography>
+            <Grid item xs={4}>
+              {/* Gráfico 1 */}
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+
+                    bgcolor: "#fff",
+                    padding: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                  }}
+                >
+                  <Box sx={{ mr: 10 }}>
+                    <Typography variant="h5" color="primary">
+                      {" "}
+                      Produtos mais vendidos{" "}
+                    </Typography>
+                  </Box>
+                  <PieMostProduct />
+                </Box>
+              </Box>
             </Grid>
           </Grid>
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={6}>
-              <Typography>Gráfico 3</Typography>
+          <Grid item xs={4}>
+              {/* Gráfico 1 */}
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+
+                    bgcolor: "#fff",
+                    padding: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                  }}
+                >
+                  <Box sx={{ mr: 10 }}>
+                    <Typography variant="h5" color="primary">
+                      {" "}
+                      Produtos mais vendidos{" "}
+                    </Typography>
+                  </Box>
+                  <PieMostProduct />
+                </Box>
+              </Box>
             </Grid>
-            <Grid item xs={6}>
-              <Typography>Gráfico 4</Typography>
+            <Grid item xs={4}>
+              {/* Gráfico 1 */}
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+
+                    bgcolor: "#fff",
+                    padding: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                  }}
+                >
+                  <Box sx={{ mr: 10 }}>
+                    <Typography variant="h5" color="primary">
+                      {" "}
+                      Produtos mais vendidos{" "}
+                    </Typography>
+                  </Box>
+                  <PieMostProduct />
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         </Grid>
