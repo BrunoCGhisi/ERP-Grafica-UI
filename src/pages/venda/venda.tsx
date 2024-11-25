@@ -296,7 +296,7 @@ const Venda = () => {
       headerName: "Código",
       editable: false,
       flex: 0,
-      width: 90,
+      width: 80,
       headerClassName: "gridHeader--header",
     },
     {
@@ -312,8 +312,8 @@ const Venda = () => {
       headerName: "Vendedor",
       editable: false,
       flex: 0,
-      width: 150,
-      headerClassName: "gridHeader--header",
+      width: 170,
+      headerClassName: "gridHeader--header",  renderCell: (params) => <span>{getUsersNames(params.value)}</span>
     },
     {
       field: "dataAtual",
