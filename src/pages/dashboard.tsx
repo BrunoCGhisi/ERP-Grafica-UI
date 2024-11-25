@@ -221,14 +221,15 @@ const Dashboard = () => {
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
                   flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                   bgcolor: "#fff",
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 2,
-                  width: "100%",
+                  width: "100%", // Garante que o Box ocupe o espaço total disponível
+                  
                 }}
               >
                 <Typography variant="h5" color="primary" sx={{ mb: 2 }}>

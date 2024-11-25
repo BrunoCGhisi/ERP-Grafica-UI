@@ -1,23 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { z } from "zod";
-import { SalesOfMonthSchemaType, salesOfMonthSchema } from "../shared/services/types";
+import { axisClasses } from "@mui/x-charts/ChartsAxis";
+import { SalesOfMonthSchemaType } from "../shared/services/types";
+
+// Função para formatar valores em R$
+const valueFormatter = (value: number | null) => {
+  return value !== null ? `R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "";
+};
 
 const SalesChart: React.FC = () => {
   const [salesData, setSalesData] = useState<SalesOfMonthSchemaType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [chartSize, setChartSize] = useState({ width: 600, height: 400 });
 
   const fetchSalesData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/vendas/mensais");
-      const parsedData = response.data.map((item: unknown) => salesOfMonthSchema.parse(item)); // Valida os dados recebidos
-      setSalesData(parsedData);
+      const response = await axios.get<SalesOfMonthSchemaType[]>(
+        "http://localhost:3000/vendas/mensais"
+      );
+      setSalesData(response.data);
+      setLoading(false);
     } catch (err) {
       setError("Erro ao carregar dados do gráfico.");
-      console.error(err);
-    } finally {
       setLoading(false);
     }
   };
@@ -27,9 +34,27 @@ const SalesChart: React.FC = () => {
 
     const interval = setInterval(() => {
       fetchSalesData();
-    }, 10000); // A cada 10 segundos
+    }, 5000);
 
-    return () => clearInterval(interval); // Limpa intervalo ao desmontar
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (chartContainerRef.current) {
+        const { width, height } = chartContainerRef.current.getBoundingClientRect();
+        setChartSize({
+          width: width - 20,
+          height: height - 20,
+        });
+      }
+    });
+
+    if (chartContainerRef.current) {
+      resizeObserver.observe(chartContainerRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
   }, []);
 
   if (loading) return <p>Carregando...</p>;
@@ -39,12 +64,43 @@ const SalesChart: React.FC = () => {
   const faturamento = salesData.map((sale) => sale.faturamento);
 
   return (
-    <div style={{ width: "100%", maxWidth: 700, margin: "0 auto" }}>
+    <div ref={chartContainerRef} style={{ width: "100%", height: "100%" }}>
       <BarChart
-        xAxis={[{ scaleType: "band", data: labels }]}
-        series={[{ data: faturamento }]}
-        width={600}
-        height={400}
+        dataset={salesData.map((sale) => ({
+          month: sale.dataVenda,
+          faturamento: sale.faturamento,
+        }))}
+        xAxis={[
+          {
+            scaleType: "band",
+            dataKey: "month",
+          },
+        ]}
+        yAxis={[
+          {
+            label: "Faturamento (R$)",
+          },
+        ]}
+        series={[
+          {
+            dataKey: "faturamento",
+            label: "Faturamento",
+            valueFormatter,
+            color: "#ffb74d",
+          },
+        ]}
+        layout="vertical" // Pode ser 'vertical' ou 'horizontal'
+        grid={{
+          vertical: true,
+          horizontal: true,
+        }}
+        width={chartSize.width}
+        height={chartSize.height}
+        sx={{
+          [`.${axisClasses.left} .${axisClasses.label}`]: {
+            transform: "translate(-30px, 0)", // Espaçamento extra para a label
+          },
+        }}
       />
     </div>
   );
