@@ -78,13 +78,13 @@ const SalesChart: React.FC = () => {
         ]}
         yAxis={[
           {
-            label: "Faturamento (R$)",
+            label: "Faturamento Bruto (R$)",
           },
         ]}
         series={[
           {
             dataKey: "faturamento",
-            label: "Faturamento",
+            label: "Faturamento Bruto",
             valueFormatter,
             color: "#ffb74d",
           },

@@ -233,7 +233,7 @@ const Dashboard = () => {
                 }}
               >
                 <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
-                  Faturamento Mensal
+                  Faturamento Bruto Mensal
                 </Typography>
                 <SalesChart />
               </Box>
