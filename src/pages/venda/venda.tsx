@@ -23,8 +23,6 @@ import {
   GridLocaleText,
   
 } from "@mui/x-data-grid";
-
-
 import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
 //Icones
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -59,7 +57,6 @@ import {
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
-import CircularProgress from "@mui/material/CircularProgress";
 
 const clienteSchema = z.object({
   id: z.number().optional(),

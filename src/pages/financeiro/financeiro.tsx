@@ -1,92 +1,48 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
-  Box,
-  InputLabel,
-  Select,
-  MenuItem,
-  Modal,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
+  Box, IconButton, Typography,
   Grid,
   Alert
 } from "@mui/material";
 import { DataGrid, GridColDef, GridLocaleText } from "@mui/x-data-grid";
-import { ModalStyle, GridStyle, SpaceStyle } from "../../shared/styles";
+import { GridStyle, SpaceStyle } from "../../shared/styles";
 import { MiniDrawer } from "../../shared/components";
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DoneIcon from "@mui/icons-material/Done";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModalRoot } from "../../shared/components/ModalRoot";
 import { useOpenModal } from "../../shared/hooks/useOpenModal";
-import { Controller, useForm } from "react-hook-form";
-
+import { useForm } from "react-hook-form";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   financiaSchema,
   financiaSchemaType,
-  FinanciaDataRow,
-  financeiroSchemaType,
+  FinanciaDataRow
 } from "../../shared/services/types";
 
-import { getFinances, postFinances, putFinances, deleteFinances } from "../../shared/services";
-import dayjs from "dayjs";
+import { getFinances } from "../../shared/services";
 import { ModalEditFinanceiro } from "./components/modal-edit-fin";
+import { ModalGetFinanceiro } from "./components/modal-get-fin";
 
 const Financeiro = () => {
   const {
-    register,
-    setValue,
     reset,
-    control,
-    formState: { errors },
-    handleSubmit,
   } = useForm<financiaSchemaType>({
     resolver: zodResolver(financiaSchema),
   });
   const [finances, setFinances] = useState<financiaSchemaType[]>([]);
-  const [selectedData, setSelectedData] = useState<FinanciaDataRow | null>(
-    null
-  );
+
   const { toggleModal, open } = useOpenModal();
+  const toggleGetModal = useOpenModal();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [idToEdit, setIdToEdit] = useState<any>(null);
+  const [selectedRow, setSelectedRow] = useState<FinanciaDataRow>();
 
-  const handleEdit = (updateDate: FinanciaDataRow) => {
-    setSelectedData(updateDate);
-    toggleModal();
+  const handleRowClick = (params: FinanciaDataRow) => {
+    setSelectedRow(params);
+    toggleGetModal.toggleModal();
   };
-
-  // Modal ADD
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => {
-    setAdOpen(true), reset();
-  };
-  const addOf = () => setAdOpen(false);
-
-  useEffect(() => {
-    if (selectedData) {
-      setValue("id", selectedData.id);
-      setValue("idVenda", selectedData.idVenda);
-      setValue("idBanco", selectedData.idBanco);
-      setValue("descricao", selectedData.descricao);
-      setValue("isPagarReceber", selectedData.isPagarReceber);
-      setValue("valor", selectedData.valor);
-      setValue("dataVencimento", selectedData.dataVencimento);
-      setValue("dataCompetencia", selectedData.dataCompetencia);
-      setValue("dataPagamento", selectedData.dataPagamento);
-      setValue("situacao", selectedData.situacao);
-      setValue("parcelas", selectedData.parcelas);
-    }
-  }, [selectedData, setValue]);
 
   //CRUD -----------------------------------------------------------------------------------------------------
 
@@ -125,6 +81,9 @@ const Financeiro = () => {
           <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
+          <IconButton onClick={() => handleRowClick(row)}>
+            <OpenInNewIcon color="primary" />
+          </IconButton>
         </div>
       ),
     },
@@ -134,6 +93,7 @@ const Financeiro = () => {
     id: financeiro.id,
     descricao: financeiro.descricao,
     idVenda: financeiro.idVenda,
+    idFormaPgto: financeiro.idFormaPgto,
     idBanco: financeiro.idBanco,
     isPagarReceber: financeiro.isPagarReceber,
     valor: financeiro.valor,
@@ -179,6 +139,14 @@ const Financeiro = () => {
                 finances={finances}
                 loadFinances={loadFinances}
 
+              />
+            )}
+            {toggleGetModal.open && (
+              <ModalGetFinanceiro
+                financeiros={finances}
+                rowData={selectedRow}
+                open={toggleGetModal.open}
+                toggleModal={toggleGetModal.toggleModal}
               />
             )}
 

@@ -29,18 +29,19 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
       defaultValues: {
         dataVencimento: filterFinances[0].dataVencimento,
         dataCompetencia: filterFinances[0].dataCompetencia,
-        dataPagamento: filterFinances[0].dataPagamento,
+        situacao: filterFinances[0].situacao,
+
       },
     });
 
     const situacao = watch("situacao");
 
     const handleSwitchChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
-        if( filterFinances[0].isPagarReceber === 0){
-            setValue("situacao", event.target.checked ? 1 : 3);
+        if( filterFinances[0].isPagarReceber === false){
+            setValue("situacao", event.target.checked ? 3 : 1);
         }
         else{
-            setValue("situacao", event.target.checked ? 2 : 4);
+            setValue("situacao", event.target.checked ? 4 : 2);
         }
     };
 
@@ -85,8 +86,8 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
             <Grid item xs={12}>
               <form onSubmit={handleSubmit(handleUpdate)}>
                 
-                <Grid item xs={3}>
-                    <InputLabel>Data da Compra</InputLabel>
+                <Grid item xs={10}>
+                    <InputLabel>Data de Vencimento</InputLabel>
                     <TextField
                       fullWidth
                       type="date"
@@ -100,8 +101,8 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                     />
                 </Grid>
 
-                <Grid item xs={3}>
-                    <InputLabel>Data da Compra</InputLabel>
+                <Grid item xs={10}>
+                    <InputLabel>Data de Competência</InputLabel>
                     <TextField
                       fullWidth
                       type="date"
@@ -115,19 +116,19 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                     />
                 </Grid>
 
-                <Grid item xs={3}>
-                  <InputLabel>Situação</InputLabel>
+                <Grid item xs={10}>
+                  <InputLabel>Situação do Pagamento</InputLabel>
                   <Box display="flex" alignItems="center">
 
-                    {filterFinances[0].isPagarReceber === 0 && (
+                    {filterFinances[0].isPagarReceber === false && (
                         <Switch
-                            checked={situacao === 1} // Verifica se o valor é 1 (ativo)
+                            checked={situacao === 3} // Verifica se o valor é 1 (ativo)
                             onChange={handleSwitchChange}
                         />
                     )}
-                    {filterFinances[0].isPagarReceber === 1 &&(
+                    {filterFinances[0].isPagarReceber === true &&(
                         <Switch
-                            checked={situacao === 2} // Verifica se o valor é 1 (ativo)
+                            checked={situacao === 4} // Verifica se o valor é 1 (ativo)
                             onChange={handleSwitchChange}
                         />
                     )}
