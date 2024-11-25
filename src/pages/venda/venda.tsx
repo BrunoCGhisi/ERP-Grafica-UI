@@ -267,6 +267,14 @@ const Venda = () => {
 
   const columns: GridColDef<VendaDataRow>[] = [
     {
+      field: "id",
+      headerName: "Código",
+      editable: false,
+      flex: 0,
+      width: 90,
+      headerClassName: "gridHeader--header",
+    },
+    {
       field: "idCliente",
       headerName: "Cliente",
       editable: false,
