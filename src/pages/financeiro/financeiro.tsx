@@ -209,6 +209,9 @@ const Financeiro = () => {
               columns={columns}
               localeText={localeText}
               initialState={{
+                sorting: {
+                  sortModel: [{ field: 'descricao', sort: 'desc' }],
+                },
                 pagination: {
                   paginationModel: {
                     pageSize: 6,

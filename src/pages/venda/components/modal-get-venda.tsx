@@ -180,7 +180,7 @@ export function ModalGetVenda({
             <TextField
               id="outlined-helperText"
               label="Venda ou Orçamento"
-              value={rowData?.isVendaOS === 1 ? "Orçamento" : "Venda"}
+              value={rowData?.isVendaOS === 0 ? "Orçamento" : "Venda"}
               inputProps={{ readOnly: true }}
             />
           </Grid>

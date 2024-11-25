@@ -58,6 +58,7 @@ import {
   getProductsAll,
   getUsers,
   getUsersAll,
+  getSuppliesAll,
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
@@ -124,7 +125,7 @@ const Venda = () => {
  useEffect(() => {
    const PriceSugestion = async () => {
      try {
-       const response = await getSupplies();
+       const response = await getSuppliesAll();
        const subscription = watch((values) => {
          const sum = values.vendas_produtos?.reduce((acc, item) => {
            const produto = produtos.find(
@@ -160,7 +161,7 @@ const Venda = () => {
    };
 
    PriceSugestion();
- }, [watch, getSupplies]);
+ }, [watch, getSuppliesAll]);
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -296,7 +297,7 @@ const Venda = () => {
       headerName: "Código",
       editable: false,
       flex: 0,
-      width: 80,
+      width: 100,
       headerClassName: "gridHeader--header",
     },
     {
@@ -807,6 +808,9 @@ const Venda = () => {
               columns={columns}
               localeText={localeText}
               initialState={{
+                sorting: {
+                  sortModel: [{ field: 'id', sort: 'desc' }],
+                },
                 pagination: {
                   paginationModel: {
                     pageSize: 6,

@@ -235,8 +235,8 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                         onChange={field.onChange}
                         value={field.value}
                       >
-                        <MenuItem value={0}>Venda</MenuItem>
-                        <MenuItem value={1}>Orçamento</MenuItem>
+                        <MenuItem value={1}>Venda</MenuItem>
+                        <MenuItem value={0}>Orçamento</MenuItem>
                       </Select>
                     )}
                   />
