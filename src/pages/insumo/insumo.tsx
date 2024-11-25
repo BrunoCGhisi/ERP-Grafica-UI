@@ -26,6 +26,7 @@ import {
   InsumoDataRow,
   insumoSchemaType,
   produtoSchemaType,
+  compraInsumoSchemaType,
 } from "../../shared/services/types";
 
 import {
@@ -38,6 +39,7 @@ import {
 import { ModalEditInsumo } from "./components/modal-edit-insumos";
 import { NumericFormat } from "react-number-format";
 import { ModalDeactivateInsumo } from "./components/modal-deactivate-insumos";
+import { getPurchases, getPurchasesSupplies } from "../../shared/services/compraServices";
 
 const Insumo = () => {
   const [supplies, setSupplies] = useState<insumoSchemaType[]>([]);
@@ -89,15 +91,31 @@ const Insumo = () => {
 
   const handleDelete = async (data: insumoSchemaType) => {
     const produtos = await getProducts();
+    const compras = await getPurchasesSupplies();
+  
+    // Verifica se produtos ou compras vieram vazios
+    const noProdutos = produtos.length === 0;
+    const noCompras = compras.length === 0;
+  
     const filterProdutos = produtos.filter(
       (produto: produtoSchemaType) => produto.idInsumo === data.id
     );
-    if (filterProdutos.length === 0) {
+    const filterCompras = compras.filter(
+      (compra: compraInsumoSchemaType) => compra.idInsumo === data.id
+    );
+  
+    if (noProdutos && noCompras) {
+      // Se não há produtos nem compras, delete diretamente
+      await deleteSupplie(data.id!);
+    } else if (filterProdutos.length === 0 && filterCompras.length === 0) {
+      // Se não há relação com produtos nem compras, delete diretamente
       await deleteSupplie(data.id!);
     } else {
+      // Caso contrário, apenas desative o insumo
       const deactivate = { ...data, isActive: false };
       await putSupplie(deactivate);
     }
+  
     loadSupplies();
   };
 

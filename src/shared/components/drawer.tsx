@@ -172,7 +172,6 @@ export function MiniDrawer({ children }: DrawerProps) {
 
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <Typography>GraficaName</Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -209,18 +208,19 @@ export function MiniDrawer({ children }: DrawerProps) {
           </ListItemButton>
           <Collapse in={openServices} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
+            <ListItemButton component={Link} to="/Financeiro" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <CurrencyExchangeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Financeiro" />
+              </ListItemButton>
               <ListItemButton component={Link} to="/Banco" sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <AccountBalanceIcon />
                 </ListItemIcon>
                 <ListItemText primary="Banco" />
               </ListItemButton>
-              <ListItemButton component={Link} to="/Financeiro" sx={{ pl: 3 }}>
-                <ListItemIcon>
-                  <CurrencyExchangeIcon />
-                </ListItemIcon>
-                <ListItemText primary="Financeiro" />
-              </ListItemButton>
+
             </List>
           </Collapse>
           <Divider sx={{ bgcolor: "primary.main" }} />
@@ -235,23 +235,25 @@ export function MiniDrawer({ children }: DrawerProps) {
           
           <Collapse in={openProduction} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton component={Link} to="/Categoria" sx={{ pl: 3 }}>
-                <ListItemIcon>
-                  <ClassIcon />
-                </ListItemIcon>
-                <ListItemText primary="Categoria" />
-              </ListItemButton>
               <ListItemButton component={Link} to="/Produto" sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <LayersIcon />
                 </ListItemIcon>
                 <ListItemText primary="Produto" />
               </ListItemButton>
+
               <ListItemButton component={Link} to="/Insumo" sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <CategoryIcon />
                 </ListItemIcon>
                 <ListItemText primary="Insumo" />
+              </ListItemButton>
+
+              <ListItemButton component={Link} to="/Categoria" sx={{ pl: 3 }}>
+                <ListItemIcon>
+                  <ClassIcon />
+                </ListItemIcon>
+                <ListItemText primary="Categoria" />
               </ListItemButton>
             </List>
           </Collapse>

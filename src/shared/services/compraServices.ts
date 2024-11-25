@@ -8,6 +8,11 @@ export const getPurchases = async () => {
   return response.data.compras;
 };
 
+export const getPurchasesSupplies = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.comprasInsumos;
+};
+
 export const postPurchases = async (data: compraSchemaType) => {
   const { id, ...mydata } = data;
   const response = await axios.post(BASE_URL, mydata);
