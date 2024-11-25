@@ -9,7 +9,7 @@ export const produtoSchema = z.object({
   idInsumo: z.number().min(1, "Campo obrigatório"),
   largura: z.coerce.number(),
   comprimento: z.coerce.number(),
-  isActive: z.boolean(),
+  isActive: z.boolean().optional(),
 });
 
 export interface ProdutoDataRow {
