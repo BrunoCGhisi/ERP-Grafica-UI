@@ -19,7 +19,7 @@ const Login = () => {
 
       const { access_token } = response.data;
       localStorage.setItem("token", access_token); // Armazena token no localStorage
-      navigate("/home"); // Navega para a rota "home"
+      navigate("/dashboard"); // Navega para a rota "home"
     } catch (error: any) {
       setError("Falha no login. Verifique suas credenciais.");
       console.error(error);
