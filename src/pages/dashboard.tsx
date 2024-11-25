@@ -9,6 +9,8 @@ import { getToken } from "../shared/services/payload";
 import PieMostProduct from "./pieTeste";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import ArchiveIcon from "@mui/icons-material/Archive";
+import SellIcon from "@mui/icons-material/Sell";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +22,8 @@ const Dashboard = () => {
     totalPagar: 0,
     qtdContasReceber: 0,
     qtdContasPagar: 0,
+    comprasHoje: 0,
+    vendasHoje: 0,
   });
 
   const handleLogout = () => {
@@ -67,11 +71,11 @@ const Dashboard = () => {
   return (
     <Box sx={SpaceStyle}>
       <MiniDrawer>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ paddingX: 2 }}>
           {/* Texto principal */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ mb: 2 }}>
             {nome && (
-              <Typography variant="h4" color="primary">
+              <Typography variant="h4" color="primary" sx={{ ml: 2 }}>
                 Bem-vindo, {nome}!
               </Typography>
             )}
@@ -79,11 +83,12 @@ const Dashboard = () => {
 
           {/* Valores A pagar e A receber */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                   bgcolor: "#fff",
                   padding: 2,
                   borderRadius: 2,
@@ -93,157 +98,141 @@ const Dashboard = () => {
                 <Typography variant="h4" color="error" sx={{ ml: 2 }}>
                   {resumo.qtdContasPagar}
                 </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
-                  <Typography variant="h6">Contas a Pagar</Typography>
+                <Box sx={{ ml: 2, flex: 1 }}>
+                  <Typography variant="h6" color="text.primary">
+                    Contas a Pagar
+                  </Typography>
                   <Typography variant="body1" color="error">
                     Total R$ {resumo.totalPagar.toFixed(2)}
                   </Typography>
                 </Box>
-                <Box sx={{ color: "#f00" }}>
-                  <UnarchiveIcon
-                    sx={{ ml: 4, fontSize: 40 }}
-                    onClick={() => finalizarConta(1, true)} // Passando o ID e o tipo de conta
-                  />
-                </Box>
+                <UnarchiveIcon sx={{ fontSize: 40, color: "error.main" }} />
               </Box>
             </Grid>
 
-            <Grid item xs={3.2}>
+            <Grid item xs={12} sm={6} md={3}>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                   bgcolor: "#fff",
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 2,
                 }}
               >
-                <Typography variant="h4" color="#20c404" sx={{ ml: 2 }}>
+                <Typography variant="h4" color="success" sx={{ ml: 1 }}>
                   {resumo.qtdContasReceber}
                 </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
-                  <Typography variant="h6">Contas a Receber</Typography>
-                  <Typography variant="body1" color="#20c404">
+                <Box sx={{ ml: 2, flex: 1 }}>
+                  <Typography variant="h6" color="text.primary">
+                    Contas a Receber
+                  </Typography>
+                  <Typography variant="body1" color="success.main">
                     Total R$ {resumo.totalReceber.toFixed(2)}
                   </Typography>
                 </Box>
-                <Box sx={{ color: "#20c404" }}>
-                  <ArchiveIcon
-                    sx={{ ml: 4, fontSize: 40 }}
-                    onClick={() => finalizarConta(2, false)} // Passando o ID e o tipo de conta
-                  />
+                <ArchiveIcon sx={{ fontSize: 40, color: "success.main" }} />
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={2.8}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  bgcolor: "#fff",
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                <Typography variant="h4" color="primary" sx={{ ml: 2 }}>
+                  {resumo.comprasHoje}
+                </Typography>
+                <Box sx={{ ml: 2, flex: 1 }}>
+                  <Typography variant="h6" color="text.primary">
+                    Compras
+                  </Typography>
+                  <Typography variant="body1" color="primary">
+                    Registradas hoje
+                  </Typography>
                 </Box>
+                <LocalMallIcon sx={{ fontSize: 40, color: "primary.main" }} />
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={2.8}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  bgcolor: "#fff",
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                <Typography variant="h4" color="primary" sx={{ ml: 2 }}>
+                  {resumo.vendasHoje}
+                </Typography>
+                <Box sx={{ ml: 2, flex: 1 }}>
+                  <Typography variant="h6" color="text.primary">
+                    Vendas
+                  </Typography>
+                  <Typography variant="body1" color="primary">
+                    Registradas hoje
+                  </Typography>
+                </Box>
+                <SellIcon sx={{ fontSize: 40, color: "primary.main" }} />
               </Box>
             </Grid>
           </Grid>
 
           {/* Gráficos */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={4}>
-              {/* Gráfico 1 */}
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-
-                    bgcolor: "#fff",
-                    padding: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                  }}
-                >
-                  <Box sx={{ mr: 10 }}>
-                    <Typography variant="h5" color="primary">
-                      {" "}
-                      Produtos mais vendidos{" "}
-                    </Typography>
-                  </Box>
-                  <PieMostProduct />
-                </Box>
+            <Grid item xs={8} sm={5}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  bgcolor: "#fff",
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                  width: "100%",
+                }}
+              >
+                <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
+                  Produtos mais vendidos
+                </Typography>
+                <PieMostProduct />
               </Box>
             </Grid>
-            <Grid item xs={4}>
-              {/* Gráfico 1 */}
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
 
-                    bgcolor: "#fff",
-                    padding: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                  }}
-                >
-                  <Box sx={{ mr: 10 }}>
-                    <Typography variant="h5" color="primary">
-                      {" "}
-                      Produtos mais vendidos{" "}
-                    </Typography>
-                  </Box>
-                  <PieMostProduct />
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container item xs={12} spacing={2}>
-          <Grid item xs={4}>
-              {/* Gráfico 1 */}
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-
-                    bgcolor: "#fff",
-                    padding: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                  }}
-                >
-                  <Box sx={{ mr: 10 }}>
-                    <Typography variant="h5" color="primary">
-                      {" "}
-                      Produtos mais vendidos{" "}
-                    </Typography>
-                  </Box>
-                  <PieMostProduct />
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              {/* Gráfico 1 */}
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-
-                    bgcolor: "#fff",
-                    padding: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                  }}
-                >
-                  <Box sx={{ mr: 10 }}>
-                    <Typography variant="h5" color="primary">
-                      {" "}
-                      Produtos mais vendidos{" "}
-                    </Typography>
-                  </Box>
-                  <PieMostProduct />
-                </Box>
+            <Grid item xs={8} sm={5}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  bgcolor: "#fff",
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                  width: "100%",
+                }}
+              >
+                <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
+                  Produtos menos vendidos
+                </Typography>
+                <PieMostProduct />
               </Box>
             </Grid>
           </Grid>
