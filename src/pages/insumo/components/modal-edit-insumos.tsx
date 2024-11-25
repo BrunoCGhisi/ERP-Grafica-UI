@@ -21,6 +21,7 @@ interface ModalEditInsumo {
 export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessage, setShowAlert, idToEdit, insumos, }: ModalEditInsumo){
 
     const filterInsumos= insumos.filter((insumo) => insumo.id === idToEdit);
+    console.log("AAAAAAAAAA ",filterInsumos[0].valorM2)
 
     const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm<insumoSchemaType>({
       resolver: zodResolver(insumoSchema),
@@ -82,25 +83,35 @@ export function ModalEditInsumo({open, loadSupplies, toggleModal, setAlertMessag
                             {...register("nome")}
                           />
                         </Grid>
+
                         <Grid item xs={12} md={100}>
-                        <NumericFormat
-                            customInput={TextField}
-                            prefix="R$"
-                            sx={{width: 450}}
-                            id="outlined-helperText"
-                            label="Valor Metro Quadrado"
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            allowLeadingZeros
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              setValue("valorM2", floatValue ?? 0);
-                            }}
-                            helperText={
-                              errors.valorM2?.message || "Obrigatório"
-                            }
-                            error={!!errors.valorM2}
-                          />
+                        <Controller
+                          name="valorM2"
+                          control={control}
+                          defaultValue={filterInsumos[0]?.valorM2 || 1} // Valor padrão ou valor existente
+                          rules={{ required: "Valor é obrigatório" }}
+                          render={({ field: { value, onChange }, fieldState: { error } }) => (
+                            <NumericFormat
+                              customInput={TextField}
+                              prefix="R$"
+                              sx={{ width: 450 }}
+                              id="outlined-helperText"
+                              label="Valor Metro Quadrado"
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              allowLeadingZeros
+                              value={value} // Vincula o valor inicial do formulário
+                              onValueChange={(values) => {
+                                const { floatValue } = values; // Extrai o valor numérico (sem formatação)
+                                onChange(floatValue ?? 0); // Atualiza o estado do formulário
+                              }}
+                              helperText={error?.message || "Obrigatório"}
+                              error={!!error}
+                            />
+                          )}
+                        />
+
+
                         </Grid>
                         <Grid item xs={12} md={100}>
                           <TextField
