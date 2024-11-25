@@ -19,7 +19,8 @@ import { putPurchases } from "../../../shared/services/compraServices";
 import {
   financeiroSchemaType,
   insumoSchemaType,
-  compraSchema
+  compraSchema,
+  bancoSchemaType
 } from "../../../shared/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -49,11 +50,8 @@ interface ModalEditCompra {
   comprasInsumos: compraInsumoSchemaType[];
   insumos: insumoSchemaType[];
   insumosAll: insumoSchemaType[];
-  bancos: {
-    nome: string;
-    valorTotal: number;
-    id?: number | undefined;
-  }[];
+  bancos: bancoSchemaType[];
+  bancosAll: bancoSchemaType[]
   financeiro: financeiroSchemaType[];
 }
 
@@ -69,7 +67,7 @@ export function ModalEditCompra({
   loadPurchases,
   idToEdit,
   setAlertMessage,
-  setShowAlert, insumosAll
+  setShowAlert, insumosAll, bancosAll
 }: ModalEditCompra) {
   const filterCompras = compras.filter((compra) => compra.id === idToEdit);
   const idCompras = filterCompras.map((compra) => compra.id);
@@ -85,18 +83,17 @@ export function ModalEditCompra({
     idCompras.includes(fin.idCompra)
   );
 
+  const bancosAssociado = financeiros[0].idBanco ? bancosAll.find((banco) => banco.id === financeiros[0].idBanco) : null
+  const bancosAtivos = bancos.filter((banco) => banco.isActive);
+  const bancosSelect = bancosAssociado && !bancosAssociado.isActive ? [...bancosAtivos, bancosAssociado ] : bancosAtivos
+
+
   const insumoAssociado = compra_insumo[0]?.idInsumo
-  ? insumosAll.find((insumo) => insumo.id === compra_insumo[0]?.idInsumo)
-  : null;
-
-  // Filtrando apenas insumos ativos, mas incluindo o desativado quando necessário
+  ? insumosAll.find((insumo) => insumo.id === compra_insumo[0]?.idInsumo) : null;
   const insumosAtivos = insumos.filter((insumo) => insumo.isActive);
-
-  // Insumos para o select: inclui o insumo desativado se necessário
   const insumosParaSelect = insumoAssociado && !insumoAssociado.isActive
-    ? [...insumosAtivos, insumoAssociado]  // Insumo desativado será adicionado
+    ? [...insumosAtivos, insumoAssociado]  
     : insumosAtivos;
-
 
 
   const {
@@ -260,7 +257,7 @@ export function ModalEditCompra({
                             onChange={(e) => field.onChange(e.target.value)}
                             fullWidth
                           >
-                            {bancos?.map((banco) => (
+                            {bancosSelect?.map((banco) => (
                               <MenuItem key={banco.id} value={banco.id}>
                                 {banco.nome}
                               </MenuItem>

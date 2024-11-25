@@ -15,6 +15,7 @@ import {
   vendaProdutoSchemaType,
   financeiroSchemaType,
   VendaDataRow,
+  bancoSchemaType,
 } from "../../../shared/services/types";
 import { GridRowParams } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +33,7 @@ interface ModalGetVenda {
   vendasProdutos: vendaProdutoSchemaType[];
   vendas: vendaSchemaType[];
   financeiro: financeiroSchemaType[];
+  bancos: bancoSchemaType[]
 }
 
 export function ModalGetVenda({
@@ -43,6 +45,7 @@ export function ModalGetVenda({
   financeiro,
   produtos,
   vendasProdutos,
+  bancos
 }: ModalGetVenda) {
   
   const filterVendas = vendas.filter((venda) => venda.id === rowData?.id);
@@ -55,6 +58,10 @@ export function ModalGetVenda({
   );
   const financeiros = financeiro.filter((fin) =>
     idVendas.includes(fin.idVenda)
+  );
+
+  const filterBancos = bancos.filter(
+    (banco) => banco.id === financeiros[0].idBanco
   );
 
   const { control } = useForm<vendaSchemaType>({
@@ -189,7 +196,7 @@ export function ModalGetVenda({
             <TextField
               id="outlined-helperText"
               label="Banco"
-              value={financeiros[0]?.idBanco || ""}
+              value={filterBancos[0]?.nome || ""}
               inputProps={{ readOnly: true }}
             />
           </Grid>

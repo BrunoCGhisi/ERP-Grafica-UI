@@ -6,7 +6,7 @@ import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
 import { getSupplies, putSale} from "../../../shared/services";
-import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType } from "../../../shared/services/types";
+import { vendaSchema, vendaSchemaType,vendaProdutoSchemaType, financeiroSchemaType, insumoSchemaType, bancoSchemaType } from "../../../shared/services/types";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -30,19 +30,17 @@ interface ModalEditVenda {
     setAlertMessage: (alertMessage: string) => void
     setShowAlert: (open: boolean) => void
     produtos: produtoSchemaType[]
+    produtosAll: produtoSchemaType[]
     vendasProdutos: vendaProdutoSchemaType[]
-    bancos : {
-        nome: string;
-        valorTotal: number; 
-        id?: number | undefined;
-    }[]
+    bancos : bancoSchemaType[]
+    bancosAll : bancoSchemaType[]
     userId: number | null
     idToEdit: any
     vendas: vendaSchemaType[],
     financeiro: financeiroSchemaType[]
 }
 
-export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, idToEdit, userId, bancos, vendas, vendasProdutos, financeiro}: ModalEditVenda){
+export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlertMessage, setShowAlert, produtos, idToEdit, userId, bancos, vendas, vendasProdutos, financeiro, bancosAll, produtosAll}: ModalEditVenda){
   
     
     const filterVendas = vendas.filter((venda) => venda.id === idToEdit);
@@ -56,6 +54,17 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
     const financeiros = financeiro.filter((fin) => idVendas.includes(fin.idVenda));
 
     const [totalQuantidade, setTotalQuantidade] = useState(0);
+
+    const bancosAssociado = financeiros[0].idBanco ? bancosAll.find((banco) => banco.id === financeiros[0].idBanco) : null
+    const bancosAtivos = bancos.filter((banco) => banco.isActive);
+    const bancosSelect = bancosAssociado && !bancosAssociado.isActive ? [...bancosAtivos, bancosAssociado ] : bancosAtivos
+
+    const produtoAssociado = venda_produto[0]?.idProduto
+    ? produtosAll.find((produto) => produto.id === venda_produto[0]?.idProduto) : null;
+    const produtosAtivos = produtos.filter((produto) => produto.isActive);
+    const produtosParaSelect = produtoAssociado && !produtoAssociado.isActive
+      ? [...produtosAtivos, produtoAssociado]  
+      : produtosAtivos;
 
     const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm<vendaSchemaType>({
       resolver: zodResolver(vendaSchema),
@@ -291,7 +300,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                         value={field.value || ""} // Valor padrão do idBanco
                         onChange={(e) => field.onChange(e.target.value)}
                       >
-                        {bancos?.map((banco) => (
+                        {bancosSelect?.map((banco) => (
                           <MenuItem key={banco.id} value={banco.id}>
                             {banco.nome}
                           </MenuItem>
@@ -402,7 +411,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                                   ?.idProduto
                               }
                             >
-                              {produtos.map((produto) => (
+                              {produtosParaSelect.map((produto) => (
                                 <MenuItem
                                   key={produto.id}
                                   value={produto.id}

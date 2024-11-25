@@ -87,6 +87,7 @@ const Venda = () => {
   const [sales, setSales] = useState<vendaSchemaType[]>([]);
   const [vp, setVp] = useState<vendaProdutoSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
+  const [bancosAll, setBancosAll] = useState<bancoSchemaType[]>([]);
   const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
@@ -189,6 +190,7 @@ const Venda = () => {
     const getBancos = async () => {
       const response = await axios.get("http://localhost:3000/banco");
       setBancos(response.data.getBancos);
+      setBancosAll(response.data.allData)
     };
     getBancos();
   }, []);
@@ -751,8 +753,10 @@ const Venda = () => {
               <ModalEditVenda
                 clientes={clientes}
                 bancos={bancos}
+                bancosAll={bancosAll}
                 open={open}
                 produtos={produtos}
+                produtosAll={produtosAll}
                 setAlertMessage={setAlertMessage}
                 setShowAlert={setShowAlert}
                 toggleModal={toggleModal}
@@ -766,6 +770,7 @@ const Venda = () => {
             )}
             {toggleGetModal.open && (
               <ModalGetVenda
+                bancos={bancosAll}
                 vendasProdutos={vp}
                 produtos={produtosAll}
                 financeiro={financeiros}

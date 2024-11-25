@@ -84,6 +84,7 @@ const Compra = () => {
   const [purchases, setPurchases] = useState<compraSchemaType[]>([]);
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
+  const [bancosAll, setBancosAll] = useState<bancoSchemaType[]>([]);
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
   const [insumosAll, setInsumosAll] = useState<insumoSchemaType[]>([]);
   const [idToEdit, setIdToEdit] = useState<any>(null);
@@ -152,6 +153,7 @@ const Compra = () => {
     const getBancos = async () => {
       const response = await axios.get("http://localhost:3000/banco");
       setBancos(response.data.getBancos);
+      setBancosAll(response.data.allData);
     };
     getBancos();
   }, []);
@@ -737,6 +739,7 @@ const Compra = () => {
             {open && (
               <ModalEditCompra
                 bancos={bancos}
+                bancosAll={bancosAll}
                 open={open}
                 setAlertMessage={setAlertMessage}
                 setShowAlert={setShowAlert}

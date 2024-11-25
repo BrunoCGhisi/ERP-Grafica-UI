@@ -53,8 +53,9 @@ export function ModalGetCompra({
   const financeiros = financeiro.filter((fin) =>
     idCompras.includes(fin.idCompra)
   );
+
   const filterBancos = bancos.filter(
-    (banco) => banco.id === financeiros[0].idBanco
+    (banco) => banco.id === financeiros[0].idBanco  
   );
 
   const { control } = useForm<compraSchemaType>({
