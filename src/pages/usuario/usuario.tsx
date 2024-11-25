@@ -150,52 +150,49 @@ const Usuario = () => {
       width: 110,
       headerClassName: "gridHeader--header",
       renderCell: ({ value }) => (value ? "Sim" : "Não"),
-    },
-    {
-      field: "acoes",
-      headerName: "Ações",
-      width: 150,
-      align: "center",
-      type: "actions",
-      flex: 0,
-      headerClassName: "gridHeader--header",
-      renderCell: ({ row }) => (
-        <div>
-          {isAdm ? (
-            <>
-             {userId === row.id && (
-        <IconButton
-          onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
-        >
-          <EditIcon />
-        </IconButton>
-      )}
-      {userId !== row.id && (
-        <>
-          <IconButton
-            onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => row.id !== undefined && handleDelete(row)}>
-            <DeleteIcon />
-          </IconButton>
-        </>
-      )}
-            </>
-          ) : null}
-        </div>
-      ),
-    },
-  ];
-  const rows = user.map((usuario) => ({
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    senha: usuario.senha,
-    isAdm: usuario.isAdm,
-    isActive: usuario.isActive
-  }));
+    },];
+    if (isAdm) {
+      columns.push({
+        field: "acoes",
+        headerName: "Ações",
+        width: 150,
+        align: "center",
+        type: "actions",
+        flex: 0,
+        headerClassName: "gridHeader--header",
+        renderCell: ({ row }) => (
+          <div>
+            {userId === row.id ? (
+              <IconButton
+                onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
+              >
+                <EditIcon />
+              </IconButton>
+            ) : (
+              <>
+                <IconButton
+                  onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => row.id !== undefined && handleDelete(row)}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
+          </div>
+        ),
+      });
+    }
+    
+    const rows = user.map((usuario) => ({
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      senha: usuario.senha,
+      isAdm: usuario.isAdm,
+      isActive: usuario.isActive,
+    }));
 
   const localeText: Partial<GridLocaleText> = {
     toolbarDensity: "Densidade",
