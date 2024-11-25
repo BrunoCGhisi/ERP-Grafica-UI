@@ -187,6 +187,29 @@ const Usuario = () => {
         ),
       });
     }
+    else{
+      columns.push({
+        field: "acoes",
+        headerName: "Ações",
+        width: 150,
+        align: "center",
+        type: "actions",
+        flex: 0,
+        headerClassName: "gridHeader--header",
+        renderCell: ({ row }) => (
+          <div>
+            {userId === row.id && (
+              <IconButton
+                onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}
+              >
+                <EditIcon />
+              </IconButton>
+            )}
+          </div>
+        ),
+      });
+
+    }
     
     const rows = user.map((usuario) => ({
       id: usuario.id,
@@ -217,6 +240,7 @@ const Usuario = () => {
               <Typography variant="h6">Usuários</Typography>
             </Grid>
 
+            {isAdm && (
             <Grid item>
               <Grid container spacing={2} direction={"row"}>
                 <Grid item>
@@ -238,7 +262,7 @@ const Usuario = () => {
                   </Button>
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid>)}
           </Grid>
           <Box>
             <Modal
