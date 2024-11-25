@@ -47,6 +47,7 @@ import {
   vendaProdutoSchemaType,
   financeiroSchemaType,
   insumoSchemaType,
+  usuarioSchemaType,
 } from "../../shared/services/types";
 import {
   getSales,
@@ -55,6 +56,8 @@ import {
   getSupplies,
   getProducts,
   getProductsAll,
+  getUsers,
+  getUsersAll,
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
@@ -95,6 +98,7 @@ const Venda = () => {
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [totalQuantidade, setTotalQuantidade] = useState(0);
+  const [users, setUsers] = useState<usuarioSchemaType[]>([]);
 
   const {
     register,
@@ -184,6 +188,21 @@ const Venda = () => {
     const clienteNome = clientes.find((cat) => cat.id === id);
     return clienteNome ? clienteNome.nome : "Desconhecido";
   };
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      const response = await getUsersAll();
+      setUsers(response);
+    };
+    loadUsers();
+  }, []);
+
+  const getUsersNames = (id: number | undefined) => {
+    const userNome = users.find((user) => user.id === id);
+    return userNome ? userNome.nome : "Desconhecido";
+  };
+
+
 
   // Trazendo bancos--------------------------------------------------
   useEffect(() => {
@@ -285,7 +304,7 @@ const Venda = () => {
       headerName: "Cliente",
       editable: false,
       flex: 0,
-      width: 250,
+      width: 220,
       headerClassName: "gridHeader--header",
     },
     {
@@ -293,23 +312,23 @@ const Venda = () => {
       headerName: "Vendedor",
       editable: false,
       flex: 0,
-      width: 250,
+      width: 150,
       headerClassName: "gridHeader--header",
     },
     {
       field: "dataAtual",
-      headerName: "Data Cadastro",
+      headerName: "Data de Cadastro",
       editable: false,
       flex: 0,
-      width: 120,
+      width: 170,
       headerClassName: "gridHeader--header",
     },
     {
       field: "isVendaOS",
-      headerName: "OS",
+      headerName: "Operação",
       editable: false,
       flex: 0,
-      width: 100,
+      width: 150,
       headerClassName: "gridHeader--header", renderCell: (params) => (params.value == 0 ? "Orçamento" : "Venda" )
     },
     {
@@ -317,7 +336,7 @@ const Venda = () => {
       headerName: "Situacao",
       editable: false,
       flex: 0,
-      width: 100,
+      width: 150,
       headerClassName: "gridHeader--header",
       renderCell: (params) => <span>{situacaoNome(params.value)}</span>,
     },
@@ -326,7 +345,7 @@ const Venda = () => {
       headerName: "Desconto",
       editable: false,
       flex: 0,
-      width: 80,
+      width: 120,
       headerClassName: "gridHeader--header",
       renderCell: (params) => (
         <span>{params.value != null ? `${params.value}%` : "N/A"}</span>
