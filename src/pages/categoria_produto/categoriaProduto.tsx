@@ -155,33 +155,36 @@ const CategoriaProduto = () => {
     <Box>
       <MiniDrawer>
         <Box sx={SpaceStyle}>
-          <Grid
+        <Grid
             container
             spacing={2}
             justifyContent="space-between"
             alignItems="center"
           >
             <Grid item>
-              <Typography variant="h6">Categorias de Produtos</Typography>
+              <Typography variant="h6">Categorias</Typography>
             </Grid>
-
             <Grid item>
-              <Button
-                onClick={addOn}
-                variant="outlined"
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                Cadastrar
-              </Button>
-               
+              <Grid container spacing={2} direction={"row"}>
+                <Grid item>
                   <Button
-                    onClick={toggleModalDeactivate.toggleModal}
+                    onClick={() => toggleModalDeactivate.toggleModal()}
                     variant="outlined"
                     startIcon={<ArchiveIcon />}
                   >
                     Arquivados
                   </Button>
-                
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={addOn}
+                    variant="outlined"
+                    startIcon={<AddCircleOutlineIcon />}
+                  >
+                    Cadastrar
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
           <Box>

@@ -78,7 +78,7 @@ const Dashboard = () => {
           <Grid item xs={12} sx={{ mb: 2 }}>
             {nome && (
               <Typography variant="h4" color="primary" sx={{ ml: 2 }}>
-                Bem-vindo, {nome}!
+                Olá, {nome}!
               </Typography>
             )}
           </Grid>

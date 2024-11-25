@@ -14,7 +14,7 @@ const SalesChart: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [chartSize, setChartSize] = useState({ width: 600, height: 400 });
+  const [chartSize, setChartSize] = useState({ width: 600, height: 300 });
 
   const fetchSalesData = async () => {
     try {
