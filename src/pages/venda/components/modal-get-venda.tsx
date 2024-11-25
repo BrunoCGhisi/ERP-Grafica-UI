@@ -151,7 +151,8 @@ export function ModalGetVenda({
             <TextField
               type="date"
               id="outlined-helperText"
-              label="Data Compra"
+              label="Data da Venda"
+              fullWidth
               InputLabelProps={{ shrink: true }}
               inputProps={{ readOnly: true }}
               value={filterVendas[0]?.dataAtual || ""}
@@ -209,8 +210,8 @@ export function ModalGetVenda({
           </Grid>
         </Grid>
         {/* Produtos da Venda */}
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Produtos da Venda
+        <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
+          Produtos
         </Typography>
         {fields.map((item) => (
           <Box
