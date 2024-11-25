@@ -57,6 +57,7 @@ import {
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
+import { NumericFormat } from "react-number-format";
 
 const clienteSchema = z.object({
   id: z.number().optional(),
@@ -266,6 +267,14 @@ const Venda = () => {
 
   const columns: GridColDef<VendaDataRow>[] = [
     {
+      field: "id",
+      headerName: "Código",
+      editable: false,
+      flex: 0,
+      width: 90,
+      headerClassName: "gridHeader--header",
+    },
+    {
       field: "idCliente",
       headerName: "Cliente",
       editable: false,
@@ -295,7 +304,7 @@ const Venda = () => {
       editable: false,
       flex: 0,
       width: 100,
-      headerClassName: "gridHeader--header",
+      headerClassName: "gridHeader--header", renderCell: (params) => (params.value == 0 ? "Orçamento" : "Venda" )
     },
     {
       field: "situacao",
@@ -327,21 +336,22 @@ const Venda = () => {
       headerClassName: "gridHeader--header",
       renderCell: ({ row }) => (
         <div>
-          <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            onClick={() =>
-              row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
-            }
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => handleRowClick(row)}>
-            <OpenInNewIcon color="primary" />
-          </IconButton>
+            <IconButton
+              onClick={() => row.id !== undefined && handleDelete(row.id)}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={() =>
+                row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
+              }
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleRowClick(row)}>
+              <OpenInNewIcon color="primary" />
+            </IconButton>
+    
         </div>
       ),
     },
@@ -351,7 +361,7 @@ const Venda = () => {
     idCliente: getClientesNames(venda.idCliente),
     idVendedor: venda.idVendedor,
     dataAtual: dayjs(venda.dataAtual).format("DD/MM/YYYY"),
-    isVendaOS: venda.isVendaOS == 0 ? "Orçamento" : "Venda",
+    isVendaOS: venda.isVendaOS,
     situacao: venda.situacao,
     desconto: venda.desconto,
   }));
@@ -599,13 +609,35 @@ const Venda = () => {
                         </Grid>
 
                         <Grid item xs={6}>
-                          <TextField
-                            placeholder={`Valor bruto: ${totalQuantidade}`}
-                            {...register("financeiro.0.valor")}
-                            variant="outlined"
-                            fullWidth
+                        <Controller
+                          name={"financeiro.0.valor"}
+                          control={control}
+                           
+                          rules={{ required: "Valor é obrigatório" }}
+                          render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <NumericFormat
+                              customInput={TextField}
+                              prefix="R$"
+                              fullWidth
+                              id="outlined-helperText"
+                              label="Preço por m²"
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              allowLeadingZeros
+                              placeholder={`Valor bruto: ${totalQuantidade}`}
+                              value={value} // Valor atual
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                onChange(floatValue ?? 0); // Atualiza o valor no react-hook-form
+                              }}
+                              error={!!error}
+                            />
+                          )}
                           />
-                        </Grid>
+                          </Grid>
                       </Grid>
                     </Grid>
                     {/* Segunda coluna */}
