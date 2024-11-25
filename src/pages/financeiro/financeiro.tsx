@@ -81,7 +81,7 @@ const Financeiro = () => {
 
   const columns: GridColDef<FinanciaDataRow>[] = [
     { field: "descricao", headerName: "Descrição", editable: false, flex: 0, minWidth: 300, headerClassName: "gridHeader--header", },
-    { field: "dataVencimento", headerName: "Vencimento", editable: false, flex: 0, width: 150, minWidth: 95, headerClassName: "gridHeader--header", },
+    { field: "dataCompetencia", headerName: "Data de Registro", editable: false, flex: 0, width: 180, minWidth: 120, headerClassName: "gridHeader--header", },
     { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 150, headerClassName: "gridHeader--header",
       renderCell: (params) => <span>{situacaoNome(params.value)}</span> },
     { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", renderCell: (params) => {
@@ -210,7 +210,7 @@ const Financeiro = () => {
               localeText={localeText}
               initialState={{
                 sorting: {
-                  sortModel: [{ field: 'descricao', sort: 'desc' }],
+                  sortModel: [{ field: 'dataCompetencia', sort: 'desc' }],
                 },
                 pagination: {
                   paginationModel: {
