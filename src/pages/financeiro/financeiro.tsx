@@ -115,12 +115,24 @@ const Financeiro = () => {
       flex: 0,
       renderCell: ({ row }) => (
         <div>
-          <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
+          {row.situacao != 0 ? (
+          <>
+           <IconButton onClick={() => row.id !== undefined && [setIdToEdit(row.id), toggleModal()]}>
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleRowClick(row)}>
             <OpenInNewIcon color="primary" />
           </IconButton>
+          </>) : 
+          (
+          <>
+            <IconButton onClick={() => handleRowClick(row)}>
+              <OpenInNewIcon color="primary" />
+            </IconButton>
+          </>
+        )}
+
+
         </div>
       ),
     },

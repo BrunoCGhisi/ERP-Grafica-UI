@@ -106,6 +106,8 @@ import {
               />
             </Grid>
             
+          {rowData?.situacao != 0 &&(
+            <>
             <Grid>
               <TextField
                 id="outlined-helperText"
@@ -131,7 +133,8 @@ import {
                 value={rowData?.dataPagamento || "Pagamento não efetuado"}
                 inputProps={{ readOnly: true }}
               />
-            </Grid>
+            </Grid></>
+          )}
            
             <Grid>
               <TextField

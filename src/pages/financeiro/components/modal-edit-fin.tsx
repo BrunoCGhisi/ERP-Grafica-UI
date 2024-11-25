@@ -106,10 +106,12 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                 </Grid>
 
                 <Grid item xs={12}>
-                  <InputLabel>Situação do Pagamento</InputLabel>
-                  <Box display="flex" alignItems="center">
-                  
+                 
 
+                    <InputLabel>Situação do Pagamento</InputLabel>
+                    <Box display="flex" alignItems="center">
+                  
+                    
                     {filterFinances[0]?.isPagarReceber == true && (
                         <Controller
                         name="situacao"
@@ -147,6 +149,7 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                     )}
 
                   </Box>
+
                 </Grid>
 
                   <Grid item xs={12} sx={{ textAlign: "right" }}>

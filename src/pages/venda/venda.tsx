@@ -343,15 +343,7 @@ const Venda = () => {
             <IconButton onClick={() => handleRowClick(row)}>
               <OpenInNewIcon color="primary" />
             </IconButton>
-         
-              <IconButton
-                onClick={() => row.id !== undefined && handleDelete(row.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-              <IconButton onClick={() => handleRowClick(row)}>
-                <OpenInNewIcon color="primary" />
-              </IconButton>
+    
         </div>
       ),
     },

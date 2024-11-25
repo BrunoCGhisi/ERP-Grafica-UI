@@ -162,9 +162,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
         </Typography>
 
         <form onSubmit={handleSubmit(handleUpdate)}>
-        {filterVendas[0].isVendaOS === 0 ? (
-            <Typography>a</Typography>
-        ) : (<Typography>a</Typography>) }
+
           <Grid container spacing={2}>
             <Grid item xs={8}>
               {/* Primeira coluna */}
