@@ -79,14 +79,14 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                 variant="h6"
                 component="h2"
               >
-                Cadastro Categoria de Produto
+                Editar Financia
               </Typography>
             </Grid>
       
             <Grid item xs={12}>
               <form onSubmit={handleSubmit(handleUpdate)}>
                 
-                <Grid item xs={10}>
+                <Grid item xs={8}>
                     <InputLabel>Data de Vencimento</InputLabel>
                     <TextField
                       fullWidth
@@ -101,7 +101,7 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                     />
                 </Grid>
 
-                <Grid item xs={10}>
+                <Grid item xs={8}>
                     <InputLabel>Data de Competência</InputLabel>
                     <TextField
                       fullWidth
@@ -116,7 +116,7 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                     />
                 </Grid>
 
-                <Grid item xs={10}>
+                <Grid item xs={12}>
                   <InputLabel>Situação do Pagamento</InputLabel>
                   <Box display="flex" alignItems="center">
 
@@ -141,7 +141,7 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                       variant="outlined"
                       startIcon={<DoneIcon />}
                     >
-                      Cadastrar
+                      Editar
                     </Button>
                   </Grid>
                
