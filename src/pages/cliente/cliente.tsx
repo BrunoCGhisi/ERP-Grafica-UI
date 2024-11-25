@@ -139,20 +139,12 @@ const Cliente = () => {
 
   const columns: GridColDef<ClienteDataRow>[] = [
     {
-      field: "nomeFantasia",
-      headerName: "Nome Fantasia",
+      field: "nome",
+      headerName: "Nome",
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 200,
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      editable: false,
-      flex: 0,
-      headerClassName: "gridHeader--header",
-      width: 180,
+      width: 290,
     },
     {
       field: "telefone",
@@ -160,35 +152,27 @@ const Cliente = () => {
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 130,
+      width: 180,
       renderCell: (params) => <span>{formatarTelefone(params.value)}</span>,
     },
     {
-      field: "cpfCnpj",
-      headerName: "CPF/CNPJ",
+      field: "cidade",
+      headerName: "Cidade",
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 120,
+      width: 200,
+     
     },
-
     {
       field: "isFornecedor",
       headerName: "Perfil de Cadastro",
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 150,
+      width: 200,
     },
 
-    {
-      field: "statusIe",
-      headerName: "Status IE",
-      editable: false,
-      flex: 0,
-      headerClassName: "gridHeader--header",
-      width: 80,
-    },
     {
       field: "acoes",
       headerName: "Ações",
@@ -364,8 +348,34 @@ const Cliente = () => {
                             )}
                           />
                         </Grid>
-
                         <Grid item xs={6}>
+                          <InputLabel id="demo-simple-select-label">
+                           Perfil de Cadastro
+                          </InputLabel>
+                          <Controller
+                            control={control}
+                            name="isFornecedor"
+                            defaultValue={true}
+                            render={({ field }) => (
+                              <Select
+                                fullWidth
+                                onChange={field.onChange}
+                                labelId="select-label"
+                                id="demo-simple-select"
+                                label="Perfil de Cadastro"
+                                error={!!errors.isFornecedor}
+                                value={field.value}
+                              >
+                                <MenuItem value={false}>Cliente</MenuItem>
+                                <MenuItem value={true}>Fornecedor </MenuItem>
+                              </Select>
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2}>
+
+                      <Grid item xs={6}>
                           <InputLabel id="demo-simple-select-label">
                             Inscrição Estadual
                           </InputLabel>
@@ -386,32 +396,6 @@ const Cliente = () => {
                                   Não contribuinte
                                 </MenuItem>
                                 <MenuItem value={false}>Contribuinte</MenuItem>
-                              </Select>
-                            )}
-                          />
-                        </Grid>
-                      </Grid>
-                      <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                          <InputLabel id="demo-simple-select-label">
-                            StatusIe
-                          </InputLabel>
-                          <Controller
-                            control={control}
-                            name="isFornecedor"
-                            defaultValue={true}
-                            render={({ field }) => (
-                              <Select
-                                fullWidth
-                                onChange={field.onChange}
-                                labelId="select-label"
-                                id="demo-simple-select"
-                                label="Perfil de Cadastro"
-                                error={!!errors.isFornecedor}
-                                value={field.value}
-                              >
-                                <MenuItem value={false}>Cliente</MenuItem>
-                                <MenuItem value={true}>Fornecedor </MenuItem>
                               </Select>
                             )}
                           />
