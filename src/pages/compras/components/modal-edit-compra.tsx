@@ -89,20 +89,14 @@ export function ModalEditCompra({
   ? insumosAll.find((insumo) => insumo.id === compra_insumo[0]?.idInsumo)
   : null;
 
-  console.log("insumoAssociado:", filterCompras);
+  // Filtrando apenas insumos ativos, mas incluindo o desativado quando necessário
+  const insumosAtivos = insumos.filter((insumo) => insumo.isActive);
 
+  // Insumos para o select: inclui o insumo desativado se necessário
+  const insumosParaSelect = insumoAssociado && !insumoAssociado.isActive
+    ? [...insumosAtivos, insumoAssociado]  // Insumo desativado será adicionado
+    : insumosAtivos;
 
-
-// Filtrando apenas insumos ativos, mas incluindo o desativado quando necessário
-const insumosAtivos = insumos.filter((insumo) => insumo.isActive);
-console.log("Insumos Ativos:", insumosAtivos);
-
-// Insumos para o select: inclui o insumo desativado se necessário
-const insumosParaSelect = insumoAssociado && !insumoAssociado.isActive
-  ? [...insumosAtivos, insumoAssociado]  // Insumo desativado será adicionado
-  : insumosAtivos;
-
-console.log("Insumos para Select (com desativados):", insumosParaSelect);
 
 
   const {
