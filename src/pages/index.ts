@@ -15,4 +15,5 @@ export { default as Template } from "./template";
 export { default as Insumo } from "./insumo/insumo";
 export { default as Financeiro } from "./financeiro/financeiro";
 export { default as PieMostProduct} from './pieTeste';
+export { default as ColumnSalesChart} from './chartFaturamentoMensal'
 export { default as BasicSwitch} from './testeToggle';

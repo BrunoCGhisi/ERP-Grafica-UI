@@ -7,10 +7,12 @@ import { MiniDrawer } from "../shared/components";
 import { SpaceStyle } from "../shared/styles";
 import { getToken } from "../shared/services/payload";
 import PieMostProduct from "./pieTeste";
+import ColumnSalesChart from "./chartFaturamentoMensal";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import SellIcon from "@mui/icons-material/Sell";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import SalesChart from "./chartFaturamentoMensal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -194,7 +196,7 @@ const Dashboard = () => {
 
           {/* Gráficos */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={8} sm={5}>
+            <Grid item xs={12} sm={5.5}>
               <Box
                 sx={{
                   display: "flex",
@@ -215,7 +217,7 @@ const Dashboard = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={8} sm={5}>
+            <Grid item xs={12} sm={5.5}>
               <Box
                 sx={{
                   display: "flex",
@@ -230,9 +232,9 @@ const Dashboard = () => {
                 }}
               >
                 <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
-                  Produtos menos vendidos
+                  Faturamento Mensal
                 </Typography>
-                <PieMostProduct />
+                <SalesChart />
               </Box>
             </Grid>
           </Grid>
