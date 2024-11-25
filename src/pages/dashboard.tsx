@@ -7,9 +7,9 @@ import { MiniDrawer } from "../shared/components";
 import { SpaceStyle } from "../shared/styles";
 import { getToken } from "../shared/services/payload";
 import PieMostProduct from "./pieTeste";
-import { flexbox } from "@mui/system";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import ArchiveIcon from "@mui/icons-material/Archive";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<number | null>(null);
@@ -27,6 +27,17 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  const fetchResumo = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/financeiro/resumo"
+      );
+      setResumo(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar resumo financeiro:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchToken = async () => {
       const tokenData = await getToken();
@@ -37,20 +48,21 @@ const Dashboard = () => {
       }
     };
 
-    const fetchResumo = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/financeiro/resumo"
-        );
-        setResumo(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar resumo financeiro:", error);
-      }
-    };
-
     fetchToken();
-    fetchResumo();
+    fetchResumo(); // Chama a função para buscar os dados iniciais do resumo
   }, []);
+
+  // Função para finalizar uma conta paga ou recebida
+  const finalizarConta = async (idConta: number, isPagar: boolean) => {
+    try {
+      await axios.put(`http://localhost:3000/financeiro/${idConta}`, {
+        isPagarReceber: !isPagar,
+      });
+      fetchResumo(); // Atualiza o resumo após finalizar a conta
+    } catch (error) {
+      console.error("Erro ao finalizar a conta:", error);
+    }
+  };
 
   return (
     <Box sx={SpaceStyle}>
@@ -58,7 +70,11 @@ const Dashboard = () => {
         <Grid container spacing={2}>
           {/* Texto principal */}
           <Grid item xs={12}>
-            {nome && <Typography variant="h5">Bem-vindo, {nome}!</Typography>}
+            {nome && (
+              <Typography variant="h4" color="primary">
+                Bem-vindo, {nome}!
+              </Typography>
+            )}
           </Grid>
 
           {/* Valores A pagar e A receber */}
@@ -84,7 +100,10 @@ const Dashboard = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ color: "#f00" }}>
-                  <UnarchiveIcon sx={{ ml: 4, fontSize: 40 }} />
+                  <UnarchiveIcon
+                    sx={{ ml: 4, fontSize: 40 }}
+                    onClick={() => finalizarConta(1, true)} // Passando o ID e o tipo de conta
+                  />
                 </Box>
               </Box>
             </Grid>
@@ -110,7 +129,10 @@ const Dashboard = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ color: "#0f0" }}>
-                  <UnarchiveIcon sx={{ ml: 4, fontSize: 40 }} />
+                  <ArchiveIcon
+                    sx={{ ml: 4, fontSize: 40 }}
+                    onClick={() => finalizarConta(2, false)} // Passando o ID e o tipo de conta
+                  />
                 </Box>
               </Box>
             </Grid>
@@ -120,7 +142,29 @@ const Dashboard = () => {
           <Grid container item xs={12} spacing={2}>
             <Grid item xs={6}>
               {/* Gráfico 1 */}
-              <PieMostProduct />
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+
+                    bgcolor: "#fff",
+                    padding: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                  }}
+                >
+                  <Box sx={{ mr: 10 }}>
+                    <Typography variant="h5" color="primary">
+                      {" "}
+                      Produtos mais vendidos{" "}
+                    </Typography>
+                  </Box>
+                  <PieMostProduct />
+                </Box>
+              </Box>
             </Grid>
             <Grid item xs={6}>
               <Typography>Gráfico 2</Typography>
