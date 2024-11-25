@@ -14,6 +14,7 @@ import {
 import { GridRowParams } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
+import { NumericFormat } from "react-number-format";
 
 interface ModalGetCompra {
   open: boolean;
@@ -121,6 +122,7 @@ export function ModalGetCompra({
               type="date"
               id="outlined-helperText"
               label={"Data compra"}
+              fullWidth
               InputLabelProps={{ shrink: true }}
               inputProps={{ readOnly: true }}
               value={dayjs(filterCompras[0].dataCompra).format("YYYY-MM-DD")}
@@ -130,7 +132,7 @@ export function ModalGetCompra({
             <TextField
               id="outlined-helperText"
               label="Desconto"
-              value={rowData?.desconto || "Sem desconto"}
+              value={ `${rowData?.desconto}%` || "Sem desconto"}
               inputProps={{ readOnly: true }}
             />
           </Grid>
@@ -194,22 +196,27 @@ export function ModalGetCompra({
             <TextField
               id="outlined-helperText"
               label="Largura"
-              value={`${item.largura} cm`}
+              value={`${item.largura} m`}
               inputProps={{ readOnly: true }}
             />
 
             <TextField
               id="outlined-helperText"
               label="Comprimento"
-              value={`${item.comprimento} cm`}
+              value={`${item.comprimento} m`}
               inputProps={{ readOnly: true }}
-              
-              
+            
             />
 
-            <TextField
+            <NumericFormat
+              customInput={TextField}
+              prefix="R$"
+              fullWidth
               id="outlined-helperText"
-              label="Custo"
+              label="Preço por m²"
+              thousandSeparator="."
+              decimalSeparator=","
+              allowLeadingZeros
               value={item.preco}
               inputProps={{ readOnly: true }}
               InputProps={{

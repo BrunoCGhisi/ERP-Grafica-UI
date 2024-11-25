@@ -9,6 +9,7 @@ import {
   Typography,
   IconButton,
   Grid,
+  InputAdornment,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
@@ -305,6 +306,13 @@ export function ModalEditCompra({
                         id="outlined-desconto"
                         label="Desconto"
                         placeholder="0"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="start">
+                              %
+                            </InputAdornment>
+                          ),
+                        }}
                         helperText={errors.desconto?.message || "Obrigatório"}
                         error={!!errors.desconto}
                         {...register("desconto")}
@@ -465,7 +473,7 @@ export function ModalEditCompra({
                                       prefix="R$"
                                       fullWidth
                                       id="outlined-helperText"
-                                      label="Preço"
+                                      label="Preço por m²"
                                       thousandSeparator="."
                                       decimalSeparator=","
                                       allowLeadingZeros

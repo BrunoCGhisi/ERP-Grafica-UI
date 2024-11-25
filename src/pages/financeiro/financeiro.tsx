@@ -63,10 +63,26 @@ const Financeiro = () => {
     getFinances();
   }, []);
 
+  const situacaoNome = (situacaoData: number | undefined) => {
+    switch (situacaoData) {
+      case 0:
+        return "Orçamento ";
+      case 2:
+        return "À receber";
+      case 3:
+        return "Pago";
+      case 4:
+        return "Recebido";
+      case 1:
+        return "À pagar";
+    }
+  };
+
   const columns: GridColDef<FinanciaDataRow>[] = [
-    { field: "descricao", headerName: "Descrição", editable: false, flex: 0, minWidth: 150, headerClassName: "gridHeader--header", },
-    { field: "dataVencimento", headerName: "Vencimento", editable: false, flex: 0, width: 95, minWidth: 95, headerClassName: "gridHeader--header", },
-    { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 90, headerClassName: "gridHeader--header", },
+    { field: "descricao", headerName: "Descrição", editable: false, flex: 0, minWidth: 300, headerClassName: "gridHeader--header", },
+    { field: "dataVencimento", headerName: "Vencimento", editable: false, flex: 0, width: 150, minWidth: 95, headerClassName: "gridHeader--header", },
+    { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 150, headerClassName: "gridHeader--header",
+      renderCell: (params) => <span>{situacaoNome(params.value)}</span> },
     { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", },
 
     {

@@ -13,6 +13,7 @@ import {
   IconButton,
   Alert,
   Grid,
+  InputAdornment,
 } from "@mui/material";
 import {
   DataGrid,
@@ -209,6 +210,14 @@ const Compra = () => {
 
   const columns: GridColDef<CompraDataRow>[] = [
     {
+      field: "id",
+      headerName: "Código",
+      editable: false,
+      flex: 0,
+      headerClassName: "gridHeader--header",
+      minWidth: 100,
+    },
+    {
       field: "idFornecedor",
       headerName: "Fornecedor",
       editable: false,
@@ -283,7 +292,7 @@ const Compra = () => {
   const rows = purchases.map((compra) => ({
     id: compra.id,
     idFornecedor: getFornecedoresNames(compra.idFornecedor),
-    isCompraOS: compra.isCompraOS,
+    isCompraOS: compra.isCompraOS === true ? "Compra" : "Orçamento",
     dataCompra: dayjs(compra.dataCompra).format("DD/MM/YYYY"),
     numNota: compra.numNota,
     desconto: compra.desconto,
@@ -408,6 +417,7 @@ const Compra = () => {
                                 sx={{ marginTop: 1 }}
                                 type="date"
                                 label="Data"
+                               
                                 InputLabelProps={{ shrink: true }}
                                 size="medium"
                                 helperText={
@@ -498,6 +508,13 @@ const Compra = () => {
                                 helperText={
                                   errors.desconto?.message || "Obrigatório"
                                 }
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="start">
+                                      %
+                                    </InputAdornment>
+                                  ),
+                                }}
                                 error={!!errors.desconto}
                                 {...register("desconto")}
                                 fullWidth
@@ -667,7 +684,7 @@ const Compra = () => {
                                       prefix="R$"
                                       fullWidth
                                       id="outlined-helperText"
-                                      label="Preço"
+                                      label="Preço por m²"
                                       thousandSeparator="."
                                       decimalSeparator=","
                                       allowLeadingZeros
