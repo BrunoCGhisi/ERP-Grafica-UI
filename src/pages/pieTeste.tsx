@@ -31,8 +31,6 @@ const PieMostProduct = () => {
     
   }));
 
-
-
   return (
     <Box>
       <PieChart
