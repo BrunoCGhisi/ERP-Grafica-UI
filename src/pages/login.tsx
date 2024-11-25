@@ -16,7 +16,6 @@ const Login = () => {
         email: email,
         senha: senha,
       });
-
       const { access_token } = response.data;
       localStorage.setItem("token", access_token); // Armazena token no localStorage
       navigate("/dashboard"); // Navega para a rota "home"
@@ -26,9 +25,6 @@ const Login = () => {
     }
   }
 
-  async function NavigateSign() {
-    navigate("/signUp");
-  }
 
   return (
     <Box>
@@ -51,10 +47,6 @@ const Login = () => {
           {error && <Typography color="error">{error}</Typography>}
           <Button variant="contained" onClick={SignIn}>
             Entrar
-          </Button>
-          <Typography>Não possui uma conta?</Typography>
-          <Button variant="contained" onClick={NavigateSign}>
-            Criar
           </Button>
         </Stack>
       </Box>
