@@ -17,12 +17,14 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   financiaSchema,
   financiaSchemaType,
-  FinanciaDataRow
+  FinanciaDataRow,
+  bancoSchemaType
 } from "../../shared/services/types";
 
-import { getFinances } from "../../shared/services";
+import { getBanks, getFinances } from "../../shared/services";
 import { ModalEditFinanceiro } from "./components/modal-edit-fin";
 import { ModalGetFinanceiro } from "./components/modal-get-fin";
+import dayjs from "dayjs";
 
 const Financeiro = () => {
   const {
@@ -31,6 +33,7 @@ const Financeiro = () => {
     resolver: zodResolver(financiaSchema),
   });
   const [finances, setFinances] = useState<financiaSchemaType[]>([]);
+  const [banks, setBanks] = useState<bancoSchemaType[]>([]);
 
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
@@ -48,6 +51,8 @@ const Financeiro = () => {
 
   const loadFinances = async () => {
     const FinancesData = await getFinances();
+    const BanksData = await getBanks();
+    setBanks(BanksData)
     setFinances(FinancesData);
   };
   useEffect(() => {
@@ -97,9 +102,9 @@ const Financeiro = () => {
     idBanco: financeiro.idBanco,
     isPagarReceber: financeiro.isPagarReceber,
     valor: financeiro.valor,
-    dataVencimento: financeiro.dataVencimento,
-    dataCompetencia: financeiro.dataCompetencia,
-    dataPagamento: financeiro.dataPagamento,
+    dataVencimento: dayjs(financeiro.dataVencimento).format("DD/MM/YYYY"),
+    dataCompetencia: dayjs( financeiro.dataCompetencia).format("DD/MM/YYYY"),
+    dataPagamento: financeiro.dataPagamento && dayjs( financeiro.dataPagamento).format("DD/MM/YYYY") || "",
     situacao: financeiro.situacao,
     parcelas: financeiro.parcelas,
   }));
@@ -143,6 +148,7 @@ const Financeiro = () => {
             )}
             {toggleGetModal.open && (
               <ModalGetFinanceiro
+                bancos={banks}
                 financeiros={finances}
                 rowData={selectedRow}
                 open={toggleGetModal.open}
