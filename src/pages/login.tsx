@@ -12,11 +12,14 @@ const Login = () => {
 
   async function SignIn() {
     try {
+      console.log("LOGIN", email)
+      console.log("LOGIN", senha)
       const response = await axios.post("http://localhost:3000/login", {
         email: email,
         senha: senha,
       });
       const { access_token } = response.data;
+      console.log("LOGIN", response.data)
       localStorage.setItem("token", access_token); // Armazena token no localStorage
       navigate("/dashboard"); // Navega para a rota "home"
     } catch (error: any) {
