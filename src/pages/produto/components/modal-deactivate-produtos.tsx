@@ -50,7 +50,7 @@ export function ModalDeactivateProduto({open, loadProducts, toggleModal, getInsu
       
       const columns: GridColDef<ProdutoDataRow>[] = [
         {field: "nome", headerName: "Nome", editable: false, flex: 0, minWidth: 150, width: 150, headerClassName: "gridHeader--header",},
-        {field: "keyWord", headerName: "Palavra Chave", editable: false, flex: 0, minWidth: 150, width: 150, headerClassName: "gridHeader--header",},
+        {field: "keyWord", headerName: "Descrição", editable: false, flex: 0, minWidth: 150, width: 150, headerClassName: "gridHeader--header",},
         {field: "tipo", headerName: "Tipo", editable: false, flex: 0, minWidth: 70, width: 100, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Serviço" : "Produto"),},
         {field: "idCategoria", headerName: "Categoria", editable: false, flex: 0, minWidth: 100, width: 100, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getCategoriaNome(params.value)}</span>,},
         {field: "idInsumo", headerName: "Insumo", editable: false, flex: 0, minWidth: 130, width: 110, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getInsumoNome(params.value)}</span>,},

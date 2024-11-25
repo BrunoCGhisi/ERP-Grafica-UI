@@ -200,11 +200,11 @@ export function ModalEditProduto({
                   />
                 </Grid>
 
-                  <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6}>
                     {/* Campo KeyWord */}
                     <TextField
                       id="outlined-helperText"
-                      label="Palavra Chave"
+                      label="Descrição"
                       helperText={
                         errors.keyWord?.message || "Obrigatório"
                       }
@@ -212,18 +212,9 @@ export function ModalEditProduto({
                       fullWidth
                       {...register("keyWord")}
                     />
-                <Grid item xs={12} md={6}>
-                  {/* Campo KeyWord */}
-                  <TextField
-                    id="outlined-helperText"
-                    label="KeyWord"
-                    helperText={errors.keyWord?.message || "Obrigatório"}
-                    error={!!errors.keyWord}
-                    fullWidth
-                    {...register("keyWord")}
-                  />
+                  
 
-                  <TextField
+                    <TextField
                     sx={{ marginTop: 2.9, mb: 3   }}
                     id="outlined-helperText"
                     label="Largura"
@@ -231,7 +222,7 @@ export function ModalEditProduto({
                     error={!!errors.largura}
                     fullWidth
                     {...register("largura")}
-                  />
+                   />
 
                     <TextField
                       id="outlined-helperText"
@@ -243,16 +234,15 @@ export function ModalEditProduto({
                       fullWidth
                       {...register("comprimento")}
                     />
-                  </Grid>
-                  <Grid item xs={12} md={8}>
+                   <InputLabel id="tipo-label">Status</InputLabel>
                           <Controller
-                          
                             name="isActive"
                             control={control}
                             defaultValue={false}
                             render={({ field }) => (
                               <Select
-                                sx={{width: 450}}
+                                label="Status"
+                                fullWidth
                                 onChange={field.onChange}
                                 value={field.value}
                               >
@@ -261,7 +251,7 @@ export function ModalEditProduto({
                               </Select>
                             )}
                           />
-                        </Grid>
+                  </Grid>
 
                   <Grid item xs={12} sx={{ textAlign: "right" }}>
                     <Button
@@ -273,8 +263,7 @@ export function ModalEditProduto({
                     </Button>
                   </Grid>
                 </Grid>
-
-              </Grid>
+                            
             </form>
           </Grid>
         </Grid>
