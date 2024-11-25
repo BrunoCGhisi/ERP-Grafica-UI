@@ -38,6 +38,7 @@ import {
   deleteProducts,
   getProducts, getSalesProd,
   getSupplies,
+  getSuppliesAll,
   postProducts,
   putProducts
 } from "../../shared/services";
@@ -59,6 +60,7 @@ const Produto = () => {
   });
   const [products, setProducts] = useState<produtoSchemaType[]>([]);
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
+  const [insumosAll, setInsumosAll] = useState<insumoSchemaType[]>([]);
   const [categorias, setCategorias] = useState<proCategorySchemaType[]>([]);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -76,7 +78,9 @@ const Produto = () => {
   // Trazendo isnumos e categoria  --------------------------------
   const loadSupplies = async () => {
     const response = await getSupplies();
+    const responseAll = await getSuppliesAll();
     setInsumos(response);
+    setInsumosAll(responseAll)
   };
   useEffect(() => {
     loadSupplies();
@@ -135,7 +139,7 @@ const Produto = () => {
   }, [open]);
 
   const getInsumoNome = (id: number | undefined) => {
-    const insumoNome = insumos.find((cat) => cat.id === id);
+    const insumoNome = insumosAll.find((cat) => cat.id === id);
     return insumoNome ? insumoNome.nome : "Desconhecido";
   };
 
@@ -408,6 +412,7 @@ const Produto = () => {
                 idToEdit={idToEdit}
                 loadProducts={loadProducts}
                 insumos={insumos}
+                insumosAll={insumosAll}
                 produtos={products}
                 categoriasProdutos={categorias}
                 setAlertMessage={setAlertMessage}

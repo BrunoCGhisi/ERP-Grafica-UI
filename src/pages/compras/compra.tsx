@@ -85,6 +85,7 @@ const Compra = () => {
   const [fornecedores, setFornecedores] = useState<fornecedorSchemaType[]>([]);
   const [bancos, setBancos] = useState<bancoSchemaType[]>([]);
   const [insumos, setInsumos] = useState<insumoSchemaType[]>([]);
+  const [insumosAll, setInsumosAll] = useState<insumoSchemaType[]>([]);
   const [idToEdit, setIdToEdit] = useState<any>(null);
   const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
   const [selectedRow, setSelectedRow] = useState<CompraDataRow>();
@@ -160,6 +161,7 @@ const Compra = () => {
     const getInsumos = async () => {
       const response = await axios.get("http://localhost:3000/insumo");
       setInsumos(response.data.insumosAtivos);
+      setInsumosAll(response.data.allData)
       console.log(response);
     };
     getInsumos();
@@ -746,13 +748,14 @@ const Compra = () => {
                 loadPurchases={loadPurchases}
                 financeiro={financeiros}
                 insumos={insumos}
+                insumosAll={insumosAll}
                 fornecedores={fornecedores}
               />
             )}
             {toggleGetModal.open && (
               <ModalGetCompra
                 comprasInsumos={ci}
-                insumos={insumos}
+                insumos={insumosAll}
                 financeiro={financeiros}
                 compras={purchases}
                 fornecedores={fornecedores}

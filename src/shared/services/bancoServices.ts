@@ -8,6 +8,11 @@ export const getBanks = async () => {
   return response.data.getBancos;
 };
 
+export const getBanksAll = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.allData;
+};
+
 export const getDeactiveBanks = async () => {
   const response = await axios.get(BASE_URL);
   return response.data.bancoDesativos;

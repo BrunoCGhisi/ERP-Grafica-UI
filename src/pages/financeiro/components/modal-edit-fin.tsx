@@ -1,12 +1,11 @@
-import { Box, Grid, Select, MenuItem, Modal, Button, TextField, Typography, InputLabel, Switch, FormControl } from "@mui/material";
+import { Box, Grid, Select, MenuItem, Modal, Button, TextField, Typography, InputLabel } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import "../../venda.css";
-import { putFinances, putSupplie } from "../../../shared/services";
-import { insumoSchema, financeiroSchema, financeiroSchemaType, financiaSchemaType, financiaSchema } from "../../../shared/services/types";
+import { putFinances } from "../../../shared/services";
+import { financiaSchemaType, financiaSchema } from "../../../shared/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModalStyle } from "../../../shared/styles";
-import { NumericFormat } from "react-number-format";
 
 interface ModalEditFinanceiro {
     open: boolean

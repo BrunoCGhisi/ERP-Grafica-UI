@@ -38,6 +38,7 @@ import {
   putCategories,
   deleteCategories,
   getProducts,
+  getProductsAll,
 } from "../../shared/services";
 import { ModalDeactivateCatProd } from "./components/modal-deactivate.catprod";
 import { ModalEditCategoria } from "./components/modal-edit-catprod";
@@ -88,7 +89,7 @@ const CategoriaProduto = () => {
   };
 
   const handleDelete = async (data: proCategorySchemaType) => {
-    const produtos = await getProducts();
+    const produtos = await getProductsAll();
     const filterProdutos = produtos.filter(
       (produto: produtoSchemaType) => produto.idInsumo === data.id
     );

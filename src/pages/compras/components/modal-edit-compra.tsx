@@ -1,5 +1,4 @@
 import {
-  Box,
   InputLabel,
   Select,
   MenuItem,
@@ -9,24 +8,19 @@ import {
   Typography,
   IconButton,
   Grid,
-  InputAdornment,
+  InputAdornment
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { ModalRoot } from "../../../shared/components/ModalRoot";
 import dayjs from "dayjs";
 import "../../venda.css";
 import { putPurchases } from "../../../shared/services/compraServices";
 import {
-  vendaSchema,
-  vendaSchemaType,
-  vendaProdutoSchemaType,
   financeiroSchemaType,
   insumoSchemaType,
-  compraSchema,
+  compraSchema
 } from "../../../shared/services/types";
-import { GridDeleteIcon } from "@mui/x-data-grid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import {
@@ -34,12 +28,11 @@ import {
   compraInsumoSchemaType,
 } from "../../../shared/services/types";
 
-import { ModalStyle } from "../../../shared/styles";
-
-const today = new Date();
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ModalRootFull } from "../../../shared/components/ModalRootFull";
 import { NumericFormat } from "react-number-format";
+
+const today = new Date();
 interface ModalEditCompra {
   open: boolean;
   toggleModal: () => void;
@@ -55,6 +48,7 @@ interface ModalEditCompra {
   compras: compraSchemaType[];
   comprasInsumos: compraInsumoSchemaType[];
   insumos: insumoSchemaType[];
+  insumosAll: insumoSchemaType[];
   bancos: {
     nome: string;
     valorTotal: number;
@@ -75,7 +69,7 @@ export function ModalEditCompra({
   loadPurchases,
   idToEdit,
   setAlertMessage,
-  setShowAlert,
+  setShowAlert, insumosAll
 }: ModalEditCompra) {
   const filterCompras = compras.filter((compra) => compra.id === idToEdit);
   const idCompras = filterCompras.map((compra) => compra.id);
@@ -90,6 +84,26 @@ export function ModalEditCompra({
   const financeiros = financeiro.filter((fin) =>
     idCompras.includes(fin.idCompra)
   );
+
+  const insumoAssociado = compra_insumo[0]?.idInsumo
+  ? insumosAll.find((insumo) => insumo.id === compra_insumo[0]?.idInsumo)
+  : null;
+
+  console.log("insumoAssociado:", filterCompras);
+
+
+
+// Filtrando apenas insumos ativos, mas incluindo o desativado quando necessário
+const insumosAtivos = insumos.filter((insumo) => insumo.isActive);
+console.log("Insumos Ativos:", insumosAtivos);
+
+// Insumos para o select: inclui o insumo desativado se necessário
+const insumosParaSelect = insumoAssociado && !insumoAssociado.isActive
+  ? [...insumosAtivos, insumoAssociado]  // Insumo desativado será adicionado
+  : insumosAtivos;
+
+console.log("Insumos para Select (com desativados):", insumosParaSelect);
+
 
   const {
     register,
@@ -374,15 +388,12 @@ export function ModalEditCompra({
                               <Controller
                                 control={control}
                                 name={`compras_insumos.${index}.idInsumo`}
-                                defaultValue={0}
+                                defaultValue={item.idInsumo}  // Definir corretamente o valor do insumo associado
                                 render={({ field }) => (
                                   <Select {...field} fullWidth>
-                                    {insumos.map((insumo) => (
-                                      <MenuItem
-                                        key={insumo.id}
-                                        value={insumo.id}
-                                      >
-                                        {insumo.nome}
+                                    {insumosParaSelect.map((insumo) => (
+                                      <MenuItem key={insumo.id} value={insumo.id}>
+                                        {insumo.nome} {!insumo.isActive && "(Inativo)"}
                                       </MenuItem>
                                     ))}
                                   </Select>

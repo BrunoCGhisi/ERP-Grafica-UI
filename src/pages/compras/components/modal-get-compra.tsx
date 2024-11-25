@@ -18,7 +18,7 @@ import { NumericFormat } from "react-number-format";
 
 interface ModalGetCompra {
   open: boolean;
-  rowData: CompraDataRow;
+  rowData: CompraDataRow | undefined;
   toggleModal: () => void;
   fornecedores: {
     nome: string;

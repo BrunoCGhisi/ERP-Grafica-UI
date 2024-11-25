@@ -27,6 +27,7 @@ interface ModalEditProduto {
   toggleModal: () => void;
   loadProducts: () => void;
   insumos: insumoSchemaType[];
+  insumosAll: insumoSchemaType[];
   categoriasProdutos: proCategorySchemaType[];
   setAlertMessage: (alertMessage: string) => void;
   setShowAlert: (open: boolean) => void;
@@ -43,17 +44,29 @@ export function ModalEditProduto({
   setShowAlert,
   produtos,
   idToEdit,
-  insumos,
+  insumos, insumosAll
 }: ModalEditProduto) {
   //const today = new Date()
   const filterProdutos = produtos.filter((produto) => produto.id === idToEdit);
 
-  const insumo = insumos.filter(
+  const insumo = insumosAll.filter(
     (insumo) => insumo.id === filterProdutos[0]?.idInsumo
   );
   const categoria = categoriasProdutos.filter(
     (categoria) => categoria.id === filterProdutos[0]?.idCategoria
   );
+
+  const insumosAtivos = insumos; // Lista de insumos ativos
+  const insumoAssociado = insumosAll.find(
+    (insumo) => insumo.id === filterProdutos[0]?.idInsumo
+  );
+  
+  // Crie a lista de insumos para o select, incluindo o insumo associado, se ele não estiver ativo
+  const insumosParaSelect = insumoAssociado
+    ? [...insumosAtivos, insumoAssociado].filter(
+        (value, index, self) => self.findIndex((i) => i.id === value.id) === index
+      )
+    : insumosAtivos;
 
   const {
     register,
@@ -135,8 +148,8 @@ export function ModalEditProduto({
                         error={!!errors.idInsumo}
                         {...field}
                       >
-                        {insumos &&
-                          insumos.map((insumo) => (
+                        {insumosParaSelect &&
+                          insumosParaSelect.map((insumo) => (
                             <MenuItem key={insumo.id} value={insumo.id}>
                               {insumo.nome}
                             </MenuItem>

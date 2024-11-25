@@ -8,6 +8,11 @@ export const getCategories = async () => {
   return response.data.catProdAtivos;
 };
 
+export const getCategoriesAll = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.allData;
+};
+
 export const getDeactiveCategories = async () => {
   const response = await axios.get(BASE_URL);
   return response.data.catProdDesativos;

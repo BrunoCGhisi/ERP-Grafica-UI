@@ -8,6 +8,13 @@ export const getProducts = async () => {
   return response.data.produtosAtivos;
 };
 
+export const getProductsAll = async () => {
+  const response = await axios.get(BASE_URL);
+  console.log()
+  return response.data.allData;
+};
+
+
 export const getProductsDeactivate = async () => {
   const response = await axios.get(BASE_URL);
   return response.data.produtosDesativos;

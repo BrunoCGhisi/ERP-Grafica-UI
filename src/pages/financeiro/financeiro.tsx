@@ -21,7 +21,7 @@ import {
   bancoSchemaType
 } from "../../shared/services/types";
 
-import { getBanks, getFinances } from "../../shared/services";
+import { getBanks, getBanksAll, getFinances } from "../../shared/services";
 import { ModalEditFinanceiro } from "./components/modal-edit-fin";
 import { ModalGetFinanceiro } from "./components/modal-get-fin";
 import dayjs from "dayjs";
@@ -34,6 +34,7 @@ const Financeiro = () => {
   });
   const [finances, setFinances] = useState<financiaSchemaType[]>([]);
   const [banks, setBanks] = useState<bancoSchemaType[]>([]);
+  const [banksAll, setBanksAll] = useState<bancoSchemaType[]>([]);
 
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
@@ -51,8 +52,8 @@ const Financeiro = () => {
 
   const loadFinances = async () => {
     const FinancesData = await getFinances();
-    const BanksData = await getBanks();
-    setBanks(BanksData)
+    const BanksDataAll = await getBanksAll(); 
+    setBanksAll(BanksDataAll)
     setFinances(FinancesData);
   };
   useEffect(() => {
@@ -192,7 +193,7 @@ const Financeiro = () => {
             )}
             {toggleGetModal.open && (
               <ModalGetFinanceiro
-                bancos={banks}
+                bancos={banksAll}
                 financeiros={finances}
                 rowData={selectedRow}
                 open={toggleGetModal.open}

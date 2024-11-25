@@ -44,6 +44,7 @@ export function ModalGetVenda({
   produtos,
   vendasProdutos,
 }: ModalGetVenda) {
+  
   const filterVendas = vendas.filter((venda) => venda.id === rowData?.id);
   const idVendas = filterVendas.map((venda) => venda.id);
   const venda_produto = vendasProdutos.filter((vp) =>

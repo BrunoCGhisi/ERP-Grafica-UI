@@ -54,6 +54,7 @@ import {
   deleteSale,
   getSupplies,
   getProducts,
+  getProductsAll,
 } from "../../shared/services";
 import { ModalEditVenda } from "./components/modal-edit-venda";
 import { ModalGetVenda } from "./components/modal-get-venda";
@@ -89,6 +90,7 @@ const Venda = () => {
   const [financeiros, setFinanceiros] = useState<financeiroSchemaType[]>([]);
   const [clientes, setClientes] = useState<clienteSchemaType[]>([]);
   const [produtos, setProdutos] = useState<produtoSchemaType[]>([]);
+  const [produtosAll, setProdutosAll] = useState<produtoSchemaType[]>([]);
   const { toggleModal, open } = useOpenModal();
   const toggleGetModal = useOpenModal();
   const [totalQuantidade, setTotalQuantidade] = useState(0);
@@ -195,6 +197,8 @@ const Venda = () => {
   useEffect(() => {
     const getProdutos = async () => {
       const responses = await getProducts();
+      const responseAll = await getProductsAll();
+      setProdutosAll(responseAll)
       setProdutos(responses);
     };
     getProdutos();
@@ -206,6 +210,7 @@ const Venda = () => {
     const response = await axios.get("http://localhost:3000/venda");
     const responseFin = await axios.get("http://localhost:3000/financeiro");
     setVp(response.data.vendasProdutos);
+    console.log("WATAFUCK", response.data.vendasProdutos)
     setFinanceiros(responseFin.data);
 
     const salesData = await getSales();
@@ -762,7 +767,7 @@ const Venda = () => {
             {toggleGetModal.open && (
               <ModalGetVenda
                 vendasProdutos={vp}
-                produtos={produtos}
+                produtos={produtosAll}
                 financeiro={financeiros}
                 vendas={sales}
                 clientes={clientes}

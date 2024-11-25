@@ -8,6 +8,12 @@ export const getSupplies = async () => {
   return response.data.insumosAtivos;
 };
 
+export const getSuppliesAll = async () => {
+  const response = await axios.get(BASE_URL);
+  return response.data.allData;
+};
+
+
 export const getDeactives = async () => {
   const response = await axios.get(BASE_URL);
   console.log("response", response.data.insumosDesativos)
