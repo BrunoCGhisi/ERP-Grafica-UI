@@ -14,7 +14,7 @@ export const financeiroSchema = z.object({
   parcelas: z.coerce.number().optional(),
   idFormaPgto: z.coerce.number().optional(),
   idBanco: z.coerce.number().optional(),
-  valor: z.coerce.number().optional()
+  valor: z.coerce.number().min(1, 'Campo Obrigatório')
 });
 
 export const vendaSchema = z.object({

@@ -281,7 +281,7 @@ export function ModalEditCliente({
                     render={({ field }) => (
                       <PatternFormat
                         {...field}
-                        format="####-####" // Formato de telefone
+                        format="#####-###" // Formato de telefone
                         mask="_"
                         customInput={TextField} // Utiliza TextField como input
                         label="CEP"

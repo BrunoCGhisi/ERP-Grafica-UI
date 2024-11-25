@@ -338,6 +338,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
 
                 <Grid item xs={6}>
                   <TextField
+                    label="Valor"
                     placeholder={`Valor bruto: ${totalQuantidade}`}
                     {...register("financeiro.0.valor")}
                     variant="outlined"

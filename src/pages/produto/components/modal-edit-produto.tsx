@@ -261,62 +261,6 @@ export function ModalEditProduto({
                   </Grid>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
-                  {/* Campo KeyWord */}
-                  <TextField
-                    id="outlined-helperText"
-                    label="KeyWord"
-                    helperText={errors.keyWord?.message || "Obrigatório"}
-                    error={!!errors.keyWord}
-                    fullWidth
-                    {...register("keyWord")}
-                  />
-
-                  <TextField
-                    sx={{ marginTop: 2.9, mb: 3   }}
-                    id="outlined-helperText"
-                    label="Largura"
-                    helperText={errors.largura?.message || "Obrigatório"}
-                    error={!!errors.largura}
-                    fullWidth
-                    {...register("largura")}
-                  />
-
-                  <TextField
-                    id="outlined-helperText"
-                    label="Comprimento"
-                    helperText={errors.comprimento?.message || "Obrigatório"}
-                    error={!!errors.comprimento}
-                    fullWidth
-                    {...register("comprimento")}
-                  />
-                  <InputLabel> Status </InputLabel>
-                  <Controller
-                    name="isActive"
-                    control={control}
-                    defaultValue={false}
-                    render={({ field }) => (
-                      <Select
-                        fullWidth
-                        onChange={field.onChange}
-                        value={field.value}
-                      >
-                        <MenuItem value={true}>Ativo</MenuItem>
-                        <MenuItem value={false}>Desativado</MenuItem>
-                      </Select>
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sx={{ textAlign: "right" }}>
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    startIcon={<DoneIcon />}
-                  >
-                    Editar
-                  </Button>
-                </Grid>
               </Grid>
             </form>
           </Grid>
