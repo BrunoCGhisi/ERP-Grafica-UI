@@ -260,6 +260,9 @@ const Compra = () => {
       flex: 0,
       headerClassName: "gridHeader--header",
       minWidth: 100,
+      renderCell: (params) => (
+        <span>{params.value != null ? `${params.value}%` : "N/A"}</span>
+      )
     },
     {
       field: "acoes",

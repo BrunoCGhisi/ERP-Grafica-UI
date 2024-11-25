@@ -108,7 +108,7 @@ const Dashboard = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={3}>
+            <Grid item xs={3.2}>
               <Box
                 sx={{
                   display: "flex",

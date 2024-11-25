@@ -170,7 +170,7 @@ export function ModalGetVenda({
             <TextField
               id="outlined-helperText"
               label="Desconto"
-              value={rowData?.desconto || ""}
+              value={`${rowData?.desconto}%` || ""}
               inputProps={{ readOnly: true }}
             />
           </Grid>
