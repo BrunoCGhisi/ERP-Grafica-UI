@@ -23,3 +23,18 @@ export const deleteFinances = async (id: number) => {
   const response = await axios.delete(`${BASE_URL}?id=${id}`);
   return response;
 };
+
+export const getTotaisFinanceiros = async () => {
+  try {
+    const response = await fetch('/financeiros/total', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    if (!response.ok) throw new Error('Erro ao buscar totais financeiros');
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
