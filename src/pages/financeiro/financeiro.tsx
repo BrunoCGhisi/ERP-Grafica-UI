@@ -65,14 +65,10 @@ const Financeiro = () => {
 
   const columns: GridColDef<FinanciaDataRow>[] = [
     { field: "descricao", headerName: "Descrição", editable: false, flex: 0, minWidth: 150, headerClassName: "gridHeader--header", },
-    { field: "idBanco", headerName: "Banco", editable: false, flex: 0, minWidth:100, headerClassName: "gridHeader--header", },
-    {field: "isPagarReceber",headerName: "À Pagar",editable: false,flex: 0, minWidth: 70, width: 70, headerClassName: "gridHeader--header", },
-    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", },
     { field: "dataVencimento", headerName: "Vencimento", editable: false, flex: 0, width: 95, minWidth: 95, headerClassName: "gridHeader--header", },
-    { field: "dataCompetencia",headerName: "Competencia",editable: false,flex: 0, minWidth: 103, headerClassName: "gridHeader--header",},
-    { field: "dataPagamento", headerName: "Pagamento", editable: false, flex: 0, width: 95, minWidth: 95, headerClassName: "gridHeader--header", },
     { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 90, headerClassName: "gridHeader--header", },
-    { field: "parcelas", headerName: "N° Parcelas", editable: false, flex: 0, width: 100, headerClassName: "gridHeader--header",},
+    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", },
+
     {
       field: "acoes",
       headerName: "Ações",
