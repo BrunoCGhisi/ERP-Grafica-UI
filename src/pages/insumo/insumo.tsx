@@ -298,7 +298,7 @@ const Insumo = () => {
                           />
                         </Grid>
 
-                        <Grid item xs={12} md={100}>
+                        <Grid item xs={12} md={8}>
 
                         <Controller
                           name="estoque"

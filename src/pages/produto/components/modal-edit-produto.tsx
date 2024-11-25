@@ -206,11 +206,12 @@ export function ModalEditProduto({
                       id="outlined-helperText"
                       label="Descrição"
                       helperText={
-                        errors.keyWord?.message || "Obrigatório"
+                        errors.keyWord?.message 
                       }
                       error={!!errors.keyWord}
                       fullWidth
                       {...register("keyWord")}
+                      sx={{mb:3}}
                     />
                   
 

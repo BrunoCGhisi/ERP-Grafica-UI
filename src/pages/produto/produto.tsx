@@ -331,6 +331,7 @@ const Produto = () => {
                             error={!!errors.keyWord}
                             fullWidth
                             {...register("keyWord")}
+                            sx={{mb: 5.7}}
                           />
 
                         <Controller
@@ -341,7 +342,7 @@ const Produto = () => {
                           render={({ field: { onChange, value }, fieldState: { error } }) => (
                             <NumericFormat
                               customInput={TextField}
-                              sx={{ marginTop: 2.9 }}
+                              
                               suffix="cm"
                               fullWidth
                               id="outlined-helperText"
@@ -368,7 +369,7 @@ const Produto = () => {
                           render={({ field: { onChange, value }, fieldState: { error } }) => (
                             <NumericFormat
                               customInput={TextField}
-                              sx={{ marginTop: 2.9 }}
+                              
                               suffix="cm"
                               fullWidth
                               id="outlined-helperText"
