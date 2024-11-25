@@ -1,4 +1,4 @@
-import { Box, Grid, Select, MenuItem, Modal, Button, TextField, Typography, InputLabel, Switch } from "@mui/material";
+import { Box, Grid, Select, MenuItem, Modal, Button, TextField, Typography, InputLabel, Switch, FormControl } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import { Controller, useForm } from "react-hook-form";
 import "../../venda.css";
@@ -24,26 +24,15 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
     console.log("FINANCAS", filterFinances)
   
 
-    const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<financiaSchemaType>({
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<financiaSchemaType>({
       resolver: zodResolver(financiaSchema),
       defaultValues: {
         dataVencimento: filterFinances[0].dataVencimento,
         dataCompetencia: filterFinances[0].dataCompetencia,
-        situacao: filterFinances[0].situacao,
+        situacao: filterFinances[0]?.situacao,
 
       },
     });
-
-    const situacao = watch("situacao");
-
-    const handleSwitchChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
-        if( filterFinances[0].isPagarReceber === false){
-            setValue("situacao", event.target.checked ? 3 : 1);
-        }
-        else{
-            setValue("situacao", event.target.checked ? 4 : 2);
-        }
-    };
 
     async function handleUpdate(data: financiaSchemaType){
         try {
@@ -119,19 +108,44 @@ export function ModalEditFinanceiro({open, loadFinances, toggleModal, setAlertMe
                 <Grid item xs={10}>
                   <InputLabel>Situação do Pagamento</InputLabel>
                   <Box display="flex" alignItems="center">
+                  
 
-                    {filterFinances[0].isPagarReceber === false && (
-                        <Switch
-                            checked={situacao === 3} // Verifica se o valor é 1 (ativo)
-                            onChange={handleSwitchChange}
-                        />
+                    {filterFinances[0]?.isPagarReceber == true && (
+                        <Controller
+                        name="situacao"
+                        control={control}
+                        render={({ field }) => (
+                            
+                        <Select
+                            sx={{width: 450}}
+                            onChange={field.onChange}
+                            value={field.value}
+                        >
+                            <MenuItem value={4}>Recebido</MenuItem>
+                            <MenuItem value={2}>À receber</MenuItem>              
+                        </Select>
+                        )}/> 
                     )}
-                    {filterFinances[0].isPagarReceber === true &&(
-                        <Switch
-                            checked={situacao === 4} // Verifica se o valor é 1 (ativo)
-                            onChange={handleSwitchChange}
-                        />
+
+                    {filterFinances[0]?.isPagarReceber == false && (
+                        <Controller
+                        name="situacao"
+                        control={control}
+                        render={({ field }) => (
+                            
+                        <Select
+                            sx={{width: 450}}
+                            onChange={field.onChange}
+                            value={field.value}
+                        >
+                            <MenuItem value={3}>Pago</MenuItem>
+                            <MenuItem value={1}>À pagar</MenuItem>             
+                        </Select>
+                        )}/> 
+
+
                     )}
+
                   </Box>
                 </Grid>
 

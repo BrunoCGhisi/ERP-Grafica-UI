@@ -7,7 +7,8 @@ import {
 import { ModalRoot } from "../../../shared/components/ModalRoot";
 import "../../venda.css";
 import {
-    financiaSchemaType, FinanciaDataRow
+    financiaSchemaType, FinanciaDataRow,
+    bancoSchemaType
 } from "../../../shared/services/types";
   
   interface ModalGetFinanceiro {
@@ -15,10 +16,7 @@ import {
     rowData: FinanciaDataRow | undefined;
     toggleModal: () => void;
     financeiros: financiaSchemaType[];
-    bancos : {
-        nome: string;
-        id?: number | undefined;
-    }[]
+    bancos : bancoSchemaType[]
   }
   
   export function ModalGetFinanceiro({
@@ -28,7 +26,10 @@ import {
   }: ModalGetFinanceiro) {
 
     const filterFinances = financeiros.filter((fin) => fin.id === rowData?.id);
-    const filterBancos = bancos.filter((banco) => banco.id === filterFinances[0].idBanco)
+    console.log(filterFinances)
+    const filterBancos = bancos.filter((banco) => banco.id === rowData?.idBanco)
+    console.log("bancos",bancos)
+    console.log(filterBancos)
   
     let formaPgto = "";
     switch (rowData?.idFormaPgto) {
@@ -127,7 +128,7 @@ import {
               <TextField
                 id="outlined-helperText"
                 label="Data Pagamento"
-                value={rowData?.dataPagamento}
+                value={rowData?.dataPagamento || "Pagamento não efetuado"}
                 inputProps={{ readOnly: true }}
               />
             </Grid>
