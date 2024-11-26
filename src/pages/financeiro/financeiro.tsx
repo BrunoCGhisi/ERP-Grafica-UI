@@ -80,11 +80,12 @@ const Financeiro = () => {
   };
 
   const columns: GridColDef<FinanciaDataRow>[] = [
+    { field: "id", headerName: "Código", editable: false, flex: 0, minWidth: 80, headerClassName: "gridHeader--header", },
     { field: "descricao", headerName: "Descrição", editable: false, flex: 0, minWidth: 300, headerClassName: "gridHeader--header", },
     { field: "dataCompetencia", headerName: "Data de Registro", editable: false, flex: 0, width: 180, minWidth: 120, headerClassName: "gridHeader--header", },
     { field: "situacao", headerName: "Status", editable: false, flex: 0, width: 150, headerClassName: "gridHeader--header",
       renderCell: (params) => <span>{situacaoNome(params.value)}</span> },
-    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 100, minWidth: 100, headerClassName: "gridHeader--header", renderCell: (params) => {
+    { field: "valor", headerName: "Valor Total", editable: false, flex: 0, width: 150, minWidth: 100, headerClassName: "gridHeader--header", renderCell: (params) => {
       const formattedValue = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -210,7 +211,7 @@ const Financeiro = () => {
               localeText={localeText}
               initialState={{
                 sorting: {
-                  sortModel: [{ field: 'dataCompetencia', sort: 'desc' }],
+                  sortModel: [{ field: 'id', sort: 'desc' }],
                 },
                 pagination: {
                   paginationModel: {
