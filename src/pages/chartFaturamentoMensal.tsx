@@ -97,8 +97,8 @@ const SalesChart: React.FC = () => {
           vertical: true,
           horizontal: true,
         }}
-        width={chartSize.width}
-        height={chartSize.height}
+        width={500}
+        height={300}
         sx={{
           [`.${axisClasses.left} .${axisClasses.label}`]: {
             transform: "translate(-30px, 0)",
