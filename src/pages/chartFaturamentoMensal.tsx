@@ -44,11 +44,10 @@ const SalesChart: React.FC = () => {
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       if (chartContainerRef.current) {
-        const { width, height } =
-          chartContainerRef.current.getBoundingClientRect();
+        const { width } = chartContainerRef.current.getBoundingClientRect();
         setChartSize({
-          width: width,
-          height: height * 0.9, // Garante altura proporcional ao container
+          width: Math.max(width, 300), // Tamanho mínimo de largura
+          height: Math.max(width * 0.6, 200), // Mantém proporção e tamanho mínimo
         });
       }
     });
@@ -67,7 +66,17 @@ const SalesChart: React.FC = () => {
   const faturamento = salesData.map((sale) => sale.faturamento);
 
   return (
-    <div ref={chartContainerRef} style={{ width: "100%", height: "100%" }}>
+    <div
+      ref={chartContainerRef}
+      style={{
+        width: "100%",
+        height: "100%",
+        minHeight: "200px", // Tamanho mínimo para garantir visibilidade
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <BarChart
         dataset={salesData.map((sale) => ({
           month: sale.dataVenda,
@@ -92,7 +101,6 @@ const SalesChart: React.FC = () => {
             color: "#ffb74d",
           },
         ]}
-        layout="vertical"
         grid={{
           vertical: true,
           horizontal: true,

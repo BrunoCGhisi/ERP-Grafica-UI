@@ -196,7 +196,7 @@ const Dashboard = () => {
 
           {/* Gráficos */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={12} sm={6.3}>
+            <Grid item xs={12} sm={6}>
               <Box
                 sx={{
                   display: "flex",
