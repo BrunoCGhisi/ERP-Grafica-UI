@@ -513,7 +513,6 @@ const Venda = () => {
                           <Controller
                             control={control}
                             name="isVendaOS"
-                            defaultValue={1}
                             render={({ field }) => (
                               <Select
                                 fullWidth

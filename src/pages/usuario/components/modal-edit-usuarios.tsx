@@ -101,7 +101,9 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
 
                   {userId != filterUsers[0]?.id && (
                     <>
+                  
                   <Grid item xs={12} md={6}>
+                  <Typography>Permissão</Typography>
                     <Controller
                       control={control}
                       name="isAdm"
@@ -122,6 +124,7 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
                     />
                   </Grid>
                   <Grid item xs={12} md={8}>
+                    <Typography>Status</Typography>
                           <Controller
                           
                             name="isActive"
@@ -129,6 +132,7 @@ export function ModalEditUsuario({open, loadUsers, toggleModal, setAlertMessage,
                             defaultValue={false}
                             render={({ field }) => (
                               <Select
+    
                                 sx={{width: 450}}
                                 onChange={field.onChange}
                                 value={field.value}
