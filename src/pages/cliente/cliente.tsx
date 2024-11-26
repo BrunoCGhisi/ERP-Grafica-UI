@@ -184,11 +184,6 @@ const Cliente = () => {
       renderCell: ({ row }) => (
         <div>
           <IconButton
-            onClick={() => row.id !== undefined && handleDelete(row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
             onClick={() =>
               row.id !== undefined && [setIdToEdit(row.id), toggleModal()]
             }
