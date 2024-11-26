@@ -178,32 +178,7 @@ export function ModalEditCliente({
                 </Grid>
 
                 <Grid item xs={6}>
-                  <InputLabel id="demo-simple-select-label">
-                    Inscrição Estadual
-                  </InputLabel>
-                  <Controller
-                    control={control}
-                    name="statusIe"
-                    defaultValue={true}
-                    render={({ field }) => (
-                      <Select
-                        onChange={field.onChange}
-                        labelId="select-label"
-                        id="demo-simple-select"
-                        label="Status da Inscrição Estadual"
-                        value={field.value}
-                        fullWidth
-                      >
-                        <MenuItem value={true}>Não contribuinte</MenuItem>
-                        <MenuItem value={false}>Contribuinte</MenuItem>
-                      </Select>
-                    )}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <InputLabel id="demo-simple-select-label">
+                <InputLabel id="demo-simple-select-label">
                   Perfil de Cadastro
                   </InputLabel>
                   <Controller
@@ -225,6 +200,32 @@ export function ModalEditCliente({
                       </Select>
                     )}
                   />
+                </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                <InputLabel id="demo-simple-select-label">
+                    Inscrição Estadual
+                  </InputLabel>
+                  <Controller
+                    control={control}
+                    name="statusIe"
+                    defaultValue={true}
+                    render={({ field }) => (
+                      <Select
+                        onChange={field.onChange}
+                        labelId="select-label"
+                        id="demo-simple-select"
+                        label="Status da Inscrição Estadual"
+                        value={field.value}
+                        fullWidth
+                      >
+                        <MenuItem value={true}>Não contribuinte</MenuItem>
+                        <MenuItem value={false}>Contribuinte</MenuItem>
+                      </Select>
+                    )}
+                  />
+                  
                 </Grid>
 
                 <Grid item xs={6} sx={{ mt: 3 }}>

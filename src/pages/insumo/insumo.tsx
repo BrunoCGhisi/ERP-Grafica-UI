@@ -92,22 +92,16 @@ const Insumo = () => {
   const handleDelete = async (data: insumoSchemaType) => {
     const produtos = await getProducts();
     const compras = await getPurchasesSupplies();
-  
-    // Verifica se produtos ou compras vieram vazios
-    const noProdutos = produtos.length === 0;
-    const noCompras = compras.length === 0;
-  
+    const comprasInsumos = compras.compra_insumo || [];
+
     const filterProdutos = produtos.filter(
       (produto: produtoSchemaType) => produto.idInsumo === data.id
     );
-    const filterCompras = compras.filter(
+    const filterCompras = comprasInsumos.filter(
       (compra: compraInsumoSchemaType) => compra.idInsumo === data.id
     );
-  
-    if (noProdutos && noCompras) {
-      // Se não há produtos nem compras, delete diretamente
-      await deleteSupplie(data.id!);
-    } else if (filterProdutos.length === 0 && filterCompras.length === 0) {
+
+    if (filterProdutos.length === 0 && filterCompras.length === 0) {
       // Se não há relação com produtos nem compras, delete diretamente
       await deleteSupplie(data.id!);
     } else {
