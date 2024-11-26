@@ -30,9 +30,15 @@ const Login = () => {
 
 
   return (
-    <Box>
-      <Box>
-        <Stack spacing={2} sx={{ width: "300px", margin: "20px auto" }}>
+
+      <Box sx={{
+        width: "100vw",        
+        height: "100vh",       
+        backgroundColor: "#fff",
+        margin: 0,
+        padding: 0,
+      }}>
+        <Stack spacing={2} sx={{ width: "300px", margin: "20px auto", padding: 1 }}>
           <Typography variant="h4">Login</Typography>
           <TextField
             label="Email"
@@ -53,7 +59,7 @@ const Login = () => {
           </Button>
         </Stack>
       </Box>
-    </Box>
+  
   );
 };
 
