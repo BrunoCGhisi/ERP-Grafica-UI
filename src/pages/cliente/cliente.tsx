@@ -17,6 +17,7 @@ import {
 import {
   DataGrid,
   GridColDef,
+  GridLocaleText,
   GridRenderCellParams,
   GridRowParams,
 } from "@mui/x-data-grid";
@@ -144,7 +145,7 @@ const Cliente = () => {
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 290,
+      width: 300,
     },
     {
       field: "telefone",
@@ -152,7 +153,7 @@ const Cliente = () => {
       editable: false,
       flex: 0,
       headerClassName: "gridHeader--header",
-      width: 180,
+      width: 200,
       renderCell: (params) => <span>{formatarTelefone(params.value)}</span>,
     },
     {
@@ -218,6 +219,12 @@ const Cliente = () => {
     cidade: cliente.cidade,
     complemento: cliente.complemento,
   }));
+
+  const localeText: Partial<GridLocaleText> = {
+    toolbarDensity: "Densidade",
+    toolbarColumns: "Colunas",
+    footerRowSelected: (count) => "", // Remove a mensagem "One row selected"
+  };
 
   return (
     <Box>
@@ -531,6 +538,7 @@ const Cliente = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              localeText={localeText}
               initialState={{
                 pagination: {
                   paginationModel: {

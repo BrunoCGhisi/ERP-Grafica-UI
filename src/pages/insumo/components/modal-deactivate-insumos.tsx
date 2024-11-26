@@ -94,11 +94,11 @@ export function ModalDeactivateInsumo({open, loadSupplies, toggleModal,}: ModalD
               aria-describedby="modal-modal-description"
             >
             <Box sx={ModalStyle}>
-            <Button
-                    onClick={addOf}
-                    variant="outlined"
-                    startIcon={<CloseRoundedIcon />}
-                />
+            <Box sx={{ mb: 2 }}>
+            <Button onClick={addOf} variant="outlined">
+              <CloseRoundedIcon />
+            </Button>
+          </Box>
               <Box sx={GridStyle}>
                 <DataGrid
                   rows={rows}

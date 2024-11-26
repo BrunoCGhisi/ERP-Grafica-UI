@@ -299,7 +299,7 @@ const Venda = () => {
       headerName: "Código",
       editable: false,
       flex: 0,
-      width: 100,
+      width: 65,
       headerClassName: "gridHeader--header",
     },
     {
@@ -323,7 +323,7 @@ const Venda = () => {
       headerName: "Data de Cadastro",
       editable: false,
       flex: 0,
-      width: 170,
+      width: 130,
       headerClassName: "gridHeader--header",
     },
     {
@@ -331,7 +331,7 @@ const Venda = () => {
       headerName: "Operação",
       editable: false,
       flex: 0,
-      width: 150,
+      width: 80,
       headerClassName: "gridHeader--header", renderCell: (params) => (params.value == 0 ? "Orçamento" : "Venda" )
     },
     {
@@ -348,7 +348,7 @@ const Venda = () => {
       headerName: "Desconto",
       editable: false,
       flex: 0,
-      width: 120,
+      width: 85,
       headerClassName: "gridHeader--header",
       renderCell: (params) => (
         <span>{params.value != null ? `${params.value}%` : "N/A"}</span>
