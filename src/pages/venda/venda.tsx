@@ -647,7 +647,7 @@ const Venda = () => {
                               prefix="R$"
                               fullWidth
                               id="outlined-helperText"
-                              label="Preço por m²"
+                              label="Preço"
                               InputLabelProps={{
                                 shrink: true,
                               }}

@@ -360,7 +360,7 @@ export function ModalEditVenda({open, loadSales, toggleModal, clientes, setAlert
                       prefix="R$"
                       fullWidth
                       id="outlined-helperText"
-                      label="Preço por m²"
+                      label="Preço"
                       InputLabelProps={{
                         shrink: true,
                       }}
