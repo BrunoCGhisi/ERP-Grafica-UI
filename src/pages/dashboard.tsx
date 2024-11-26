@@ -196,7 +196,7 @@ const Dashboard = () => {
 
           {/* Gráficos */}
           <Grid container item xs={12} spacing={2}>
-            <Grid item xs={12} sm={5.5}>
+            <Grid item xs={12} sm={6.3}>
               <Box
                 sx={{
                   display: "flex",
@@ -228,8 +228,8 @@ const Dashboard = () => {
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 2,
-                  width: "100%", // Garante que o Box ocupe o espaço total disponível
-                  
+                  width: "100%",
+                  height: "100%", // Garante altura responsiva
                 }}
               >
                 <Typography variant="h5" color="primary" sx={{ mb: 2 }}>

@@ -6,7 +6,9 @@ import { SalesOfMonthSchemaType } from "../shared/services/types";
 
 // Função para formatar valores em R$
 const valueFormatter = (value: number | null) => {
-  return value !== null ? `R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "";
+  return value !== null
+    ? `R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+    : "";
 };
 
 const SalesChart: React.FC = () => {
@@ -14,7 +16,7 @@ const SalesChart: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [chartSize, setChartSize] = useState({ width: 600, height: 300 });
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
   const fetchSalesData = async () => {
     try {
@@ -42,10 +44,11 @@ const SalesChart: React.FC = () => {
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       if (chartContainerRef.current) {
-        const { width, height } = chartContainerRef.current.getBoundingClientRect();
+        const { width, height } =
+          chartContainerRef.current.getBoundingClientRect();
         setChartSize({
-          width: width - 20,
-          height: height - 20,
+          width: width,
+          height: height * 0.9, // Garante altura proporcional ao container
         });
       }
     });
@@ -89,7 +92,7 @@ const SalesChart: React.FC = () => {
             color: "#ffb74d",
           },
         ]}
-        layout="vertical" // Pode ser 'vertical' ou 'horizontal'
+        layout="vertical"
         grid={{
           vertical: true,
           horizontal: true,
@@ -98,7 +101,7 @@ const SalesChart: React.FC = () => {
         height={chartSize.height}
         sx={{
           [`.${axisClasses.left} .${axisClasses.label}`]: {
-            transform: "translate(-30px, 0)", // Espaçamento extra para a label
+            transform: "translate(-30px, 0)",
           },
         }}
       />

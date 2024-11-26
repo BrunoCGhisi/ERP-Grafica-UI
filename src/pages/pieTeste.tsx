@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { pieMostProductSchemaType } from "../shared/services/types";
 
@@ -21,7 +21,6 @@ const PieMostProduct = () => {
     getPieMostProduct();
   }, []);
 
-  // Adicionando cores personalizadas
   const pieData = pieMostProduct.map((produto, index) => ({
     id: produto.idProduto,
     value: produto.totalVendido,
@@ -29,14 +28,17 @@ const PieMostProduct = () => {
     color: [
       "#f57c00", // Cor 1
       "#ff9800", // Cor 2
-      "#ffa726", // Cor 3 
+      "#ffa726", // Cor 3
       "#ffcc80", // Cor 4
       "#ffe0b2", // Cor 5
     ][index % 5], // Alterna entre as cores
   }));
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="row" alignItems="center" marginRight={30}>
+      {/* Descrição das labels */}
+     
+      {/* Gráfico */}
       <PieChart
         series={[
           {
@@ -48,7 +50,7 @@ const PieMostProduct = () => {
             highlighted: { additionalRadius: 10 },
           },
         ]}
-        width={400}
+        width={800}
         height={300}
       />
     </Box>

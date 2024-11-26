@@ -44,7 +44,8 @@ export function ModalEditProduto({
   setShowAlert,
   produtos,
   idToEdit,
-  insumos, insumosAll
+  insumos,
+  insumosAll,
 }: ModalEditProduto) {
   //const today = new Date()
   const filterProdutos = produtos.filter((produto) => produto.id === idToEdit);
@@ -60,11 +61,12 @@ export function ModalEditProduto({
   const insumoAssociado = insumosAll.find(
     (insumo) => insumo.id === filterProdutos[0]?.idInsumo
   );
-  
+
   // Crie a lista de insumos para o select, incluindo o insumo associado, se ele não estiver ativo
   const insumosParaSelect = insumoAssociado
     ? [...insumosAtivos, insumoAssociado].filter(
-        (value, index, self) => self.findIndex((i) => i.id === value.id) === index
+        (value, index, self) =>
+          self.findIndex((i) => i.id === value.id) === index
       )
     : insumosAtivos;
 
@@ -136,15 +138,13 @@ export function ModalEditProduto({
                   <InputLabel id="insumo-label">Insumos</InputLabel>
                   <Controller
                     name="idInsumo"
-                    
                     control={control}
                     render={({ field }) => (
                       <Select
                         fullWidth
                         labelId="select-label"
                         id="demo-simple-select"
-                        sx={{mb: 3}}
-                        
+                        sx={{ mb: 3 }}
                         error={!!errors.idInsumo}
                         {...field}
                       >
@@ -180,7 +180,9 @@ export function ModalEditProduto({
                     )}
                   />
 
-                  <InputLabel id="tipo-label" sx={{mt:3}}>Tipo</InputLabel>
+                  <InputLabel id="tipo-label" sx={{ mt: 3 }}>
+                    Tipo
+                  </InputLabel>
                   <Controller
                     control={control}
                     name="tipo"
@@ -191,7 +193,6 @@ export function ModalEditProduto({
                         labelId="tipo-label"
                         id="tipo-select"
                         fullWidth
-                        
                       >
                         <MenuItem value={true}>Não</MenuItem>
                         <MenuItem value={false}>Sim</MenuItem>
@@ -201,70 +202,64 @@ export function ModalEditProduto({
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                    {/* Campo KeyWord */}
-                    <TextField
-                      id="outlined-helperText"
-                      label="Descrição"
-                      helperText={
-                        errors.keyWord?.message 
-                      }
-                      error={!!errors.keyWord}
-                      fullWidth
-                      {...register("keyWord")}
-                      sx={{mb:3}}
-                    />
-                  
+                  {/* Campo KeyWord */}
+                  <TextField
+                    id="outlined-helperText"
+                    label="Descrição"
+                    helperText={errors.keyWord?.message}
+                    error={!!errors.keyWord}
+                    fullWidth
+                    {...register("keyWord")}
+                    sx={{ mb: 3 }}
+                  />
 
-                    <TextField
-                    sx={{ marginTop: 2.9, mb: 3   }}
+                  <TextField
+                    sx={{ marginTop: 2.9, mb: 3 }}
                     id="outlined-helperText"
                     label="Largura"
                     helperText={errors.largura?.message || "Obrigatório"}
                     error={!!errors.largura}
                     fullWidth
                     {...register("largura")}
-                   />
+                  />
 
-                    <TextField
-                      id="outlined-helperText"
-                      label="Comprimento"
-                      helperText={
-                        errors.comprimento?.message || "Obrigatório"
-                      }
-                      error={!!errors.comprimento}
-                      fullWidth
-                      {...register("comprimento")}
-                    />
-                   <InputLabel id="tipo-label">Status</InputLabel>
-                          <Controller
-                            name="isActive"
-                            control={control}
-                            defaultValue={false}
-                            render={({ field }) => (
-                              <Select
-                                label="Status"
-                                fullWidth
-                                onChange={field.onChange}
-                                value={field.value}
-                              >
-                                <MenuItem value={true}>Ativo</MenuItem>
-                                <MenuItem value={false}>Desativado</MenuItem>
-                              </Select>
-                            )}
-                          />
-                  </Grid>
-
-                  <Grid item xs={12} sx={{ textAlign: "right" }}>
-                    <Button
-                      type="submit"
-                      variant="outlined"
-                      startIcon={<DoneIcon />}
-                    >
-                      Editar
-                    </Button>
-                  </Grid>
+                  <TextField
+                    id="outlined-helperText"
+                    label="Comprimento"
+                    helperText={errors.comprimento?.message || "Obrigatório"}
+                    error={!!errors.comprimento}
+                    fullWidth
+                    {...register("comprimento")}
+                  />
+                  <InputLabel id="tipo-label">Status</InputLabel>
+                  <Controller
+                    name="isActive"
+                    control={control}
+                    defaultValue={false}
+                    render={({ field }) => (
+                      <Select
+                        label="Status"
+                        fullWidth
+                        onChange={field.onChange}
+                        value={field.value}
+                      >
+                        <MenuItem value={true}>Ativo</MenuItem>
+                        <MenuItem value={false}>Desativado</MenuItem>
+                      </Select>
+                    )}
+                  />
                 </Grid>
-                            
+
+                <Grid item xs={12} sx={{ textAlign: "right" }}>
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    startIcon={<DoneIcon />}
+                  >
+                    Editar
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
           </Grid>
         </Grid>
