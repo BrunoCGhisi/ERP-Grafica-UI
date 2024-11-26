@@ -122,6 +122,10 @@ const Venda = () => {
     name: "vendas_produtos",
   });
 
+  const [adopen, setAdOpen] = useState<boolean>(false);
+  const addOn = () => setAdOpen(true);
+  const addOf = () => setAdOpen(false);
+
  useEffect(() => {
    const PriceSugestion = async () => {
      try {
@@ -161,7 +165,7 @@ const Venda = () => {
    };
 
    PriceSugestion();
- }, [watch, getSuppliesAll]);
+ }, [watch, open, addOn]);
 
   const handleAddProduct = () => {
     append({ idProduto: 0, quantidade: 1 }); // Adiciona um novo produto com quantidade inicial
@@ -262,9 +266,7 @@ const Venda = () => {
     loadSales();
   }, [open]);
 
-  const [adopen, setAdOpen] = useState<boolean>(false);
-  const addOn = () => setAdOpen(true);
-  const addOf = () => setAdOpen(false);
+
 
   const situacaoNome = (situacaoData: number | undefined) => {
     switch (situacaoData) {
