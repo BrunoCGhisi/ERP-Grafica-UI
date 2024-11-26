@@ -151,7 +151,7 @@ const Produto = () => {
   const columns: GridColDef<ProdutoDataRow>[] = [
     {field: "nome", headerName: "Nome", editable: false, flex: 0, minWidth: 150, width: 200, headerClassName: "gridHeader--header",},
     {field: "keyWord", headerName: "Descrição", editable: false, flex: 0, minWidth: 150, width: 190, headerClassName: "gridHeader--header",},
-    {field: "tipo", headerName: "Tipo", editable: false, flex: 0, minWidth: 70, width: 150, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Serviço" : "Produto"),},
+    {field: "tipo", headerName: "Tipo", editable: false, flex: 0, minWidth: 70, width: 150, headerClassName: "gridHeader--header", valueGetter: ({ value }) => (value ? "Produto" : "Serviço"),},
     {field: "idCategoria", headerName: "Categoria", editable: false, flex: 0, minWidth: 150, width: 100, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getCategoriaNome(params.value)}</span>,},
     {field: "idInsumo", headerName: "Insumo", editable: false, flex: 0, minWidth: 200, width: 110, headerClassName: "gridHeader--header", renderCell: (params) => <span>{getInsumoNome(params.value)}</span>,},
     {field: "largura", headerName: "Largura", editable: false, flex: 0, minWidth: 70, width: 70, headerClassName: "gridHeader--header", renderCell: (params) => <span>{params.value} cm</span>,},

@@ -194,8 +194,8 @@ export function ModalEditProduto({
                         id="tipo-select"
                         fullWidth
                       >
-                        <MenuItem value={true}>Não</MenuItem>
-                        <MenuItem value={false}>Sim</MenuItem>
+                        <MenuItem value={true}>Serviço</MenuItem>
+                        <MenuItem value={false}>Produto</MenuItem>
                       </Select>
                     )}
                   />
