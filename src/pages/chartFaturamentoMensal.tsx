@@ -44,10 +44,11 @@ const SalesChart: React.FC = () => {
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       if (chartContainerRef.current) {
-        const { width } = chartContainerRef.current.getBoundingClientRect();
+        const { width, height } =
+          chartContainerRef.current.getBoundingClientRect();
         setChartSize({
-          width: Math.max(width, 300), // Tamanho mínimo de largura
-          height: Math.max(width * 0.6, 200), // Mantém proporção e tamanho mínimo
+          width: width,
+          height: height * 0.9, // Garante altura proporcional ao container
         });
       }
     });
@@ -66,17 +67,7 @@ const SalesChart: React.FC = () => {
   const faturamento = salesData.map((sale) => sale.faturamento);
 
   return (
-    <div
-      ref={chartContainerRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        minHeight: "200px", // Tamanho mínimo para garantir visibilidade
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div ref={chartContainerRef} style={{ width: "100%", height: "100%" }}>
       <BarChart
         dataset={salesData.map((sale) => ({
           month: sale.dataVenda,
@@ -101,12 +92,13 @@ const SalesChart: React.FC = () => {
             color: "#ffb74d",
           },
         ]}
+        layout="vertical"
         grid={{
           vertical: true,
           horizontal: true,
         }}
-        width={chartSize.width}
-        height={chartSize.height}
+        width={500}
+        height={300}
         sx={{
           [`.${axisClasses.left} .${axisClasses.label}`]: {
             transform: "translate(-30px, 0)",
